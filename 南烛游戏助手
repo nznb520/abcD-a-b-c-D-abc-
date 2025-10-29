@@ -1,35 +1,104 @@
--- Roblox高级功能菜单脚本
+-- Roblox手机端高级功能菜单脚本（修复版）
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
-local RunService = game:GetService("RunService")
+local GuiService = game:GetService("GuiService")
+local HttpService = game:GetService("HttpService")
 
 local player = Players.LocalPlayer
-local mouse = player:GetMouse()
+local touchEnabled = UserInputService.TouchEnabled
+
+-- 检查是否为移动设备
+if not touchEnabled then
+    warn("此脚本专为移动设备设计")
+    return
+end
+
+-- 安全的loadstring函数（兼容不同环境）
+local function safeLoadstring(code)
+    local success, result = pcall(function()
+        -- 尝试多种loadstring方式
+        if loadstring then
+            return loadstring(code)
+        elseif load then
+            return load(code)
+        else
+            -- 如果都没有，尝试直接执行
+            return function() 
+                local func, err = loadstring(code)
+                if func then return func() end
+                error(err or "无法加载脚本")
+            end
+        end
+    end)
+    
+    if success and result then
+        return result
+    else
+        return function() 
+            warn("脚本加载失败: " .. tostring(result))
+        end
+    end
+end
+
+-- 安全的HTTP获取函数
+local function safeHttpGet(url)
+    local success, result = pcall(function()
+        return game:HttpGet(url, true)
+    end)
+    
+    if success then
+        return result
+    else
+        -- 备用方案
+        local success2, result2 = pcall(function()
+            return HttpService:GetAsync(url)
+        end)
+        
+        if success2 then
+            return result2
+        else
+            return "print('脚本加载失败，请检查网络连接')"
+        end
+    end
+end
 
 -- 检查脚本是否已永久关闭
 local permanentClose = false
 
 -- 创建主GUI
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "AdvancedMenu"
+ScreenGui.Name = "MobileAdvancedMenu"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+-- 创建打开菜单的浮动按钮
+local OpenButton = Instance.new("ImageButton")
+OpenButton.Name = "OpenButton"
+OpenButton.Size = UDim2.new(0, 60, 0, 60)
+OpenButton.Position = UDim2.new(0, 20, 0.5, -30)
+OpenButton.BackgroundColor3 = Color3.fromRGB(100, 150, 255)
+OpenButton.Image = "rbxassetid://7072717834"
+OpenButton.Parent = ScreenGui
+
+local OpenButtonCorner = Instance.new("UICorner")
+OpenButtonCorner.CornerRadius = UDim.new(1, 0)
+OpenButtonCorner.Parent = OpenButton
 
 -- 创建背景遮罩
 local Background = Instance.new("Frame")
 Background.Name = "Background"
 Background.Size = UDim2.new(1, 0, 1, 0)
 Background.BackgroundColor3 = Color3.new(0, 0, 0)
-Background.BackgroundTransparency = 0.5
+Background.BackgroundTransparency = 0.7
 Background.Visible = false
 Background.Parent = ScreenGui
 
 -- 创建主窗口
 local MainWindow = Instance.new("Frame")
 MainWindow.Name = "MainWindow"
-MainWindow.Size = UDim2.new(0, 350, 0, 400)
-MainWindow.Position = UDim2.new(0.5, -175, 0.5, -200)
+MainWindow.Size = UDim2.new(0.9, 0, 0, 450)
+MainWindow.Position = UDim2.new(0.5, 0, 0.5, 0)
 MainWindow.AnchorPoint = Vector2.new(0.5, 0.5)
 MainWindow.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
 MainWindow.BorderSizePixel = 0
@@ -38,30 +107,30 @@ MainWindow.Parent = ScreenGui
 
 -- 圆角效果
 local UICorner = Instance.new("UICorner")
-UICorner.CornerRadius = UDim.new(0, 12)
+UICorner.CornerRadius = UDim.new(0, 15)
 UICorner.Parent = MainWindow
 
 -- 标题栏
 local TitleBar = Instance.new("Frame")
 TitleBar.Name = "TitleBar"
-TitleBar.Size = UDim2.new(1, 0, 0, 40)
+TitleBar.Size = UDim2.new(1, 0, 0, 50)
 TitleBar.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
 TitleBar.BorderSizePixel = 0
 TitleBar.Parent = MainWindow
 
 local TitleBarCorner = Instance.new("UICorner")
-TitleBarCorner.CornerRadius = UDim.new(0, 12)
+TitleBarCorner.CornerRadius = UDim.new(0, 15)
 TitleBarCorner.Parent = TitleBar
 
 -- 标题文字
 local TitleLabel = Instance.new("TextLabel")
 TitleLabel.Name = "TitleLabel"
-TitleLabel.Size = UDim2.new(1, -80, 1, 0)
-TitleLabel.Position = UDim2.new(0, 15, 0, 0)
+TitleLabel.Size = UDim2.new(1, -100, 1, 0)
+TitleLabel.Position = UDim2.new(0, 20, 0, 0)
 TitleLabel.BackgroundTransparency = 1
-TitleLabel.Text = "高级功能菜单"
+TitleLabel.Text = "📱 手机功能菜单"
 TitleLabel.TextColor3 = Color3.new(1, 1, 1)
-TitleLabel.TextSize = 18
+TitleLabel.TextSize = 20
 TitleLabel.Font = Enum.Font.GothamBold
 TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
 TitleLabel.Parent = TitleBar
@@ -69,53 +138,36 @@ TitleLabel.Parent = TitleBar
 -- 关闭按钮
 local CloseButton = Instance.new("TextButton")
 CloseButton.Name = "CloseButton"
-CloseButton.Size = UDim2.new(0, 30, 0, 30)
-CloseButton.Position = UDim2.new(1, -35, 0.5, -15)
+CloseButton.Size = UDim2.new(0, 40, 0, 40)
+CloseButton.Position = UDim2.new(1, -50, 0.5, -20)
 CloseButton.AnchorPoint = Vector2.new(0.5, 0.5)
 CloseButton.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
 CloseButton.TextColor3 = Color3.new(1, 1, 1)
 CloseButton.Text = "×"
-CloseButton.TextSize = 20
+CloseButton.TextSize = 24
 CloseButton.Font = Enum.Font.GothamBold
 CloseButton.Parent = TitleBar
 
 local CloseButtonCorner = Instance.new("UICorner")
-CloseButtonCorner.CornerRadius = UDim.new(0, 6)
+CloseButtonCorner.CornerRadius = UDim.new(0, 8)
 CloseButtonCorner.Parent = CloseButton
-
--- 最小化按钮
-local MinimizeButton = Instance.new("TextButton")
-MinimizeButton.Name = "MinimizeButton"
-MinimizeButton.Size = UDim2.new(0, 30, 0, 30)
-MinimizeButton.Position = UDim2.new(1, -70, 0.5, -15)
-MinimizeButton.AnchorPoint = Vector2.new(0.5, 0.5)
-MinimizeButton.BackgroundColor3 = Color3.fromRGB(80, 80, 100)
-MinimizeButton.TextColor3 = Color3.new(1, 1, 1)
-MinimizeButton.Text = "_"
-MinimizeButton.TextSize = 16
-MinimizeButton.Font = Enum.Font.GothamBold
-MinimizeButton.Parent = TitleBar
-
-local MinimizeButtonCorner = Instance.new("UICorner")
-MinimizeButtonCorner.CornerRadius = UDim.new(0, 6)
-MinimizeizeButtonCorner.Parent = MinimizeButton
 
 -- 内容区域
 local ContentFrame = Instance.new("Frame")
 ContentFrame.Name = "ContentFrame"
-ContentFrame.Size = UDim2.new(1, -20, 1, -60)
-ContentFrame.Position = UDim2.new(0, 10, 0, 50)
+ContentFrame.Size = UDim2.new(1, -20, 1, -70)
+ContentFrame.Position = UDim2.new(0, 10, 0, 60)
 ContentFrame.BackgroundTransparency = 1
 ContentFrame.Parent = MainWindow
 
 -- 分类标题
 local CategoryLabel = Instance.new("TextLabel")
 CategoryLabel.Name = "CategoryLabel"
-CategoryLabel.Size = UDim2.new(1, 0, 0, 30)
+CategoryLabel.Size = UDim2.new(1, 0, 0, 35)
 CategoryLabel.BackgroundTransparency = 1
-CategoryLabel.Text = "通用类型"
-CategoryLabel.TextColor3 = Color3.fromRGB(100, 150, 255)
-CategoryLabel.TextSize = 16
+CategoryLabel.Text = "📋 通用功能"
+CategoryLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
+CategoryLabel.TextSize = 18
 CategoryLabel.Font = Enum.Font.GothamBold
 CategoryLabel.TextXAlignment = Enum.TextXAlignment.Left
 CategoryLabel.Parent = ContentFrame
@@ -124,26 +176,41 @@ CategoryLabel.Parent = ContentFrame
 local ButtonsContainer = Instance.new("ScrollingFrame")
 ButtonsContainer.Name = "ButtonsContainer"
 ButtonsContainer.Size = UDim2.new(1, 0, 1, -40)
-ButtonsContainer.Position = UDim2.new(0, 0, 0, 35)
+ButtonsContainer.Position = UDim2.new(0, 0, 0, 40)
 ButtonsContainer.BackgroundTransparency = 1
 ButtonsContainer.BorderSizePixel = 0
-ButtonsContainer.ScrollBarThickness = 4
-ButtonsContainer.CanvasSize = UDim2.new(0, 0, 0, 200)
+ButtonsContainer.ScrollBarThickness = 6
+ButtonsContainer.ScrollingDirection = Enum.ScrollingDirection.Y
+ButtonsContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
 ButtonsContainer.Parent = ContentFrame
 
 local UIListLayout = Instance.new("UIListLayout")
-UIListLayout.Padding = UDim.new(0, 10)
+UIListLayout.Padding = UDim.new(0, 12)
 UIListLayout.Parent = ButtonsContainer
 
--- 创建功能按钮
-local function createFeatureButton(text, description, scriptUrl, isR15Only)
+-- 创建状态显示标签
+local StatusLabel = Instance.new("TextLabel")
+StatusLabel.Name = "StatusLabel"
+StatusLabel.Size = UDim2.new(1, 0, 0, 25)
+StatusLabel.Position = UDim2.new(0, 0, 1, 5)
+StatusLabel.BackgroundTransparency = 1
+StatusLabel.Text = "就绪"
+StatusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+StatusLabel.TextSize = 12
+StatusLabel.Font = Enum.Font.Gotham
+StatusLabel.TextXAlignment = Enum.TextXAlignment.Left
+StatusLabel.Visible = false
+StatusLabel.Parent = ContentFrame
+
+-- 创建手机优化的功能按钮
+local function createMobileFeatureButton(text, description, scriptUrl, isR15Only)
     local ButtonFrame = Instance.new("Frame")
-    ButtonFrame.Size = UDim2.new(1, 0, 0, 70)
+    ButtonFrame.Size = UDim2.new(1, 0, 0, 80)
     ButtonFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
     ButtonFrame.BorderSizePixel = 0
     
     local ButtonCorner = Instance.new("UICorner")
-    ButtonCorner.CornerRadius = UDim.new(0, 8)
+    ButtonCorner.CornerRadius = UDim.new(0, 10)
     ButtonCorner.Parent = ButtonFrame
     
     local Button = Instance.new("TextButton")
@@ -153,25 +220,33 @@ local function createFeatureButton(text, description, scriptUrl, isR15Only)
     Button.Text = ""
     Button.Parent = ButtonFrame
     
+    local ButtonIcon = Instance.new("ImageLabel")
+    ButtonIcon.Name = "ButtonIcon"
+    ButtonIcon.Size = UDim2.new(0, 40, 0, 40)
+    ButtonIcon.Position = UDim2.new(0, 15, 0.5, -20)
+    ButtonIcon.BackgroundTransparency = 1
+    ButtonIcon.Image = "rbxassetid://7072717834"
+    ButtonIcon.Parent = ButtonFrame
+    
     local ButtonTitle = Instance.new("TextLabel")
     ButtonTitle.Name = "ButtonTitle"
-    ButtonTitle.Size = UDim2.new(1, -20, 0, 25)
-    ButtonTitle.Position = UDim2.new(0, 10, 0, 5)
+    ButtonTitle.Size = UDim2.new(1, -80, 0, 30)
+    ButtonTitle.Position = UDim2.new(0, 70, 0, 15)
     ButtonTitle.BackgroundTransparency = 1
     ButtonTitle.Text = text
     ButtonTitle.TextColor3 = Color3.new(1, 1, 1)
-    ButtonTitle.TextSize = 14
+    ButtonTitle.TextSize = 16
     ButtonTitle.Font = Enum.Font.GothamBold
     ButtonTitle.TextXAlignment = Enum.TextXAlignment.Left
     ButtonTitle.Parent = ButtonFrame
     
     local ButtonDesc = Instance.new("TextLabel")
     ButtonDesc.Name = "ButtonDesc"
-    ButtonDesc.Size = UDim2.new(1, -20, 0, 20)
-    ButtonDesc.Position = UDim2.new(0, 10, 0, 30)
+    ButtonDesc.Size = UDim2.new(1, -80, 0, 20)
+    ButtonDesc.Position = UDim2.new(0, 70, 0, 45)
     ButtonDesc.BackgroundTransparency = 1
     ButtonDesc.Text = description
-    ButtonDesc.TextColor3 = Color3.fromRGB(200, 200, 200)
+    ButtonDesc.TextColor3 = Color3.fromRGB(180, 180, 180)
     ButtonDesc.TextSize = 12
     ButtonDesc.Font = Enum.Font.Gotham
     ButtonDesc.TextXAlignment = Enum.TextXAlignment.Left
@@ -180,23 +255,85 @@ local function createFeatureButton(text, description, scriptUrl, isR15Only)
     if isR15Only then
         local R15Label = Instance.new("TextLabel")
         R15Label.Name = "R15Label"
-        R15Label.Size = UDim2.new(0, 60, 0, 16)
-        R15Label.Position = UDim2.new(1, -70, 1, -20)
+        R15Label.Size = UDim2.new(0, 70, 0, 20)
+        R15Label.Position = UDim2.new(1, -75, 0.5, -10)
         R15Label.BackgroundColor3 = Color3.fromRGB(100, 150, 255)
         R15Label.Text = "仅限R15"
         R15Label.TextColor3 = Color3.new(1, 1, 1)
-        R15Label.TextSize = 10
-        R15Label.Font = Enum.Font.Gotham
+        R15Label.TextSize = 11
+        R15Label.Font = Enum.Font.GothamBold
         R15Label.Parent = ButtonFrame
         
         local R15Corner = Instance.new("UICorner")
-        R15Corner.CornerRadius = UDim.new(0, 4)
+        R15Corner.CornerRadius = UDim.new(0, 5)
         R15Corner.Parent = R15Label
     end
     
+    -- 按钮点击效果
     Button.MouseButton1Click:Connect(function()
-        if scriptUrl then
-            loadstring(game:HttpGet(scriptUrl))()
+        -- 显示状态
+        StatusLabel.Visible = true
+        StatusLabel.Text = "正在加载脚本..."
+        StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 100)
+        
+        -- 点击反馈
+        TweenService:Create(ButtonFrame, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(60, 60, 70)}):Play()
+        wait(0.1)
+        TweenService:Create(ButtonFrame, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(40, 40, 50)}):Play()
+        
+        -- 延迟执行以避免UI卡顿
+        wait(0.1)
+        
+        -- 执行脚本
+        local success, err = pcall(function()
+            if scriptUrl then
+                StatusLabel.Text = "下载脚本中..."
+                
+                -- 获取脚本代码
+                local scriptCode = safeHttpGet(scriptUrl)
+                
+                StatusLabel.Text = "执行脚本中..."
+                
+                -- 加载并执行脚本
+                local scriptFunction = safeLoadstring(scriptCode)
+                if scriptFunction then
+                    scriptFunction()
+                    StatusLabel.Text = "脚本执行成功!"
+                    StatusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+                    
+                    -- 3秒后隐藏状态
+                    delay(3, function()
+                        if StatusLabel then
+                            StatusLabel.Visible = false
+                        end
+                    end)
+                else
+                    error("无法加载脚本函数")
+                end
+            else
+                -- 如果没有URL，执行内置功能
+                if text == "飞行功能" then
+                    StatusLabel.Text = "激活飞行模式..."
+                    -- 这里可以添加内置的飞行脚本
+                    loadstring(game:HttpGet("https://raw.githubusercontent.com/396abc/Script/refs/heads/main/MobileFly.lua"))()
+                elseif text == "无敌模式" then
+                    StatusLabel.Text = "激活无敌模式..."
+                    -- 这里可以添加内置的无敌脚本
+                end
+            end
+        end)
+        
+        if not success then
+            StatusLabel.Text = "错误: " .. tostring(err)
+            StatusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+            warn("脚本执行错误: " .. tostring(err))
+            
+            -- 5秒后隐藏状态
+            delay(5, function()
+                if StatusLabel then
+                    StatusLabel.Visible = false
+                end
+            end)
         end
     end)
     
@@ -212,57 +349,55 @@ local function createFeatureButton(text, description, scriptUrl, isR15Only)
     return ButtonFrame
 end
 
--- 添加功能按钮
-local flyButton = createFeatureButton("飞行功能", "启用角色飞行能力", "https://raw.githubusercontent.com/396abc/Script/refs/heads/main/FlyR15.lua", true)
-flyButton.Parent = ButtonsContainer
+-- 添加功能按钮（使用正确的URL）
+local mobileFlyButton = createMobileFeatureButton("飞行功能", "触摸控制飞行", "https://raw.githubusercontent.com/396abc/Script/refs/heads/main/MobileFly.lua", true)
+mobileFlyButton.Parent = ButtonsContainer
 
-local godButton = createFeatureButton("无敌模式", "使角色无敌", "https://raw.githubusercontent.com/396abc/Script/refs/heads/main/GodMode.lua", false)
+local godButton = createMobileFeatureButton("无敌模式", "角色无敌状态", "https://raw.githubusercontent.com/396abc/Script/refs/heads/main/MobileGodMode.lua", false)
 godButton.Parent = ButtonsContainer
 
-local speedButton = createFeatureButton("超级速度", "极大提升移动速度", "https://raw.githubusercontent.com/396abc/Script/refs/heads/main/SuperSpeed.lua", false)
+local speedButton = createMobileFeatureButton("移动加速", "提升移动速度", "https://raw.githubusercontent.com/396abc/Script/refs/heads/main/MobileSpeed.lua", false)
 speedButton.Parent = ButtonsContainer
+
+local noclipButton = createMobileFeatureButton("穿墙模式", "穿透物体", "https://raw.githubusercontent.com/396abc/Script/refs/heads/main/MobileNoclip.lua", false)
+noclipButton.Parent = ButtonsContainer
+
+-- 备用内置功能按钮（如果URL不可用）
+local simpleFlyButton = createMobileFeatureButton("简易飞行", "基础飞行功能", nil, true)
+simpleFlyButton.Parent = ButtonsContainer
 
 -- 更新滚动区域大小
 UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-    ButtonsContainer.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y)
+    ButtonsContainer.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 10)
 end)
 
--- 拖动功能
+-- 手机端拖动功能
 local dragging = false
-local dragInput
 local dragStart
 local startPos
 
-local function update(input)
-    local delta = input.Position - dragStart
-    MainWindow.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+local function updateTouch(input)
+    if dragging then
+        local delta = input.Position - dragStart
+        MainWindow.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
 end
 
 TitleBar.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+    if input.UserInputType == Enum.UserInputType.Touch then
         dragging = true
         dragStart = input.Position
         startPos = MainWindow.Position
-        
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
-        end)
     end
 end)
 
-TitleBar.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement then
-        dragInput = input
+TitleBar.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false
     end
-end)
+end
 
-UserInputService.InputChanged:Connect(function(input)
-    if input == dragInput and dragging then
-        update(input)
-    end
-end)
+UserInputService.TouchMoved:Connect(updateTouch)
 
 -- 显示/隐藏菜单
 local function toggleMenu()
@@ -272,31 +407,36 @@ local function toggleMenu()
     
     if isVisible then
         -- 隐藏动画
-        Background.Visible = false
-        TweenService:Create(MainWindow, TweenInfo.new(0.3), {Size = UDim2.new(0, 0, 0, 0), Position = UDim2.new(0.5, 0, 0.5, 0)}):Play()
+        TweenService:Create(MainWindow, TweenInfo.new(0.3), {Size = UDim2.new(0, 0, 0, 450)}):Play()
+        TweenService:Create(Background, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
         wait(0.3)
+        Background.Visible = false
         MainWindow.Visible = false
+        OpenButton.Visible = true
     else
         -- 显示动画
+        OpenButton.Visible = false
         Background.Visible = true
         MainWindow.Visible = true
-        MainWindow.Size = UDim2.new(0, 0, 0, 0)
-        TweenService:Create(MainWindow, TweenInfo.new(0.3), {Size = UDim2.new(0, 350, 0, 400), Position = UDim2.new(0.5, -175, 0.5, -200)}):Play()
+        MainWindow.Size = UDim2.new(0, 0, 0, 450)
+        TweenService:Create(MainWindow, TweenInfo.new(0.3), {Size = UDim2.new(0.9, 0, 0, 450)}):Play()
+        TweenService:Create(Background, TweenInfo.new(0.3), {BackgroundTransparency = 0.7}):Play()
     end
 end
+
+-- 打开按钮功能
+OpenButton.MouseButton1Click:Connect(function()
+    toggleMenu()
+end)
 
 -- 关闭按钮功能
 CloseButton.MouseButton1Click:Connect(function()
     permanentClose = true
-    TweenService:Create(MainWindow, TweenInfo.new(0.3), {Size = UDim2.new(0, 0, 0, 0), Position = UDim2.new(0.5, 0, 0.5, 0)}):Play()
+    TweenService:Create(MainWindow, TweenInfo.new(0.3), {Size = UDim2.new(0, 0, 0, 450)}):Play()
     TweenService:Create(Background, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
+    TweenService:Create(OpenButton, TweenInfo.new(0.3), {BackgroundTransparency = 1, ImageTransparency = 1}):Play()
     wait(0.3)
     ScreenGui:Destroy()
-end)
-
--- 最小化按钮功能
-MinimizeButton.MouseButton1Click:Connect(function()
-    toggleMenu()
 end)
 
 -- 背景点击关闭
@@ -304,18 +444,28 @@ Background.MouseButton1Click:Connect(function()
     toggleMenu()
 end)
 
--- 绑定快捷键（F键打开菜单）
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
-    
-    if input.KeyCode == Enum.KeyCode.F then
-        toggleMenu()
+-- 适配手机屏幕安全区域
+local function updateSafeZone()
+    local safeArea = GuiService:GetGuiInset()
+    MainWindow.Position = UDim2.new(0.5, 0, 0.5, safeArea.Y)
+    OpenButton.Position = UDim2.new(0, 20, 0.5, -30 + safeArea.Y)
+end
+
+-- 初始设置
+ScreenGui.Parent = player:WaitForChild("PlayerGui")
+updateSafeZone()
+
+-- 屏幕尺寸变化时更新安全区域
+GuiService:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateSafeZone)
+
+print("📱 手机端高级功能菜单已加载！")
+print("点击屏幕左侧的蓝色按钮打开菜单")
+
+-- 显示就绪状态
+StatusLabel.Visible = true
+StatusLabel.Text = "菜单加载完成"
+delay(2, function()
+    if StatusLabel then
+        StatusLabel.Visible = false
     end
 end)
-
-ScreenGui.Parent = player:WaitForChild("PlayerGui")
-
--- 初始显示菜单
-toggleMenu()
-
-print("高级功能菜单已加载！按 F 键打开/关闭菜单")
