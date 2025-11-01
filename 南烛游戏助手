@@ -1,4 +1,4 @@
--- NZ脚本中心完整版
+-- NZ脚本中心流星球体版
 -- 主作者:南烛
 
 local Players = game:GetService("Players")
@@ -12,397 +12,190 @@ local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "NZScriptCenter"
 ScreenGui.Parent = game.CoreGui
 
--- 创建欢迎界面
-local WelcomeFrame = Instance.new("Frame")
-WelcomeFrame.Name = "WelcomeFrame"
-WelcomeFrame.Size = UDim2.new(0, 500, 0, 300)
-WelcomeFrame.Position = UDim2.new(0.5, -250, 0.5, -150)
-WelcomeFrame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.3)
-WelcomeFrame.BorderSizePixel = 0
-WelcomeFrame.Parent = ScreenGui
+-- 创建星空球体按钮
+local BallButton = Instance.new("ImageButton")
+BallButton.Name = "BallButton"
+BallButton.Size = UDim2.new(0, 80, 0, 80)
+BallButton.Position = UDim2.new(0, 20, 0.5, -40)
+BallButton.BackgroundTransparency = 1
+BallButton.Image = "rbxassetid://130876619" -- 星空图片ID
+BallButton.ImageColor3 = Color3.new(1, 1, 1)
+BallButton.Parent = ScreenGui
 
--- 欢迎背景效果
-local Gradient = Instance.new("UIGradient")
-Gradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.new(0.2, 0, 0.4)),
-    ColorSequenceKeypoint.new(1, Color3.new(0, 0, 0.8))
-}
-Gradient.Rotation = 45
-Gradient.Parent = WelcomeFrame
+-- 创建圆形遮罩
+local CircleMask = Instance.new("UICorner")
+CircleMask.CornerRadius = UDim.new(1, 0)
+CircleMask.Parent = BallButton
 
--- 欢迎文本
-local WelcomeText = Instance.new("TextLabel")
-WelcomeText.Name = "WelcomeText"
-WelcomeText.Text = "欢迎使用NZ脚本中心"
-WelcomeText.Size = UDim2.new(1, 0, 0, 80)
-WelcomeText.Position = UDim2.new(0, 0, 0.3, 0)
-WelcomeText.BackgroundTransparency = 1
-WelcomeText.TextColor3 = Color3.new(1, 1, 1)
-WelcomeText.TextSize = 36
-WelcomeText.Font = Enum.Font.SourceSansBold
-WelcomeText.Parent = WelcomeFrame
+-- 创建主弹窗
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 300, 0, 400)
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -200)
+MainFrame.BackgroundColor3 = Color3.new(0.05, 0.05, 0.15)
+MainFrame.BorderSizePixel = 2
+MainFrame.BorderColor3 = Color3.new(1, 0, 0)
+MainFrame.Visible = false
+MainFrame.Parent = ScreenGui
 
--- 副标题文本
-local SubText = Instance.new("TextLabel")
-SubText.Name = "SubText"
-SubText.Text = "主作者:南烛 | 版本:2.0"
-SubText.Size = UDim2.new(1, 0, 0, 30)
-SubText.Position = UDim2.new(0, 0, 0.5, 0)
-SubText.BackgroundTransparency = 1
-SubText.TextColor3 = Color3.new(0.8, 0.8, 1)
-SubText.TextSize = 20
-SubText.Font = Enum.Font.SourceSans
-SubText.Parent = WelcomeFrame
+-- 边框发光效果
+local Glow = Instance.new("ImageLabel")
+Glow.Name = "Glow"
+Glow.Size = UDim2.new(1, 10, 1, 10)
+Glow.Position = UDim2.new(0, -5, 0, -5)
+Glow.BackgroundTransparency = 1
+Glow.Image = "rbxassetid://5028857084"
+Glow.ImageColor3 = Color3.new(0, 0.5, 1)
+Glow.ScaleType = Enum.ScaleType.Slice
+Glow.SliceCenter = Rect.new(24, 24, 24, 24)
+Glow.Parent = MainFrame
 
--- 加载动画
-local LoadingBar = Instance.new("Frame")
-LoadingBar.Name = "LoadingBar"
-LoadingBar.Size = UDim2.new(0, 0, 0, 5)
-LoadingBar.Position = UDim2.new(0.5, 0, 0.7, 0)
-LoadingBar.AnchorPoint = Vector2.new(0.5, 0.5)
-LoadingBar.BackgroundColor3 = Color3.new(0, 1, 1)
-LoadingBar.BorderSizePixel = 0
-LoadingBar.Parent = WelcomeFrame
-
--- 文本颜色变化效果
+-- 边框颜色变化效果
 spawn(function()
-    while WelcomeText and WelcomeText.Parent do
+    while MainFrame and MainFrame.Parent do
         for i = 0, 1, 0.01 do
-            if not WelcomeText or not WelcomeText.Parent then break end
-            WelcomeText.TextColor3 = Color3.fromHSV(i, 1, 1)
+            if not MainFrame or not MainFrame.Parent then break end
+            MainFrame.BorderColor3 = Color3.fromHSV(i, 1, 1)
+            Glow.ImageColor3 = Color3.fromHSV(i, 0.8, 1)
             task.wait(0.05)
         end
     end
 end)
 
--- 加载动画效果
-spawn(function()
-    for i = 0, 400, 2 do
-        if not LoadingBar or not LoadingBar.Parent then break end
-        LoadingBar.Size = UDim2.new(0, i, 0, 5)
-        task.wait()
+-- 标题栏
+local TitleBar = Instance.new("Frame")
+TitleBar.Name = "TitleBar"
+TitleBar.Size = UDim2.new(1, 0, 0, 35)
+TitleBar.BackgroundColor3 = Color3.new(0.1, 0.1, 0.3)
+TitleBar.Parent = MainFrame
+
+-- 标题文本
+local TitleText = Instance.new("TextLabel")
+TitleText.Name = "TitleText"
+TitleText.Text = "NZ脚本中心"
+TitleText.Size = UDim2.new(0, 150, 1, 0)
+TitleText.Position = UDim2.new(0, 10, 0, 0)
+TitleText.BackgroundTransparency = 1
+TitleText.TextColor3 = Color3.new(1, 1, 1)
+TitleText.TextSize = 20
+TitleText.Font = Enum.Font.SourceSansBold
+TitleText.TextXAlignment = Enum.TextXAlignment.Left
+TitleText.Parent = TitleBar
+
+-- 关闭按钮
+local CloseButton = Instance.new("TextButton")
+CloseButton.Name = "CloseButton"
+CloseButton.Text = "×"
+CloseButton.Size = UDim2.new(0, 25, 0, 25)
+CloseButton.Position = UDim2.new(1, -30, 0, 5)
+CloseButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
+CloseButton.TextColor3 = Color3.new(1, 1, 1)
+CloseButton.Parent = TitleBar
+
+-- 内容区域
+local ContentFrame = Instance.new("Frame")
+ContentFrame.Name = "ContentFrame"
+ContentFrame.Size = UDim2.new(1, -20, 1, -70)
+ContentFrame.Position = UDim2.new(0, 10, 0, 60)
+ContentFrame.BackgroundTransparency = 1
+ContentFrame.Parent = MainFrame
+
+-- 快速旋转按钮
+local FastSpinButton = Instance.new("TextButton")
+FastSpinButton.Name = "FastSpinButton"
+FastSpinButton.Text = "快速旋转 (速度50)"
+FastSpinButton.Size = UDim2.new(1, 0, 0, 35)
+FastSpinButton.Position = UDim2.new(0, 0, 0, 40)
+FastSpinButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
+FastSpinButton.TextColor3 = Color3.new(1, 1, 1)
+FastSpinButton.Parent = ContentFrame
+
+-- 极速旋转按钮
+local SuperSpinButton = Instance.new("TextButton")
+SuperSpinButton.Name = "SuperSpinButton"
+SuperSpinButton.Text = "极速旋转 (速度100)"
+SuperSpinButton.Size = UDim2.new(1, 0, 0, 35)
+SuperSpinButton.Position = UDim2.new(0, 0, 0, 80)
+SuperSpinButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
+SuperSpinButton.TextColor3 = Color3.new(1, 1, 1)
+SuperSpinButton.Parent = ContentFrame
+
+-- 无限跳按钮
+local InfiniteJumpButton = Instance.new("TextButton")
+InfiniteJumpButton.Name = "InfiniteJumpButton"
+InfiniteJumpButton.Text = "无限跳跃"
+InfiniteJumpButton.Size = UDim2.new(1, 0, 0, 35)
+InfiniteJumpButton.Position = UDim2.new(0, 0, 0, 120)
+InfiniteJumpButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
+InfiniteJumpButton.TextColor3 = Color3.new(1, 1, 1)
+InfiniteJumpButton.Parent = ContentFrame
+
+-- 飞行功能按钮
+local FlightButton = Instance.new("TextButton")
+FlightButton.Name = "FlightButton"
+FlightButton.Text = "无敌少侠飞行"
+FlightButton.Size = UDim2.new(1, 0, 0, 35)
+FlightButton.Position = UDim2.new(0, 0, 0, 160)
+FlightButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
+FlightButton.TextColor3 = Color3.new(1, 1, 1)
+FlightButton.Parent = ContentFrame
+
+-- 状态提示
+local StatusText = Instance.new("TextLabel")
+StatusText.Name = "StatusText"
+StatusText.Text = "点击左侧球体打开菜单"
+StatusText.Size = UDim2.new(1, 0, 0, 20)
+StatusText.Position = UDim2.new(0, 0, 1, -25)
+StatusText.BackgroundTransparency = 1
+StatusText.TextColor3 = Color3.new(0, 1, 0)
+StatusText.TextSize = 14
+StatusText.Font = Enum.Font.SourceSans
+StatusText.TextXAlignment = Enum.TextXAlignment.Left
+StatusText.Parent = ContentFrame
+
+-- 球体按钮点击事件
+local isMainFrameVisible = false
+BallButton.MouseButton1Click:Connect(function()
+    if isMainFrameVisible then
+        -- 关闭主界面，变回星空球体
+        MainFrame.Visible = false
+        BallButton.Image = "rbxassetid://130876619" -- 星空图片
+        StatusText.Text = "点击左侧球体打开菜单"
+    else
+        -- 打开主界面，变为流星图片
+        MainFrame.Visible = true
+        BallButton.Image = "rbxassetid://142835429" -- 流星图片ID
+        StatusText.Text = "点击球体关闭菜单"
     end
+    isMainFrameVisible = not isMainFrameVisible
 end)
 
--- 延迟显示主界面
-task.delay(3, function()
-    WelcomeFrame:Destroy()
+-- 关闭按钮点击事件
+CloseButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+    BallButton.Image = "rbxassetid://130876619" -- 星空图片
+    StatusText.Text = "点击左侧球体打开菜单"
+    isMainFrameVisible = false
+end)
+
+-- 快速旋转功能
+FastSpinButton.MouseButton1Click:Connect(function()
+    StatusText.Text = "快速旋转已激活"
     
-    -- 创建主弹窗
-    local MainFrame = Instance.new("Frame")
-    MainFrame.Name = "MainFrame"
-    MainFrame.Size = UDim2.new(0, 350, 0, 450)
-    MainFrame.Position = UDim2.new(0.5, -175, 0.5, -225)
-    MainFrame.BackgroundColor3 = Color3.new(0.05, 0.05, 0.15)
-    MainFrame.BorderSizePixel = 2
-    MainFrame.BorderColor3 = Color3.new(1, 0, 0)
-    MainFrame.Parent = ScreenGui
-    
-    -- 边框发光效果
-    local Glow = Instance.new("ImageLabel")
-    Glow.Name = "Glow"
-    Glow.Size = UDim2.new(1, 10, 1, 10)
-    Glow.Position = UDim2.new(0, -5, 0, -5)
-    Glow.BackgroundTransparency = 1
-    Glow.Image = "rbxassetid://5028857084"
-    Glow.ImageColor3 = Color3.new(0, 0.5, 1)
-    Glow.ScaleType = Enum.ScaleType.Slice
-    Glow.SliceCenter = Rect.new(24, 24, 24, 24)
-    Glow.Parent = MainFrame
-    
-    -- 边框颜色变化效果
-    spawn(function()
-        while MainFrame and MainFrame.Parent do
-            for i = 0, 1, 0.01 do
-                if not MainFrame or not MainFrame.Parent then break end
-                MainFrame.BorderColor3 = Color3.fromHSV(i, 1, 1)
-                Glow.ImageColor3 = Color3.fromHSV(i, 0.8, 1)
-                task.wait(0.05)
+    LocalPlayer.CharacterAdded:Connect(function(character)
+        local humanoid = character:WaitForChild("Humanoid")
+        humanoid.AutoRotate = false
+        
+        game:GetService("RunService").Heartbeat:Connect(function()
+            if humanoid and humanoid.Parent then
+                humanoid.RootPart.CFrame = humanoid.RootPart.CFrame * CFrame.Angles(0, math.rad(50), 0)
             end
-        end
-    end)
-    
-    -- 标题栏
-    local TitleBar = Instance.new("Frame")
-    TitleBar.Name = "TitleBar"
-    TitleBar.Size = UDim2.new(1, 0, 0, 35)
-    TitleBar.BackgroundColor3 = Color3.new(0.1, 0.1, 0.3)
-    TitleBar.Parent = MainFrame
-    
-    -- 标题文本
-    local TitleText = Instance.new("TextLabel")
-    TitleText.Name = "TitleText"
-    TitleText.Text = "NZ脚本中心"
-    TitleText.Size = UDim2.new(0, 150, 1, 0)
-    TitleText.Position = UDim2.new(0, 10, 0, 0)
-    TitleText.BackgroundTransparency = 1
-    TitleText.TextColor3 = Color3.new(1, 1, 1)
-    TitleText.TextSize = 20
-    TitleText.Font = Enum.Font.SourceSansBold
-    TitleText.TextXAlignment = Enum.TextXAlignment.Left
-    TitleText.Parent = TitleBar
-    
-    -- 缩放按钮
-    local ZoomInButton = Instance.new("TextButton")
-    ZoomInButton.Name = "ZoomInButton"
-    ZoomInButton.Text = "+"
-    ZoomInButton.Size = UDim2.new(0, 25, 0, 25)
-    ZoomInButton.Position = UDim2.new(1, -85, 0, 5)
-    ZoomInButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
-    ZoomInButton.TextColor3 = Color3.new(1, 1, 1)
-    ZoomInButton.Parent = TitleBar
-    
-    local ZoomOutButton = Instance.new("TextButton")
-    ZoomOutButton.Name = "ZoomOutButton"
-    ZoomOutButton.Text = "="
-    ZoomOutButton.Size = UDim2.new(0, 25, 0, 25)
-    ZoomOutButton.Position = UDim2.new(1, -115, 0, 5)
-    ZoomOutButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
-    ZoomOutButton.TextColor3 = Color3.new(1, 1, 1)
-    ZoomOutButton.Parent = TitleBar
-    
-    -- 最小化按钮
-    local MinimizeButton = Instance.new("TextButton")
-    MinimizeButton.Name = "MinimizeButton"
-    MinimizeButton.Text = "-"
-    MinimizeButton.Size = UDim2.new(0, 25, 0, 25)
-    MinimizeButton.Position = UDim2.new(1, -55, 0, 5)
-    MinimizeButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
-    MinimizeButton.TextColor3 = Color3.new(1, 1, 1)
-    MinimizeButton.Parent = TitleBar
-    
-    -- 关闭按钮
-    local CloseButton = Instance.new("TextButton")
-    CloseButton.Name = "CloseButton"
-    CloseButton.Text = "×"
-    CloseButton.Size = UDim2.new(0, 25, 0, 25)
-    CloseButton.Position = UDim2.new(1, -25, 0, 5)
-    CloseButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
-    CloseButton.TextColor3 = Color3.new(1, 1, 1)
-    CloseButton.Parent = TitleBar
-    
-    -- 左侧控制按钮
-    local ControlButton = Instance.new("TextButton")
-    ControlButton.Name = "ControlButton"
-    ControlButton.Text = "≡"
-    ControlButton.Size = UDim2.new(0, 35, 0, 35)
-    ControlButton.Position = UDim2.new(0, -40, 0, 100)
-    ControlButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.3)
-    ControlButton.TextColor3 = Color3.new(1, 1, 1)
-    ControlButton.Parent = ScreenGui
-    
-    -- 内容区域
-    local ContentFrame = Instance.new("Frame")
-    ContentFrame.Name = "ContentFrame"
-    ContentFrame.Size = UDim2.new(1, -20, 1, -70)
-    ContentFrame.Position = UDim2.new(0, 10, 0, 60)
-    ContentFrame.BackgroundTransparency = 1
-    ContentFrame.Parent = MainFrame
-    
-    -- 通用类型标题
-    local GeneralTitle = Instance.new("TextLabel")
-    GeneralTitle.Name = "GeneralTitle"
-    GeneralTitle.Text = "通用功能"
-    GeneralTitle.Size = UDim2.new(1, 0, 0, 30)
-    GeneralTitle.Position = UDim2.new(0, 0, 0, 0)
-    GeneralTitle.BackgroundTransparency = 1
-    GeneralTitle.TextColor3 = Color3.new(1, 1, 1)
-    GeneralTitle.TextSize = 18
-    GeneralTitle.Font = Enum.Font.SourceSansBold
-    GeneralTitle.TextXAlignment = Enum.TextXAlignment.Left
-    GeneralTitle.Parent = ContentFrame
-    
-    -- 快速旋转
-    local FastSpinButton = Instance.new("TextButton")
-    FastSpinButton.Name = "FastSpinButton"
-    FastSpinButton.Text = "快速旋转 (速度50)"
-    FastSpinButton.Size = UDim2.new(1, 0, 0, 35)
-    FastSpinButton.Position = UDim2.new(0, 0, 0, 40)
-    FastSpinButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
-    FastSpinButton.TextColor3 = Color3.new(1, 1, 1)
-    FastSpinButton.Parent = ContentFrame
-    
-    -- 极速旋转
-    local SuperSpinButton = Instance.new("TextButton")
-    SuperSpinButton.Name = "SuperSpinButton"
-    SuperSpinButton.Text = "极速旋转 (速度100)"
-    SuperSpinButton.Size = UDim2.new(1, 0, 0, 35)
-    SuperSpinButton.Position = UDim2.new(0, 0, 0, 80)
-    SuperSpinButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
-    SuperSpinButton.TextColor3 = Color3.new(1, 1, 1)
-    SuperSpinButton.Parent = ContentFrame
-    
-    -- 无限跳
-    local InfiniteJumpButton = Instance.new("TextButton")
-    InfiniteJumpButton.Name = "InfiniteJumpButton"
-    InfiniteJumpButton.Text = "无限跳跃"
-    InfiniteJumpButton.Size = UDim2.new(1, 0, 0, 35)
-    InfiniteJumpButton.Position = UDim2.new(0, 0, 0, 120)
-    InfiniteJumpButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
-    InfiniteJumpButton.TextColor3 = Color3.new(1, 1, 1)
-    InfiniteJumpButton.Parent = ContentFrame
-    
-    -- 飞行功能
-    local FlightButton = Instance.new("TextButton")
-    FlightButton.Name = "FlightButton"
-    FlightButton.Text = "无敌少侠飞行"
-    FlightButton.Size = UDim2.new(1, 0, 0, 35)
-    FlightButton.Position = UDim2.new(0, 0, 0, 160)
-    FlightButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
-    FlightButton.TextColor3 = Color3.new(1, 1, 1)
-    FlightButton.Parent = ContentFrame
-    
-    -- 状态提示
-    local StatusText = Instance.new("TextLabel")
-    StatusText.Name = "StatusText"
-    StatusText.Text = "就绪"
-    StatusText.Size = UDim2.new(1, 0, 0, 20)
-    StatusText.Position = UDim2.new(0, 0, 1, -25)
-    StatusText.BackgroundTransparency = 1
-    StatusText.TextColor3 = Color3.new(0, 1, 0)
-    StatusText.TextSize = 14
-    StatusText.Font = Enum.Font.SourceSans
-    StatusText.TextXAlignment = Enum.TextXAlignment.Left
-    StatusText.Parent = ContentFrame
-    
-    -- 变量
-    local isMinimized = false
-    local isDragging = false
-    local dragStartPos = Vector2.new(0, 0)
-    local frameStartPos = UDim2.new(0, 0, 0, 0)
-    local isControlDragging = false
-    local controlStartPos = Vector2.new(0, 0)
-    local buttonStartPos = UDim2.new(0, 0, 0, 0)
-    
-    -- 拖动主窗口
-    TitleBar.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            isDragging = true
-            dragStartPos = Vector2.new(input.Position.X, input.Position.Y)
-            frameStartPos = MainFrame.Position
-        end
-    end)
-    
-    UserInputService.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement and isDragging then
-            local delta = Vector2.new(input.Position.X, input.Position.Y) - dragStartPos
-            MainFrame.Position = UDim2.new(frameStartPos.X.Scale, frameStartPos.X.Offset + delta.X, 
-                                          frameStartPos.Y.Scale, frameStartPos.Y.Offset + delta.Y)
-        end
-    end)
-    
-    UserInputService.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            isDragging = false
-        end
-    end)
-    
-    -- 拖动控制按钮
-    ControlButton.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            isControlDragging = true
-            controlStartPos = Vector2.new(input.Position.X, input.Position.Y)
-            buttonStartPos = ControlButton.Position
-        end
-    end)
-    
-    UserInputService.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement and isControlDragging then
-            local delta = Vector2.new(input.Position.X, input.Position.Y) - controlStartPos
-            ControlButton.Position = UDim2.new(buttonStartPos.X.Scale, buttonStartPos.X.Offset + delta.X, 
-                                              buttonStartPos.Y.Scale, buttonStartPos.Y.Offset + delta.Y)
-        end
-    end)
-    
-    UserInputService.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            isControlDragging = false
-        end
-    end)
-    
-    -- 最小化按钮功能
-    MinimizeButton.MouseButton1Click:Connect(function()
-        if isMinimized then
-            -- 恢复
-            MainFrame.Size = UDim2.new(0, 350, 0, 450)
-            isMinimized = false
-        else
-            -- 最小化
-            MainFrame.Size = UDim2.new(0, 350, 0, 35)
-            isMinimized = true
-        end
-    end)
-    
-    -- 控制按钮功能
-    ControlButton.MouseButton1Click:Connect(function()
-        if isMinimized then
-            -- 恢复
-            MainFrame.Size = UDim2.new(0, 350, 0, 450)
-            isMinimized = false
-        else
-            -- 最小化
-            MainFrame.Size = UDim2.new(0, 350, 0, 35)
-            isMinimized = true
-        end
-    end)
-    
-    -- 放大按钮功能
-    ZoomInButton.MouseButton1Click:Connect(function()
-        local currentSize = MainFrame.Size
-        MainFrame.Size = UDim2.new(0, math.min(currentSize.X.Offset * 1.2, 600), 
-                                  0, math.min(currentSize.Y.Offset * 1.2, 700))
-        StatusText.Text = "UI放大"
-    end)
-    
-    -- 缩小按钮功能
-    ZoomOutButton.MouseButton1Click:Connect(function()
-        local currentSize = MainFrame.Size
-        MainFrame.Size = UDim2.new(0, math.max(currentSize.X.Offset * 0.8, 200), 
-                                  0, math.max(currentSize.Y.Offset * 0.8, 35))
-        StatusText.Text = "UI缩小"
-    end)
-    
-    -- 关闭按钮功能
-    CloseButton.MouseButton1Click:Connect(function()
-        local MessageBox = Instance.new("Frame")
-        MessageBox.Name = "MessageBox"
-        MessageBox.Size = UDim2.new(0, 300, 0, 150)
-        MessageBox.Position = UDim2.new(0.5, -150, 0.5, -75)
-        MessageBox.BackgroundColor3 = Color3.new(0.1, 0.1, 0.3)
-        MessageBox.BorderSizePixel = 0
-        MessageBox.Parent = ScreenGui
-        
-        local MessageText = Instance.new("TextLabel")
-        MessageText.Name = "MessageText"
-        MessageText.Text = "感谢使用NZ脚本中心\n期待下次再见！"
-        MessageText.Size = UDim2.new(1, -20, 0, 80)
-        MessageText.Position = UDim2.new(0, 10, 0, 20)
-        MessageText.BackgroundTransparency = 1
-        MessageText.TextColor3 = Color3.new(1, 1, 1)
-        MessageText.TextSize = 20
-        MessageText.Font = Enum.Font.SourceSansBold
-        MessageText.Parent = MessageBox
-        
-        local OKButton = Instance.new("TextButton")
-        OKButton.Name = "OKButton"
-        OKButton.Text = "确定"
-        OKButton.Size = UDim2.new(0, 100, 0, 40)
-        OKButton.Position = UDim2.new(0.5, -50, 1, -60)
-        OKButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.6)
-        OKButton.TextColor3 = Color3.new(1, 1, 1)
-        OKButton.Parent = MessageBox
-        
-        OKButton.MouseButton1Click:Connect(function()
-            ScreenGui:Destroy()
         end)
     end)
     
-    -- 快速旋转功能
-    FastSpinButton.MouseButton1Click:Connect(function()
-        StatusText.Text = "快速旋转已激活"
-        
-        LocalPlayer.CharacterAdded:Connect(function(character)
-            local humanoid = character:WaitForChild("Humanoid")
+    if LocalPlayer.Character then
+        local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
+        if humanoid then
             humanoid.AutoRotate = false
             
             game:GetService("RunService").Heartbeat:Connect(function()
@@ -410,28 +203,28 @@ task.delay(3, function()
                     humanoid.RootPart.CFrame = humanoid.RootPart.CFrame * CFrame.Angles(0, math.rad(50), 0)
                 end
             end)
-        end)
-        
-        if LocalPlayer.Character then
-            local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
-            if humanoid then
-                humanoid.AutoRotate = false
-                
-                game:GetService("RunService").Heartbeat:Connect(function()
-                    if humanoid and humanoid.Parent then
-                        humanoid.RootPart.CFrame = humanoid.RootPart.CFrame * CFrame.Angles(0, math.rad(50), 0)
-                    end
-                end)
-            end
         end
+    end
+end)
+
+-- 极速旋转功能
+SuperSpinButton.MouseButton1Click:Connect(function()
+    StatusText.Text = "极速旋转已激活"
+    
+    LocalPlayer.CharacterAdded:Connect(function(character)
+        local humanoid = character:WaitForChild("Humanoid")
+        humanoid.AutoRotate = false
+        
+        game:GetService("RunService").Heartbeat:Connect(function()
+            if humanoid and humanoid.Parent then
+                humanoid.RootPart.CFrame = humanoid.RootPart.CFrame * CFrame.Angles(0, math.rad(100), 0)
+            end
+        end)
     end)
     
-    -- 极速旋转功能
-    SuperSpinButton.MouseButton1Click:Connect(function()
-        StatusText.Text = "极速旋转已激活"
-        
-        LocalPlayer.CharacterAdded:Connect(function(character)
-            local humanoid = character:WaitForChild("Humanoid")
+    if LocalPlayer.Character then
+        local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
+        if humanoid then
             humanoid.AutoRotate = false
             
             game:GetService("RunService").Heartbeat:Connect(function()
@@ -439,47 +232,34 @@ task.delay(3, function()
                     humanoid.RootPart.CFrame = humanoid.RootPart.CFrame * CFrame.Angles(0, math.rad(100), 0)
                 end
             end)
-        end)
-        
-        if LocalPlayer.Character then
-            local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
-            if humanoid then
-                humanoid.AutoRotate = false
-                
-                game:GetService("RunService").Heartbeat:Connect(function()
-                    if humanoid and humanoid.Parent then
-                        humanoid.RootPart.CFrame = humanoid.RootPart.CFrame * CFrame.Angles(0, math.rad(100), 0)
-                    end
-                end)
-            end
         end
+    end
+end)
+
+-- 无限跳功能
+InfiniteJumpButton.MouseButton1Click:Connect(function()
+    StatusText.Text = "无限跳跃已激活"
+    
+    LocalPlayer.CharacterAdded:Connect(function(character)
+        local humanoid = character:WaitForChild("Humanoid")
+        
+        UserInputService.JumpRequest:Connect(function()
+            humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        end)
     end)
     
-    -- 无限跳功能
-    InfiniteJumpButton.MouseButton1Click:Connect(function()
-        StatusText.Text = "无限跳跃已激活"
-        
-        LocalPlayer.CharacterAdded:Connect(function(character)
-            local humanoid = character:WaitForChild("Humanoid")
-            
+    if LocalPlayer.Character then
+        local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
+        if humanoid then
             UserInputService.JumpRequest:Connect(function()
                 humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
             end)
-        end)
-        
-        if LocalPlayer.Character then
-            local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
-            if humanoid then
-                UserInputService.JumpRequest:Connect(function()
-                    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-                end)
-            end
         end
-    end)
-    
-    -- 飞行功能
-    FlightButton.MouseButton1Click:Connect(function()
-        StatusText.Text = "正在加载飞行脚本..."
-        loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Invinicible-Flight-R15-45414"))()
-    end)
+    end
+end)
+
+-- 飞行功能
+FlightButton.MouseButton1Click:Connect(function()
+    StatusText.Text = "正在加载飞行脚本..."
+    loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Invinicible-Flight-R15-45414"))()
 end)
