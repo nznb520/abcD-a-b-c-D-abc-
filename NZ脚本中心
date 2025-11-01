@@ -13,7 +13,7 @@ local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "NZScriptCenterPremium"
 ScreenGui.Parent = game.CoreGui
 
--- 创建高级卡密验证界面
+-- 创建卡密验证界面
 local KeyFrame = Instance.new("Frame")
 KeyFrame.Name = "KeyFrame"
 KeyFrame.Size = UDim2.new(0, 450, 0, 300)
@@ -31,15 +31,6 @@ CardEffect.ImageColor3 = Color3.new(0.2, 0, 0.4)
 CardEffect.ScaleType = Enum.ScaleType.Slice
 CardEffect.SliceCenter = Rect.new(24, 24, 24, 24)
 CardEffect.Parent = KeyFrame
-
--- 动态光影效果
-local LightEffect = Instance.new("ImageLabel")
-LightEffect.Name = "LightEffect"
-LightEffect.Size = UDim2.new(1, 0, 1, 0)
-LightEffect.Image = "rbxassetid://4965711615"
-LightEffect.ImageTransparency = 0.8
-LightEffect.BackgroundTransparency = 1
-LightEffect.Parent = KeyFrame
 
 -- 卡密验证标题
 local KeyTitle = Instance.new("TextLabel")
@@ -116,25 +107,6 @@ SpaceBackground.Image = "rbxassetid://1328157353"
 SpaceBackground.ScaleType = Enum.ScaleType.Crop
 SpaceBackground.Parent = MainFrame
 
--- 彩色渐变边框
-local BorderGlow = Instance.new("Frame")
-BorderGlow.Name = "BorderGlow"
-BorderGlow.Size = UDim2.new(1, 10, 1, 10)
-BorderGlow.Position = UDim2.new(0, -5, 0, -5)
-BorderGlow.BackgroundTransparency = 1
-BorderGlow.Parent = MainFrame
-
-local Gradient = Instance.new("UIGradient")
-Gradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.new(1, 0, 0)),
-    ColorSequenceKeypoint.new(0.25, Color3.new(1, 1, 0)),
-    ColorSequenceKeypoint.new(0.5, Color3.new(0, 1, 0)),
-    ColorSequenceKeypoint.new(0.75, Color3.new(0, 0, 1)),
-    ColorSequenceKeypoint.new(1, Color3.new(1, 0, 1))
-}
-Gradient.Rotation = 45
-Gradient.Parent = BorderGlow
-
 -- 标题栏
 local TitleBar = Instance.new("Frame")
 TitleBar.Name = "TitleBar"
@@ -175,6 +147,52 @@ CloseButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
 CloseButton.TextColor3 = Color3.new(1, 1, 1)
 CloseButton.Parent = TitleBar
 
+-- 恢复按钮（高级版）
+local RestoreButton = Instance.new("Frame")
+RestoreButton.Name = "RestoreButton"
+RestoreButton.Size = UDim2.new(0, 220, 0, 50)
+RestoreButton.Position = UDim2.new(0, 20, 0, 5)
+RestoreButton.BackgroundTransparency = 1
+RestoreButton.Visible = false
+RestoreButton.Parent = ScreenGui
+
+-- 拖动标识部分
+local DragHandle = Instance.new("TextButton")
+DragHandle.Name = "DragHandle"
+DragHandle.Text = "&"
+DragHandle.Size = UDim2.new(0, 40, 1, 0)
+DragHandle.Position = UDim2.new(0, 0, 0, 0)
+DragHandle.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
+DragHandle.TextColor3 = Color3.new(1, 1, 1)
+DragHandle.TextSize = 24
+DragHandle.Parent = RestoreButton
+
+-- 名称部分
+local NameButton = Instance.new("TextButton")
+NameButton.Name = "NameButton"
+NameButton.Text = "NZ脚本中心"
+NameButton.Size = UDim2.new(1, -40, 1, 0)
+NameButton.Position = UDim2.new(0, 40, 0, 0)
+NameButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.3)
+NameButton.TextColor3 = Color3.new(1, 1, 1)
+NameButton.TextSize = 18
+NameButton.Parent = RestoreButton
+
+-- 圆角效果
+local UICorner1 = Instance.new("UICorner")
+UICorner1.CornerRadius = UDim.new(0, 8)
+UICorner1.Parent = DragHandle
+
+local UICorner2 = Instance.new("UICorner")
+UICorner2.CornerRadius = UDim.new(0, 8)
+UICorner2.Parent = NameButton
+
+-- 边框发光效果
+local GlowEffect = Instance.new("UIStroke")
+GlowEffect.Color = Color3.new(0, 0.5, 1)
+GlowEffect.Thickness = 3
+GlowEffect.Parent = NameButton
+
 -- 左侧导航栏
 local NavBar = Instance.new("Frame")
 NavBar.Name = "NavBar"
@@ -183,56 +201,22 @@ NavBar.Position = UDim2.new(0, 0, 0, 40)
 NavBar.BackgroundColor3 = Color3.new(0.07, 0.07, 0.17)
 NavBar.Parent = MainFrame
 
--- 作者留言栏目
-local AuthorMessage = Instance.new("TextLabel")
-AuthorMessage.Name = "AuthorMessage"
-AuthorMessage.Text = "欢迎使用本脚本！为确保脚本功能稳定及账号安全，严禁将脚本配套的卡密外传或分享给他人，违规可能导致卡密失效，感谢你的配合！\n\n欢迎进入NZ脚本中心操作界面！请牢记核心规则：任何时候不得将激活脚本的卡密外传，这是保障你使用权限不被侵占的关键哦！\n\n很高兴你选择本脚本！为维护所有用户的合法权益，特此提醒：禁止将获取到的脚本卡密外传至第三方平台或个人，让我们共同维护安全的使用环境！"
-AuthorMessage.Size = UDim2.new(1, -10, 0, 150)
-AuthorMessage.Position = UDim2.new(0, 5, 0, 10)
-AuthorMessage.BackgroundTransparency = 1
-AuthorMessage.TextColor3 = Color3.new(1, 1, 0.5)
-AuthorMessage.TextSize = 14
-AuthorMessage.TextWrapped = true
-AuthorMessage.Parent = NavBar
-
 -- 通用功能按钮
 local GeneralButton = Instance.new("TextButton")
 GeneralButton.Name = "GeneralButton"
 GeneralButton.Text = "通用功能"
 GeneralButton.Size = UDim2.new(1, -10, 0, 40)
-GeneralButton.Position = UDim2.new(0, 5, 0, 170)
+GeneralButton.Position = UDim2.new(0, 5, 0, 10)
 GeneralButton.BackgroundColor3 = Color3.new(0.15, 0.15, 0.3)
 GeneralButton.TextColor3 = Color3.new(1, 1, 1)
 GeneralButton.Parent = NavBar
-
--- 开发人员按钮
-local DeveloperButton = Instance.new("TextButton")
-DeveloperButton.Name = "DeveloperButton"
-DeveloperButton.Text = "开发团队"
-DeveloperButton.Size = UDim2.new(1, -10, 0, 40)
-DeveloperButton.Position = UDim2.new(0, 5, 0, 220)
-DeveloperButton.BackgroundColor3 = Color3.new(0.15, 0.15, 0.3)
-DeveloperButton.TextColor3 = Color3.new(1, 1, 1)
-DeveloperButton.Parent = NavBar
-
--- 开发人员信息
-local DeveloperInfo = Instance.new("TextLabel")
-DeveloperInfo.Name = "DeveloperInfo"
-DeveloperInfo.Text = "主作者:南烛\n副作者:逍遥\n经理:深拥情话梦一场\n代理:孙笑川\n代理:以后\n代理:星云\n星云大号:相信"
-DeveloperInfo.Size = UDim2.new(1, -10, 0, 150)
-DeveloperInfo.Position = UDim2.new(0, 5, 0, 270)
-DeveloperInfo.BackgroundTransparency = 1
-DeveloperInfo.TextColor3 = Color3.new(1, 1, 1)
-DeveloperInfo.TextSize = 14
-DeveloperInfo.TextWrapped = true
-DeveloperInfo.Parent = NavBar
 
 -- ESP功能按钮
 local ESPButton = Instance.new("TextButton")
 ESPButton.Name = "ESPButton"
 ESPButton.Text = "ESP功能"
 ESPButton.Size = UDim2.new(1, -10, 0, 40)
-ESPButton.Position = UDim2.new(0, 5, 0, 110)
+ESPButton.Position = UDim2.new(0, 5, 0, 60)
 ESPButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
 ESPButton.TextColor3 = Color3.new(1, 1, 1)
 ESPButton.Parent = NavBar
@@ -242,18 +226,55 @@ local OtherScriptsButton = Instance.new("TextButton")
 OtherScriptsButton.Name = "OtherScriptsButton"
 OtherScriptsButton.Text = "其他脚本"
 OtherScriptsButton.Size = UDim2.new(1, -10, 0, 40)
-OtherScriptsButton.Position = UDim2.new(0, 5, 0, 160)
+OtherScriptsButton.Position = UDim2.new(0, 5, 0, 110)
 OtherScriptsButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
 OtherScriptsButton.TextColor3 = Color3.new(1, 1, 1)
 OtherScriptsButton.Parent = NavBar
 
--- 内容区域
-local ContentFrame = Instance.new("Frame")
-ContentFrame.Name = "ContentFrame"
-ContentFrame.Size = UDim2.new(1, -130, 1, -50)
-ContentFrame.Position = UDim2.new(0, 125, 0, 45)
-ContentFrame.BackgroundTransparency = 1
-ContentFrame.Parent = MainFrame
+-- 右侧内容区域
+local RightContent = Instance.new("Frame")
+RightContent.Name = "RightContent"
+RightContent.Size = UDim2.new(1, -130, 1, -50)
+RightContent.Position = UDim2.new(0, 125, 0, 45)
+RightContent.BackgroundTransparency = 1
+RightContent.Parent = MainFrame
+
+-- 作者留言
+local AuthorMessage = Instance.new("TextLabel")
+AuthorMessage.Name = "AuthorMessage"
+AuthorMessage.Text = "欢迎使用本脚本！为确保脚本功能稳定及账号安全，严禁将脚本配套的卡密外传或分享给他人，违规可能导致卡密失效，感谢你的配合！\n\n欢迎进入NZ脚本中心操作界面！请牢记核心规则：任何时候不得将激活脚本的卡密外传，这是保障你使用权限不被侵占的关键哦！\n\n很高兴你选择本脚本！为维护所有用户的合法权益，特此提醒：禁止将获取到的脚本卡密外传至第三方平台或个人，让我们共同维护安全的使用环境！"
+AuthorMessage.Size = UDim2.new(1, -20, 0, 120)
+AuthorMessage.Position = UDim2.new(0, 10, 0, 10)
+AuthorMessage.BackgroundTransparency = 1
+AuthorMessage.TextColor3 = Color3.new(1, 1, 0.5)
+AuthorMessage.TextSize = 14
+AuthorMessage.TextWrapped = true
+AuthorMessage.Parent = RightContent
+
+-- 开发人员信息
+local DeveloperInfo = Instance.new("TextLabel")
+DeveloperInfo.Name = "DeveloperInfo"
+DeveloperInfo.Text = "开发团队:\n主作者:南烛\n副作者:逍遥\n经理:深拥情话梦一场\n代理:孙笑川\n代理:以后\n代理:星云\n星云大号:相信"
+DeveloperInfo.Size = UDim2.new(1, -20, 0, 150)
+DeveloperInfo.Position = UDim2.new(0, 10, 0, 140)
+DeveloperInfo.BackgroundTransparency = 1
+DeveloperInfo.TextColor3 = Color3.new(1, 1, 1)
+DeveloperInfo.TextSize = 16
+DeveloperInfo.TextWrapped = true
+DeveloperInfo.Parent = RightContent
+
+-- 状态提示
+local StatusText = Instance.new("TextLabel")
+StatusText.Name = "StatusText"
+StatusText.Text = "就绪"
+StatusText.Size = UDim2.new(1, 0, 0, 20)
+StatusText.Position = UDim2.new(0, 0, 1, -25)
+StatusText.BackgroundTransparency = 1
+StatusText.TextColor3 = Color3.new(0, 1, 0)
+StatusText.TextSize = 14
+StatusText.Font = Enum.Font.SourceSans
+StatusText.TextXAlignment = Enum.TextXAlignment.Left
+StatusText.Parent = RightContent
 
 -- 通用功能页面
 local GeneralFrame = Instance.new("Frame")
@@ -261,7 +282,7 @@ GeneralFrame.Name = "GeneralFrame"
 GeneralFrame.Size = UDim2.new(1, 0, 1, 0)
 GeneralFrame.BackgroundTransparency = 1
 GeneralFrame.Visible = true
-GeneralFrame.Parent = ContentFrame
+GeneralFrame.Parent = RightContent
 
 -- 快速旋转
 local FastSpinButton = Instance.new("TextButton")
@@ -309,7 +330,7 @@ ESPFrame.Name = "ESPFrame"
 ESPFrame.Size = UDim2.new(1, 0, 1, 0)
 ESPFrame.BackgroundTransparency = 1
 ESPFrame.Visible = false
-ESPFrame.Parent = ContentFrame
+ESPFrame.Parent = RightContent
 
 -- ESP开关
 local ESPToggle = Instance.new("TextButton")
@@ -337,7 +358,7 @@ OtherScriptsFrame.Name = "OtherScriptsFrame"
 OtherScriptsFrame.Size = UDim2.new(1, 0, 1, 0)
 OtherScriptsFrame.BackgroundTransparency = 1
 OtherScriptsFrame.Visible = false
-OtherScriptsFrame.Parent = ContentFrame
+OtherScriptsFrame.Parent = RightContent
 
 -- SN.hub脚本按钮
 local SNHubButton = Instance.new("TextButton")
@@ -379,23 +400,13 @@ TXRetireButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
 TXRetireButton.TextColor3 = Color3.new(1, 1, 1)
 TXRetireButton.Parent = OtherScriptsFrame
 
--- 状态提示
-local StatusText = Instance.new("TextLabel")
-StatusText.Name = "StatusText"
-StatusText.Text = "就绪"
-StatusText.Size = UDim2.new(1, 0, 0, 20)
-StatusText.Position = UDim2.new(0, 0, 1, -25)
-StatusText.BackgroundTransparency = 1
-StatusText.TextColor3 = Color3.new(0, 1, 0)
-StatusText.TextSize = 14
-StatusText.Font = Enum.Font.SourceSans
-StatusText.TextXAlignment = Enum.TextXAlignment.Left
-StatusText.Parent = ContentFrame
-
 -- 变量
 local isDragging = false
 local dragStartPos = Vector2.new(0, 0)
 local frameStartPos = UDim2.new(0, 0, 0, 0)
+local isRestoreDragging = false
+local restoreStartPos = Vector2.new(0, 0)
+local buttonStartPos = UDim2.new(0, 0, 0, 0)
 local espEnabled = false
 local teamDetectEnabled = false
 local espHighlights = {}
@@ -424,6 +435,20 @@ VerifyButton.MouseButton1Click:Connect(function()
     end
 end)
 
+-- 最小化按钮功能
+MinimizeButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+    RestoreButton.Visible = true
+    StatusText.Text = "脚本已最小化"
+end)
+
+-- 恢复按钮功能
+NameButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = true
+    RestoreButton.Visible = false
+    StatusText.Text = "脚本已恢复"
+end)
+
 -- 拖动主窗口
 TitleBar.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -433,17 +458,33 @@ TitleBar.InputBegan:Connect(function(input)
     end
 end)
 
+-- 拖动恢复按钮
+DragHandle.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        isRestoreDragging = true
+        restoreStartPos = Vector2.new(input.Position.X, input.Position.Y)
+        buttonStartPos = RestoreButton.Position
+    end
+end)
+
 UserInputService.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement and isDragging then
-        local delta = Vector2.new(input.Position.X, input.Position.Y) - dragStartPos
-        MainFrame.Position = UDim2.new(frameStartPos.X.Scale, frameStartPos.X.Offset + delta.X, 
-                                      frameStartPos.Y.Scale, frameStartPos.Y.Offset + delta.Y)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        if isDragging then
+            local delta = Vector2.new(input.Position.X, input.Position.Y) - dragStartPos
+            MainFrame.Position = UDim2.new(frameStartPos.X.Scale, frameStartPos.X.Offset + delta.X, 
+                                          frameStartPos.Y.Scale, frameStartPos.Y.Offset + delta.Y)
+        elseif isRestoreDragging then
+            local delta = Vector2.new(input.Position.X, input.Position.Y) - restoreStartPos
+            RestoreButton.Position = UDim2.new(buttonStartPos.X.Scale, buttonStartPos.X.Offset + delta.X, 
+                                              buttonStartPos.Y.Scale, buttonStartPos.Y.Offset + delta.Y)
+        end
     end
 end)
 
 UserInputService.InputEnded:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         isDragging = false
+        isRestoreDragging = false
     end
 end)
 
@@ -680,26 +721,12 @@ CloseButton.MouseButton1Click:Connect(function()
     StatusText.Text = "界面已关闭"
 end)
 
--- 最小化按钮功能
-MinimizeButton.MouseButton1Click:Connect(function()
-    MainFrame.Visible = false
-    RestoreButton.Visible = true
-    StatusText.Text = "脚本已最小化"
-end)
-
--- 恢复按钮功能
-RestoreButton.MouseButton1Click:Connect(function()
-    MainFrame.Visible = true
-    RestoreButton.Visible = false
-    StatusText.Text = "脚本已恢复"
-end)
-
 -- 边框颜色变化效果
 spawn(function()
-    while Gradient and Gradient.Parent do
-        for i = 0, 360, 1 do
-            if not Gradient or not Gradient.Parent then break end
-            Gradient.Rotation = i
+    while GlowEffect and GlowEffect.Parent do
+        for i = 0, 1, 0.01 do
+            if not GlowEffect or not GlowEffect.Parent then break end
+            GlowEffect.Color = Color3.fromHSV(i, 1, 1)
             task.wait(0.05)
         end
     end
