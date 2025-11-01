@@ -1,10 +1,10 @@
--- NZ脚本中心安全验证版
+-- NZ脚本中心完整版
 -- 主作者:南烛
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
-local HttpService = game:GetService("HttpService")
+local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 
@@ -43,6 +43,7 @@ KeyInput.Position = UDim2.new(0.1, 0, 0.3, 0)
 KeyInput.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
 KeyInput.TextColor3 = Color3.new(1, 1, 1)
 KeyInput.TextSize = 18
+KeyInput.Font = Enum.Font.SourceSans
 KeyInput.Parent = KeyFrame
 
 -- 验证按钮
@@ -76,56 +77,11 @@ CopyButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
 CopyButton.TextColor3 = Color3.new(1, 1, 1)
 CopyButton.Parent = KeyFrame
 
--- 创建欢迎界面
-local WelcomeFrame = Instance.new("Frame")
-WelcomeFrame.Name = "WelcomeFrame"
-WelcomeFrame.Size = UDim2.new(0, 500, 0, 300)
-WelcomeFrame.Position = UDim2.new(0.5, -250, 0.5, -150)
-WelcomeFrame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.3)
-WelcomeFrame.BorderSizePixel = 0
-WelcomeFrame.Visible = false
-WelcomeFrame.Parent = ScreenGui
-
--- 欢迎文本
-local WelcomeText = Instance.new("TextLabel")
-WelcomeText.Name = "WelcomeText"
-WelcomeText.Text = "欢迎使用NZ脚本中心"
-WelcomeText.Size = UDim2.new(1, 0, 0, 80)
-WelcomeText.Position = UDim2.new(0, 0, 0.3, 0)
-WelcomeText.BackgroundTransparency = 1
-WelcomeText.TextColor3 = Color3.new(1, 1, 1)
-WelcomeText.TextSize = 36
-WelcomeText.Font = Enum.Font.SourceSansBold
-WelcomeText.Parent = WelcomeFrame
-
--- 作者留言
-local AuthorMessage = Instance.new("TextLabel")
-AuthorMessage.Name = "AuthorMessage"
-AuthorMessage.Text = "作者想对你说：\n欢迎使用本脚本！为确保脚本功能稳定及账号安全，\n严禁将脚本配套的卡密外传或分享给他人，\n违规可能导致卡密失效，感谢你的配合！"
-AuthorMessage.Size = UDim2.new(0.8, 0, 0, 100)
-AuthorMessage.Position = UDim2.new(0.1, 0, 0.1, 0)
-AuthorMessage.BackgroundTransparency = 1
-AuthorMessage.TextColor3 = Color3.new(1, 1, 0)
-AuthorMessage.TextSize = 16
-AuthorMessage.TextXAlignment = Enum.TextXAlignment.Left
-AuthorMessage.TextYAlignment = Enum.TextYAlignment.Top
-AuthorMessage.Parent = WelcomeFrame
-
--- 加载动画
-local LoadingBar = Instance.new("Frame")
-LoadingBar.Name = "LoadingBar"
-LoadingBar.Size = UDim2.new(0, 0, 0, 5)
-LoadingBar.Position = UDim2.new(0.5, 0, 0.7, 0)
-LoadingBar.AnchorPoint = Vector2.new(0.5, 0.5)
-LoadingBar.BackgroundColor3 = Color3.new(0, 1, 1)
-LoadingBar.BorderSizePixel = 0
-LoadingBar.Parent = WelcomeFrame
-
 -- 创建主弹窗
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 350, 0, 450)
-MainFrame.Position = UDim2.new(0.5, -175, 0.5, -225)
+MainFrame.Size = UDim2.new(0, 600, 0, 500)
+MainFrame.Position = UDim2.new(0.5, -300, 0.5, -250)
 MainFrame.BackgroundColor3 = Color3.new(0.05, 0.05, 0.15)
 MainFrame.BorderSizePixel = 2
 MainFrame.BorderColor3 = Color3.new(1, 0, 0)
@@ -133,107 +89,209 @@ MainFrame.Visible = false
 MainFrame.Parent = ScreenGui
 
 -- 边框发光效果
-local MainGlow = Instance.new("ImageLabel")
-MainGlow.Name = "Glow"
-MainGlow.Size = UDim2.new(1, 10, 1, 10)
-MainGlow.Position = UDim2.new(0, -5, 0, -5)
-MainGlow.BackgroundTransparency = 1
-MainGlow.Image = "rbxassetid://5028857084"
-MainGlow.ImageColor3 = Color3.new(0, 0.5, 1)
-MainGlow.ScaleType = Enum.ScaleType.Slice
-MainGlow.SliceCenter = Rect.new(24, 24, 24, 24)
-MainGlow.Parent = MainFrame
+local Glow = Instance.new("ImageLabel")
+Glow.Name = "Glow"
+Glow.Size = UDim2.new(1, 10, 1, 10)
+Glow.Position = UDim2.new(0, -5, 0, -5)
+Glow.BackgroundTransparency = 1
+Glow.Image = "rbxassetid://5028857084"
+Glow.ImageColor3 = Color3.new(0, 0.5, 1)
+Glow.ScaleType = Enum.ScaleType.Slice
+Glow.SliceCenter = Rect.new(24, 24, 24, 24)
+Glow.Parent = MainFrame
 
 -- 标题栏
 local TitleBar = Instance.new("Frame")
 TitleBar.Name = "TitleBar"
-TitleBar.Size = UDim2.new(1, 0, 0, 35)
+TitleBar.Size = UDim2.new(1, 0, 0, 40)
 TitleBar.BackgroundColor3 = Color3.new(0.1, 0.1, 0.3)
 TitleBar.Parent = MainFrame
 
 -- 标题文本
-local MainTitleText = Instance.new("TextLabel")
-MainTitleText.Name = "TitleText"
-MainTitleText.Text = "NZ脚本中心"
-MainTitleText.Size = UDim2.new(0, 150, 1, 0)
-MainTitleText.Position = UDim2.new(0, 10, 0, 0)
-MainTitleText.BackgroundTransparency = 1
-MainTitleText.TextColor3 = Color3.new(1, 1, 1)
-MainTitleText.TextSize = 20
-MainTitleText.Font = Enum.Font.SourceSansBold
-MainTitleText.TextXAlignment = Enum.TextXAlignment.Left
-MainTitleText.Parent = TitleBar
+local TitleText = Instance.new("TextLabel")
+TitleText.Name = "TitleText"
+TitleText.Text = "NZ脚本中心"
+TitleText.Size = UDim2.new(0, 150, 1, 0)
+TitleText.Position = UDim2.new(0, 10, 0, 0)
+TitleText.BackgroundTransparency = 1
+TitleText.TextColor3 = Color3.new(1, 1, 1)
+TitleText.TextSize = 24
+TitleText.Font = Enum.Font.SourceSansBold
+TitleText.TextXAlignment = Enum.TextXAlignment.Left
+TitleText.Parent = TitleBar
+
+-- 最小化按钮
+local MinimizeButton = Instance.new("TextButton")
+MinimizeButton.Name = "MinimizeButton"
+MinimizeButton.Text = "-"
+MinimizeButton.Size = UDim2.new(0, 30, 0, 30)
+MinimizeButton.Position = UDim2.new(1, -70, 0, 5)
+MinimizeButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
+MinimizeButton.TextColor3 = Color3.new(1, 1, 1)
+MinimizeButton.Parent = TitleBar
 
 -- 关闭按钮
-local MainCloseButton = Instance.new("TextButton")
-MainCloseButton.Name = "CloseButton"
-MainCloseButton.Text = "×"
-MainCloseButton.Size = UDim2.new(0, 25, 0, 25)
-MainCloseButton.Position = UDim2.new(1, -30, 0, 5)
-MainCloseButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
-MainCloseButton.TextColor3 = Color3.new(1, 1, 1)
-MainCloseButton.Parent = TitleBar
+local CloseButton = Instance.new("TextButton")
+CloseButton.Name = "CloseButton"
+CloseButton.Text = "×"
+CloseButton.Size = UDim2.new(0, 30, 0, 30)
+CloseButton.Position = UDim2.new(1, -35, 0, 5)
+CloseButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
+CloseButton.TextColor3 = Color3.new(1, 1, 1)
+CloseButton.Parent = TitleBar
+
+-- 恢复按钮
+local RestoreButton = Instance.new("TextButton")
+RestoreButton.Name = "RestoreButton"
+RestoreButton.Text = "NZ脚本中心"
+RestoreButton.Size = UDim2.new(0, 150, 0, 30)
+RestoreButton.Position = UDim2.new(0, 40, 0, 5)
+RestoreButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.3)
+RestoreButton.TextColor3 = Color3.new(1, 1, 1)
+RestoreButton.Visible = false
+RestoreButton.Parent = ScreenGui
+
+-- 拖动标识
+local DragHandle = Instance.new("TextLabel")
+DragHandle.Name = "DragHandle"
+DragHandle.Text = "≡"
+DragHandle.Size = UDim2.new(0, 25, 0, 25)
+DragHandle.Position = UDim2.new(0, 5, 0, 5)
+DragHandle.BackgroundTransparency = 1
+DragHandle.TextColor3 = Color3.new(1, 1, 1)
+DragHandle.Parent = RestoreButton
+
+-- 边框发光效果
+local RestoreGlow = Instance.new("ImageLabel")
+RestoreGlow.Name = "RestoreGlow"
+RestoreGlow.Size = UDim2.new(1, 10, 1, 10)
+RestoreGlow.Position = UDim2.new(0, -5, 0, -5)
+RestoreGlow.BackgroundTransparency = 1
+RestoreGlow.Image = "rbxassetid://5028857084"
+RestoreGlow.ScaleType = Enum.ScaleType.Slice
+RestoreGlow.SliceCenter = Rect.new(24, 24, 24, 24)
+RestoreGlow.Parent = RestoreButton
+
+-- 左侧导航栏
+local NavBar = Instance.new("Frame")
+NavBar.Name = "NavBar"
+NavBar.Size = UDim2.new(0, 120, 1, -40)
+NavBar.Position = UDim2.new(0, 0, 0, 40)
+NavBar.BackgroundColor3 = Color3.new(0.07, 0.07, 0.17)
+NavBar.Parent = MainFrame
+
+-- 导航栏分隔线
+local NavDivider = Instance.new("Frame")
+NavDivider.Name = "NavDivider"
+NavDivider.Size = UDim2.new(0, 2, 1, 0)
+NavDivider.Position = UDim2.new(1, 0, 0, 0)
+NavDivider.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
+NavDivider.BorderSizePixel = 0
+NavDivider.Parent = NavBar
+
+-- 通用功能按钮
+local GeneralButton = Instance.new("TextButton")
+GeneralButton.Name = "GeneralButton"
+GeneralButton.Text = "通用功能"
+GeneralButton.Size = UDim2.new(1, -10, 0, 40)
+GeneralButton.Position = UDim2.new(0, 5, 0, 10)
+GeneralButton.BackgroundColor3 = Color3.new(0.15, 0.15, 0.3)
+GeneralButton.TextColor3 = Color3.new(1, 1, 1)
+GeneralButton.Parent = NavBar
+
+-- ESP功能按钮
+local ESPButton = Instance.new("TextButton")
+ESPButton.Name = "ESPButton"
+ESPButton.Text = "ESP功能"
+ESPButton.Size = UDim2.new(1, -10, 0, 40)
+ESPButton.Position = UDim2.new(0, 5, 0, 60)
+ESPButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+ESPButton.TextColor3 = Color3.new(1, 1, 1)
+ESPButton.Parent = NavBar
 
 -- 内容区域
 local ContentFrame = Instance.new("Frame")
 ContentFrame.Name = "ContentFrame"
-ContentFrame.Size = UDim2.new(1, -20, 1, -70)
-ContentFrame.Position = UDim2.new(0, 10, 0, 60)
+ContentFrame.Size = UDim2.new(1, -130, 1, -50)
+ContentFrame.Position = UDim2.new(0, 125, 0, 45)
 ContentFrame.BackgroundTransparency = 1
 ContentFrame.Parent = MainFrame
 
--- 通用类型标题
-local GeneralTitle = Instance.new("TextLabel")
-GeneralTitle.Name = "GeneralTitle"
-GeneralTitle.Text = "通用功能"
-GeneralTitle.Size = UDim2.new(1, 0, 0, 30)
-GeneralTitle.Position = UDim2.new(0, 0, 0, 0)
-GeneralTitle.BackgroundTransparency = 1
-GeneralTitle.TextColor3 = Color3.new(1, 1, 1)
-GeneralTitle.TextSize = 18
-GeneralTitle.Font = Enum.Font.SourceSansBold
-GeneralTitle.TextXAlignment = Enum.TextXAlignment.Left
-GeneralTitle.Parent = ContentFrame
+-- 通用功能页面
+local GeneralFrame = Instance.new("Frame")
+GeneralFrame.Name = "GeneralFrame"
+GeneralFrame.Size = UDim2.new(1, 0, 1, 0)
+GeneralFrame.BackgroundTransparency = 1
+GeneralFrame.Visible = true
+GeneralFrame.Parent = ContentFrame
 
 -- 快速旋转
 local FastSpinButton = Instance.new("TextButton")
 FastSpinButton.Name = "FastSpinButton"
 FastSpinButton.Text = "快速旋转 (速度50)"
-FastSpinButton.Size = UDim2.new(1, 0, 0, 35)
-FastSpinButton.Position = UDim2.new(0, 0, 0, 40)
+FastSpinButton.Size = UDim2.new(1, 0, 0, 40)
+FastSpinButton.Position = UDim2.new(0, 0, 0, 10)
 FastSpinButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
 FastSpinButton.TextColor3 = Color3.new(1, 1, 1)
-FastSpinButton.Parent = ContentFrame
+FastSpinButton.Parent = GeneralFrame
 
 -- 极速旋转
 local SuperSpinButton = Instance.new("TextButton")
 SuperSpinButton.Name = "SuperSpinButton"
 SuperSpinButton.Text = "极速旋转 (速度100)"
-SuperSpinButton.Size = UDim2.new(1, 0, 0, 35)
-SuperSpinButton.Position = UDim2.new(0, 0, 0, 80)
+SuperSpinButton.Size = UDim2.new(1, 0, 0, 40)
+SuperSpinButton.Position = UDim2.new(0, 0, 0, 60)
 SuperSpinButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
 SuperSpinButton.TextColor3 = Color3.new(1, 1, 1)
-SuperSpinButton.Parent = ContentFrame
+SuperSpinButton.Parent = GeneralFrame
 
 -- 无限跳
 local InfiniteJumpButton = Instance.new("TextButton")
 InfiniteJumpButton.Name = "InfiniteJumpButton"
 InfiniteJumpButton.Text = "无限跳跃"
-InfiniteJumpButton.Size = UDim2.new(1, 0, 0, 35)
+InfiniteJumpButton.Size = UDim2.new(1, 0, 0, 40)
 InfiniteJumpButton.Position = UDim2.new(0, 0, 0, 120)
 InfiniteJumpButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
 InfiniteJumpButton.TextColor3 = Color3.new(1, 1, 1)
-InfiniteJumpButton.Parent = ContentFrame
+InfiniteJumpButton.Parent = GeneralFrame
 
 -- 飞行功能
 local FlightButton = Instance.new("TextButton")
 FlightButton.Name = "FlightButton"
 FlightButton.Text = "无敌少侠飞行"
-FlightButton.Size = UDim2.new(1, 0, 0, 35)
+FlightButton.Size = UDim2.new(1, 0, 0, 40)
 FlightButton.Position = UDim2.new(0, 0, 0, 160)
 FlightButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
 FlightButton.TextColor3 = Color3.new(1, 1, 1)
-FlightButton.Parent = ContentFrame
+FlightButton.Parent = GeneralFrame
+
+-- ESP功能页面
+local ESPFrame = Instance.new("Frame")
+ESPFrame.Name = "ESPFrame"
+ESPFrame.Size = UDim2.new(1, 0, 1, 0)
+ESPFrame.BackgroundTransparency = 1
+ESPFrame.Visible = false
+ESPFrame.Parent = ContentFrame
+
+-- ESP开关
+local ESPToggle = Instance.new("TextButton")
+ESPToggle.Name = "ESPToggle"
+ESPToggle.Text = "开启ESP"
+ESPToggle.Size = UDim2.new(1, 0, 0, 40)
+ESPToggle.Position = UDim2.new(0, 0, 0, 10)
+ESPToggle.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
+ESPToggle.TextColor3 = Color3.new(1, 1, 1)
+ESPToggle.Parent = ESPFrame
+
+-- 队伍检测开关
+local TeamDetectToggle = Instance.new("TextButton")
+TeamDetectToggle.Name = "TeamDetectToggle"
+TeamDetectToggle.Text = "开启队伍检测"
+TeamDetectToggle.Size = UDim2.new(1, 0, 0, 40)
+TeamDetectToggle.Position = UDim2.new(0, 0, 0, 60)
+TeamDetectToggle.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
+TeamDetectToggle.TextColor3 = Color3.new(1, 1, 1)
+TeamDetectToggle.Parent = ESPFrame
 
 -- 状态提示
 local StatusText = Instance.new("TextLabel")
@@ -252,7 +310,12 @@ StatusText.Parent = ContentFrame
 local isDragging = false
 local dragStartPos = Vector2.new(0, 0)
 local frameStartPos = UDim2.new(0, 0, 0, 0)
-local activeFunctions = {}
+local isRestoreDragging = false
+local restoreStartPos = Vector2.new(0, 0)
+local buttonStartPos = UDim2.new(0, 0, 0, 0)
+local espEnabled = false
+local teamDetectEnabled = false
+local espHighlights = {}
 local correctKey = "nznb666"
 
 -- 复制群号功能
@@ -269,27 +332,27 @@ end)
 -- 验证卡密功能
 VerifyButton.MouseButton1Click:Connect(function()
     if KeyInput.Text == correctKey then
-        KeyFrame.Visible = false
-        WelcomeFrame.Visible = true
-        
-        -- 加载动画效果
-        spawn(function()
-            for i = 0, 400, 2 do
-                if not LoadingBar or not LoadingBar.Parent then break end
-                LoadingBar.Size = UDim2.new(0, i, 0, 5)
-                task.wait()
-            end
-        end)
-        
-        -- 延迟显示主界面
-        task.delay(3, function()
-            WelcomeFrame:Destroy()
-            MainFrame.Visible = true
-        end)
+        KeyFrame:Destroy()
+        MainFrame.Visible = true
+        StatusText.Text = "验证成功，欢迎使用"
     else
         KeyInput.Text = ""
         KeyInput.PlaceholderText = "卡密错误，请重新输入"
     end
+end)
+
+-- 最小化按钮功能
+MinimizeButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+    RestoreButton.Visible = true
+    StatusText.Text = "脚本已最小化"
+end)
+
+-- 恢复按钮功能
+RestoreButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = true
+    RestoreButton.Visible = false
+    StatusText.Text = "脚本已恢复"
 end)
 
 -- 拖动主窗口
@@ -301,97 +364,164 @@ TitleBar.InputBegan:Connect(function(input)
     end
 end)
 
+-- 拖动恢复按钮
+RestoreButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        isRestoreDragging = true
+        restoreStartPos = Vector2.new(input.Position.X, input.Position.Y)
+        buttonStartPos = RestoreButton.Position
+    end
+end)
+
 UserInputService.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement and isDragging then
-        local delta = Vector2.new(input.Position.X, input.Position.Y) - dragStartPos
-        MainFrame.Position = UDim2.new(frameStartPos.X.Scale, frameStartPos.X.Offset + delta.X, 
-                                      frameStartPos.Y.Scale, frameStartPos.Y.Offset + delta.Y)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        if isDragging then
+            local delta = Vector2.new(input.Position.X, input.Position.Y) - dragStartPos
+            MainFrame.Position = UDim2.new(frameStartPos.X.Scale, frameStartPos.X.Offset + delta.X, 
+                                          frameStartPos.Y.Scale, frameStartPos.Y.Offset + delta.Y)
+        elseif isRestoreDragging then
+            local delta = Vector2.new(input.Position.X, input.Position.Y) - restoreStartPos
+            RestoreButton.Position = UDim2.new(buttonStartPos.X.Scale, buttonStartPos.X.Offset + delta.X, 
+                                              buttonStartPos.Y.Scale, buttonStartPos.Y.Offset + delta.Y)
+        end
     end
 end)
 
 UserInputService.InputEnded:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         isDragging = false
+        isRestoreDragging = false
     end
 end)
 
--- 快速旋转功能
-FastSpinButton.MouseButton1Click:Connect(function()
-    StatusText.Text = "快速旋转已激活"
+-- 导航按钮功能
+GeneralButton.MouseButton1Click:Connect(function()
+    GeneralFrame.Visible = true
+    ESPFrame.Visible = false
+    GeneralButton.BackgroundColor3 = Color3.new(0.15, 0.15, 0.3)
+    ESPButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    StatusText.Text = "切换到通用功能"
+end)
+
+ESPButton.MouseButton1Click:Connect(function()
+    GeneralFrame.Visible = false
+    ESPFrame.Visible = true
+    GeneralButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    ESPButton.BackgroundColor3 = Color3.new(0.15, 0.15, 0.3)
+    StatusText.Text = "切换到ESP功能"
+end)
+
+-- 更新ESP显示
+local function updateESP()
+    -- 清除现有高亮
+    for _, highlight in pairs(espHighlights) do
+        highlight:Destroy()
+    end
+    espHighlights = {}
     
-    local function startFastSpin(character)
-        local humanoid = character:WaitForChild("Humanoid")
-        humanoid.AutoRotate = false
-        
-        local connection = game:GetService("RunService").Heartbeat:Connect(function()
-            if humanoid and humanoid.Parent then
-                humanoid.RootPart.CFrame = humanoid.RootPart.CFrame * CFrame.Angles(0, math.rad(50), 0)
+    if not espEnabled then return end
+    
+    -- 为所有玩家添加高亮
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character then
+            local highlight = Instance.new("Highlight")
+            highlight.Parent = player.Character
+            
+            -- 设置颜色
+            if teamDetectEnabled then
+                -- 队伍检测开启时，队友绿色，敌人红色
+                if player.Team == LocalPlayer.Team then
+                    highlight.FillColor = Color3.new(0, 1, 0)  -- 队友绿色
+                    highlight.OutlineColor = Color3.new(0, 0.8, 0)
+                else
+                    highlight.FillColor = Color3.new(1, 0, 0)  -- 敌人红色
+                    highlight.OutlineColor = Color3.new(0.8, 0, 0)
+                end
+            else
+                -- 队伍检测关闭时，统一白色
+                highlight.FillColor = Color3.new(1, 1, 1)  -- 白色
+                highlight.OutlineColor = Color3.new(0.8, 0.8, 0.8)
             end
-        end)
-        
-        table.insert(activeFunctions, connection)
+            
+            table.insert(espHighlights, highlight)
+        end
+    end
+end
+
+-- ESP开关功能
+ESPToggle.MouseButton1Click:Connect(function()
+    espEnabled = not espEnabled
+    
+    if espEnabled then
+        ESPToggle.Text = "关闭ESP"
+        StatusText.Text = "ESP已开启"
+    else
+        ESPToggle.Text = "开启ESP"
+        StatusText.Text = "ESP已关闭"
     end
     
-    LocalPlayer.CharacterAdded:Connect(startFastSpin)
+    updateESP()
+end)
+
+-- 队伍检测开关功能
+TeamDetectToggle.MouseButton1Click:Connect(function()
+    teamDetectEnabled = not teamDetectEnabled
     
-    if LocalPlayer.Character then
-        startFastSpin(LocalPlayer.Character)
+    if teamDetectEnabled then
+        TeamDetectToggle.Text = "关闭队伍检测"
+        StatusText.Text = "队伍检测已开启"
+    else
+        TeamDetectToggle.Text = "开启队伍检测"
+        StatusText.Text = "队伍检测已关闭"
+    end
+    
+    if espEnabled then
+        updateESP()
     end
 end)
 
--- 极速旋转功能
-SuperSpinButton.MouseButton1Click:Connect(function()
-    StatusText.Text = "极速旋转已激活"
-    
-    local function startSuperSpin(character)
-        local humanoid = character:WaitForChild("Humanoid")
-        humanoid.AutoRotate = false
-        
-        local connection = game:GetService("RunService").Heartbeat:Connect(function()
-            if humanoid and humanoid.Parent then
-                humanoid.RootPart.CFrame = humanoid.RootPart.CFrame * CFrame.Angles(0, math.rad(100), 0)
-            end
-        end)
-        
-        table.insert(activeFunctions, connection)
-    end
-    
-    LocalPlayer.CharacterAdded:Connect(startSuperSpin)
-    
-    if LocalPlayer.Character then
-        startSuperSpin(LocalPlayer.Character)
+-- 玩家加入/离开时更新ESP
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function(character)
+        if espEnabled then
+            updateESP()
+        end
+    end)
+end)
+
+Players.PlayerRemoving:Connect(function(player)
+    if espEnabled then
+        updateESP()
     end
 end)
 
--- 无限跳功能
-InfiniteJumpButton.MouseButton1Click:Connect(function()
-    StatusText.Text = "无限跳跃已激活"
-    
-    local function startInfiniteJump(character)
-        local humanoid = character:WaitForChild("Humanoid")
-        
-        local connection = UserInputService.JumpRequest:Connect(function()
-            humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-        end)
-        
-        table.insert(activeFunctions, connection)
-    end
-    
-    LocalPlayer.CharacterAdded:Connect(startInfiniteJump)
-    
-    if LocalPlayer.Character then
-        startInfiniteJump(LocalPlayer.Character)
+-- 角色重生时更新ESP
+LocalPlayer.CharacterAdded:Connect(function(character)
+    if espEnabled then
+        updateESP()
     end
 end)
 
--- 飞行功能
-FlightButton.MouseButton1Click:Connect(function()
-    StatusText.Text = "正在加载飞行脚本..."
-    loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Invinicible-Flight-R15-45414"))()
+-- 队伍变化时更新ESP
+LocalPlayer:GetPropertyChangedSignal("Team"):Connect(function()
+    if espEnabled and teamDetectEnabled then
+        updateESP()
+    end
 end)
 
 -- 关闭按钮功能
-MainCloseButton.MouseButton1Click:Connect(function()
+CloseButton.MouseButton1Click:Connect(function()
     MainFrame.Visible = false
     StatusText.Text = "界面已关闭"
+end)
+
+-- 边框颜色变化效果
+spawn(function()
+    while RestoreGlow and RestoreGlow.Parent do
+        for i = 0, 1, 0.01 do
+            if not RestoreGlow or not RestoreGlow.Parent then break end
+            RestoreGlow.ImageColor3 = Color3.fromHSV(i, 0.8, 1)
+            task.wait(0.05)
+        end
+    end
 end)
