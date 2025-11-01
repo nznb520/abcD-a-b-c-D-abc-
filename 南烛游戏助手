@@ -1,471 +1,648 @@
--- Roblox手机端高级功能菜单脚本（修复版）
-local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
-local GuiService = game:GetService("GuiService")
-local HttpService = game:GetService("HttpService")
+-- NZ脚本中心增强版完整代码
+local player = game:GetService("Players").LocalPlayer
+local gui = Instance.new("ScreenGui")
+gui.Name = "NZScriptCenterPro"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
 
-local player = Players.LocalPlayer
-local touchEnabled = UserInputService.TouchEnabled
+-- 3D透视效果背景
+local bgFrame = Instance.new("Frame")
+bgFrame.Name = "Background"
+bgFrame.Size = UDim2.new(1, 0, 1, 0)
+bgFrame.Position = UDim2.new(0, 0, 0, 0)
+bgFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 20)
+bgFrame.BorderSizePixel = 0
+bgFrame.ZIndex = -10
+bgFrame.Parent = gui
 
--- 检查是否为移动设备
-if not touchEnabled then
-    warn("此脚本专为移动设备设计")
-    return
+-- 3D粒子效果
+local particles = {}
+for i = 1, 50 do
+    local particle = Instance.new("Frame")
+    particle.Name = "Particle_"..i
+    particle.Size = UDim2.new(0, math.random(2,5), 0, math.random(2,5))
+    particle.Position = UDim2.new(0, math.random(0,1000), 0, math.random(0,600))
+    particle.BackgroundColor3 = Color3.fromHSV(math.random(), 0.5, 1)
+    particle.BorderSizePixel = 0
+    particle.ZIndex = -5
+    particle.Parent = bgFrame
+    table.insert(particles, {
+        frame = particle,
+        speedX = math.random(-5,5)/10,
+        speedY = math.random(-5,5)/10,
+        depth = math.random(1,3)
+    })
 end
 
--- 安全的loadstring函数（兼容不同环境）
-local function safeLoadstring(code)
-    local success, result = pcall(function()
-        -- 尝试多种loadstring方式
-        if loadstring then
-            return loadstring(code)
-        elseif load then
-            return load(code)
-        else
-            -- 如果都没有，尝试直接执行
-            return function() 
-                local func, err = loadstring(code)
-                if func then return func() end
-                error(err or "无法加载脚本")
-            end
+-- 粒子动画
+coroutine.wrap(function()
+    while true do
+        for _, p in ipairs(particles) do
+            local currentPos = p.frame.Position
+            local newX = (currentPos.X.Offset + p.speedX * p.depth) % 1000
+            local newY = (currentPos.Y.Offset + p.speedY * p.depth) % 600
+            p.frame.Position = UDim2.new(0, newX, 0, newY)
         end
-    end)
-    
-    if success and result then
-        return result
-    else
-        return function() 
-            warn("脚本加载失败: " .. tostring(result))
+        wait(0.02)
+    end
+end)()
+
+-- 主框架
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0.35, 0, 0.45, 0)
+mainFrame.Position = UDim2.new(0.325, 0, 0.275, 0)
+mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+mainFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+mainFrame.BackgroundTransparency = 0.2
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = gui
+
+-- 高级边框效果
+local borderGlow = Instance.new("ImageLabel")
+borderGlow.Name = "BorderGlow"
+borderGlow.Size = UDim2.new(1, 12, 1, 12)
+borderGlow.Position = UDim2.new(0, -6, 0, -6)
+borderGlow.BackgroundTransparency = 1
+borderGlow.Image = "rbxassetid://8996079555"
+borderGlow.ImageColor3 = Color3.fromRGB(0, 150, 255)
+borderGlow.ScaleType = Enum.ScaleType.Slice
+borderGlow.SliceCenter = Rect.new(100, 100, 100, 100)
+borderGlow.SliceScale = 0.5
+borderGlow.Parent = mainFrame
+
+-- 边框动画
+coroutine.wrap(function()
+    while true do
+        for hue = 0, 1, 0.01 do
+            borderGlow.ImageColor3 = Color3.fromHSV(hue, 0.8, 1)
+            borderGlow.ImageTransparency = 0.3 + 0.2 * math.sin(hue * math.pi * 2)
+            wait(0.05)
         end
     end
-end
-
--- 安全的HTTP获取函数
-local function safeHttpGet(url)
-    local success, result = pcall(function()
-        return game:HttpGet(url, true)
-    end)
-    
-    if success then
-        return result
-    else
-        -- 备用方案
-        local success2, result2 = pcall(function()
-            return HttpService:GetAsync(url)
-        end)
-        
-        if success2 then
-            return result2
-        else
-            return "print('脚本加载失败，请检查网络连接')"
-        end
-    end
-end
-
--- 检查脚本是否已永久关闭
-local permanentClose = false
-
--- 创建主GUI
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "MobileAdvancedMenu"
-ScreenGui.ResetOnSpawn = false
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-
--- 创建打开菜单的浮动按钮
-local OpenButton = Instance.new("ImageButton")
-OpenButton.Name = "OpenButton"
-OpenButton.Size = UDim2.new(0, 60, 0, 60)
-OpenButton.Position = UDim2.new(0, 20, 0.5, -30)
-OpenButton.BackgroundColor3 = Color3.fromRGB(100, 150, 255)
-OpenButton.Image = "rbxassetid://7072717834"
-OpenButton.Parent = ScreenGui
-
-local OpenButtonCorner = Instance.new("UICorner")
-OpenButtonCorner.CornerRadius = UDim.new(1, 0)
-OpenButtonCorner.Parent = OpenButton
-
--- 创建背景遮罩
-local Background = Instance.new("Frame")
-Background.Name = "Background"
-Background.Size = UDim2.new(1, 0, 1, 0)
-Background.BackgroundColor3 = Color3.new(0, 0, 0)
-Background.BackgroundTransparency = 0.7
-Background.Visible = false
-Background.Parent = ScreenGui
-
--- 创建主窗口
-local MainWindow = Instance.new("Frame")
-MainWindow.Name = "MainWindow"
-MainWindow.Size = UDim2.new(0.9, 0, 0, 450)
-MainWindow.Position = UDim2.new(0.5, 0, 0.5, 0)
-MainWindow.AnchorPoint = Vector2.new(0.5, 0.5)
-MainWindow.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-MainWindow.BorderSizePixel = 0
-MainWindow.Visible = false
-MainWindow.Parent = ScreenGui
-
--- 圆角效果
-local UICorner = Instance.new("UICorner")
-UICorner.CornerRadius = UDim.new(0, 15)
-UICorner.Parent = MainWindow
+end)()
 
 -- 标题栏
-local TitleBar = Instance.new("Frame")
-TitleBar.Name = "TitleBar"
-TitleBar.Size = UDim2.new(1, 0, 0, 50)
-TitleBar.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
-TitleBar.BorderSizePixel = 0
-TitleBar.Parent = MainWindow
+local titleBar = Instance.new("Frame")
+titleBar.Name = "TitleBar"
+titleBar.Size = UDim2.new(1, 0, 0.12, 0)
+titleBar.Position = UDim2.new(0, 0, 0, 0)
+titleBar.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+titleBar.BackgroundTransparency = 0.3
+titleBar.BorderSizePixel = 0
+titleBar.Parent = mainFrame
 
-local TitleBarCorner = Instance.new("UICorner")
-TitleBarCorner.CornerRadius = UDim.new(0, 15)
-TitleBarCorner.Parent = TitleBar
+-- 标题文本
+local title = Instance.new("TextLabel")
+title.Name = "Title"
+title.Size = UDim2.new(0.6, 0, 1, 0)
+title.Position = UDim2.new(0.2, 0, 0, 0)
+title.BackgroundTransparency = 1
+title.Text = "NZ脚本中心 PRO"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 20
+title.TextStrokeTransparency = 0.7
+title.Parent = titleBar
 
--- 标题文字
-local TitleLabel = Instance.new("TextLabel")
-TitleLabel.Name = "TitleLabel"
-TitleLabel.Size = UDim2.new(1, -100, 1, 0)
-TitleLabel.Position = UDim2.new(0, 20, 0, 0)
-TitleLabel.BackgroundTransparency = 1
-TitleLabel.Text = "📱 手机功能菜单"
-TitleLabel.TextColor3 = Color3.new(1, 1, 1)
-TitleLabel.TextSize = 20
-TitleLabel.Font = Enum.Font.GothamBold
-TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
-TitleLabel.Parent = TitleBar
+-- 标题动画
+coroutine.wrap(function()
+    while true do
+        title.TextStrokeColor3 = Color3.fromHSV(tick()%5/5, 1, 1)
+        title.TextColor3 = Color3.fromHSV(tick()%5/5, 0.5, 1)
+        wait(0.1)
+    end
+end)()
 
--- 关闭按钮
-local CloseButton = Instance.new("TextButton")
-CloseButton.Name = "CloseButton"
-CloseButton.Size = UDim2.new(0, 40, 0, 40)
-CloseButton.Position = UDim2.new(1, -50, 0.5, -20)
-CloseButton.AnchorPoint = Vector2.new(0.5, 0.5)
-CloseButton.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
-CloseButton.TextColor3 = Color3.new(1, 1, 1)
-CloseButton.Text = "×"
-CloseButton.TextSize = 24
-CloseButton.Font = Enum.Font.GothamBold
-CloseButton.Parent = TitleBar
+-- 控制按钮
+local closeButton = Instance.new("TextButton")
+closeButton.Name = "CloseButton"
+closeButton.Size = UDim2.new(0.1, 0, 1, 0)
+closeButton.Position = UDim2.new(0.9, 0, 0, 0)
+closeButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+closeButton.BackgroundTransparency = 0.5
+closeButton.BorderSizePixel = 0
+closeButton.Text = "✕"
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.Font = Enum.Font.GothamBold
+closeButton.TextSize = 18
+closeButton.Parent = titleBar
 
-local CloseButtonCorner = Instance.new("UICorner")
-CloseButtonCorner.CornerRadius = UDim.new(0, 8)
-CloseButtonCorner.Parent = CloseButton
+local minimizeButton = Instance.new("TextButton")
+minimizeButton.Name = "MinimizeButton"
+minimizeButton.Size = UDim2.new(0.1, 0, 1, 0)
+minimizeButton.Position = UDim2.new(0.8, 0, 0, 0)
+minimizeButton.BackgroundColor3 = Color3.fromRGB(50, 50, 200)
+minimizeButton.BackgroundTransparency = 0.5
+minimizeButton.BorderSizePixel = 0
+minimizeButton.Text = "─"
+minimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+minimizeButton.Font = Enum.Font.GothamBold
+minimizeButton.TextSize = 18
+minimizeButton.Parent = titleBar
+
+local resizeButton = Instance.new("TextButton")
+resizeButton.Name = "ResizeButton"
+resizeButton.Size = UDim2.new(0.1, 0, 1, 0)
+resizeButton.Position = UDim2.new(0.7, 0, 0, 0)
+resizeButton.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+resizeButton.BackgroundTransparency = 0.5
+resizeButton.BorderSizePixel = 0
+resizeButton.Text = "↔"
+resizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+resizeButton.Font = Enum.Font.GothamBold
+resizeButton.TextSize = 18
+resizeButton.Parent = titleBar
+
+-- 按钮悬停效果
+local function setupButtonHover(button)
+    button.MouseEnter:Connect(function()
+        button.BackgroundTransparency = 0.2
+    end)
+    button.MouseLeave:Connect(function()
+        button.BackgroundTransparency = 0.5
+    end)
+end
+
+setupButtonHover(closeButton)
+setupButtonHover(minimizeButton)
+setupButtonHover(resizeButton)
 
 -- 内容区域
-local ContentFrame = Instance.new("Frame")
-ContentFrame.Name = "ContentFrame"
-ContentFrame.Size = UDim2.new(1, -20, 1, -70)
-ContentFrame.Position = UDim2.new(0, 10, 0, 60)
-ContentFrame.BackgroundTransparency = 1
-ContentFrame.Parent = MainWindow
+local contentFrame = Instance.new("ScrollingFrame")
+contentFrame.Name = "ContentFrame"
+contentFrame.Size = UDim2.new(1, 0, 0.88, 0)
+contentFrame.Position = UDim2.new(0, 0, 0.12, 0)
+contentFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+contentFrame.BackgroundTransparency = 0.3
+contentFrame.BorderSizePixel = 0
+contentFrame.ScrollBarThickness = 8
+contentFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 255)
+contentFrame.CanvasSize = UDim2.new(0, 0, 2, 0)
+contentFrame.Parent = mainFrame
 
--- 分类标题
-local CategoryLabel = Instance.new("TextLabel")
-CategoryLabel.Name = "CategoryLabel"
-CategoryLabel.Size = UDim2.new(1, 0, 0, 35)
-CategoryLabel.BackgroundTransparency = 1
-CategoryLabel.Text = "📋 通用功能"
-CategoryLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
-CategoryLabel.TextSize = 18
-CategoryLabel.Font = Enum.Font.GothamBold
-CategoryLabel.TextXAlignment = Enum.TextXAlignment.Left
-CategoryLabel.Parent = ContentFrame
+-- 类别按钮
+local categories = {"通用", "移动", "视觉", "工具", "娱乐", "高级"}
+local categoryButtons = {}
 
--- 功能按钮容器
-local ButtonsContainer = Instance.new("ScrollingFrame")
-ButtonsContainer.Name = "ButtonsContainer"
-ButtonsContainer.Size = UDim2.new(1, 0, 1, -40)
-ButtonsContainer.Position = UDim2.new(0, 0, 0, 40)
-ButtonsContainer.BackgroundTransparency = 1
-ButtonsContainer.BorderSizePixel = 0
-ButtonsContainer.ScrollBarThickness = 6
-ButtonsContainer.ScrollingDirection = Enum.ScrollingDirection.Y
-ButtonsContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
-ButtonsContainer.Parent = ContentFrame
+for i, category in ipairs(categories) do
+    local button = Instance.new("TextButton")
+    button.Name = category .. "Button"
+    button.Size = UDim2.new(0.15, 0, 0.08, 0)
+    button.Position = UDim2.new(0.03 + (i-1)*0.16, 0, 0.03, 0)
+    button.BackgroundColor3 = Color3.fromRGB(60, 60, 80)
+    button.BackgroundTransparency = 0.4
+    button.BorderSizePixel = 0
+    button.Text = category
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.Font = Enum.Font.Gotham
+    button.TextSize = 14
+    button.Parent = contentFrame
+    
+    button.MouseEnter:Connect(function()
+        button.BackgroundColor3 = Color3.fromRGB(80, 80, 120)
+    end)
+    button.MouseLeave:Connect(function()
+        button.BackgroundColor3 = Color3.fromRGB(60, 60, 80)
+    end)
+    
+    categoryButtons[category] = button
+end
 
-local UIListLayout = Instance.new("UIListLayout")
-UIListLayout.Padding = UDim.new(0, 12)
-UIListLayout.Parent = ButtonsContainer
+-- 通用功能区域
+local generalFrame = Instance.new("Frame")
+generalFrame.Name = "GeneralFrame"
+generalFrame.Size = UDim2.new(0.94, 0, 1.5, 0)
+generalFrame.Position = UDim2.new(0.03, 0, 0.12, 0)
+generalFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+generalFrame.BackgroundTransparency = 0.4
+generalFrame.BorderSizePixel = 0
+generalFrame.Visible = true
+generalFrame.Parent = contentFrame
 
--- 创建状态显示标签
-local StatusLabel = Instance.new("TextLabel")
-StatusLabel.Name = "StatusLabel"
-StatusLabel.Size = UDim2.new(1, 0, 0, 25)
-StatusLabel.Position = UDim2.new(0, 0, 1, 5)
-StatusLabel.BackgroundTransparency = 1
-StatusLabel.Text = "就绪"
-StatusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
-StatusLabel.TextSize = 12
-StatusLabel.Font = Enum.Font.Gotham
-StatusLabel.TextXAlignment = Enum.TextXAlignment.Left
-StatusLabel.Visible = false
-StatusLabel.Parent = ContentFrame
+-- 功能组标题
+local function createSectionTitle(text, yPosition)
+    local title = Instance.new("TextLabel")
+    title.Name = text .. "Title"
+    title.Size = UDim2.new(0.9, 0, 0.07, 0)
+    title.Position = UDim2.new(0.05, 0, yPosition, 0)
+    title.BackgroundTransparency = 1
+    title.Text = text
+    title.TextColor3 = Color3.fromRGB(200, 200, 255)
+    title.Font = Enum.Font.GothamBold
+    title.TextSize = 16
+    title.TextXAlignment = Enum.TextXAlignment.Left
+    title.Parent = generalFrame
+    return title
+end
 
--- 创建手机优化的功能按钮
-local function createMobileFeatureButton(text, description, scriptUrl, isR15Only)
-    local ButtonFrame = Instance.new("Frame")
-    ButtonFrame.Size = UDim2.new(1, 0, 0, 80)
-    ButtonFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
-    ButtonFrame.BorderSizePixel = 0
+-- 旋转功能组
+createSectionTitle("旋转功能", 0.05)
+
+-- 快速旋转按钮
+local fastSpinButton = Instance.new("TextButton")
+fastSpinButton.Name = "FastSpinButton"
+fastSpinButton.Size = UDim2.new(0.9, 0, 0.1, 0)
+fastSpinButton.Position = UDim2.new(0.05, 0, 0.13, 0)
+fastSpinButton.BackgroundColor3 = Color3.fromRGB(80, 80, 120)
+fastSpinButton.BackgroundTransparency = 0.4
+fastSpinButton.BorderSizePixel = 0
+fastSpinButton.Text = "快速旋转 (速度25)"
+fastSpinButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+fastSpinButton.Font = Enum.Font.Gotham
+fastSpinButton.TextSize = 14
+fastSpinButton.Parent = generalFrame
+
+-- 极速旋转按钮
+local turboSpinButton = Instance.new("TextButton")
+turboSpinButton.Name = "TurboSpinButton"
+turboSpinButton.Size = UDim2.new(0.9, 0, 0.1, 0)
+turboSpinButton.Position = UDim2.new(0.05, 0, 0.25, 0)
+turboSpinButton.BackgroundColor3 = Color3.fromRGB(80, 80, 120)
+turboSpinButton.BackgroundTransparency = 0.4
+turboSpinButton.BorderSizePixel = 0
+turboSpinButton.Text = "极速旋转 (速度50)"
+turboSpinButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+turboSpinButton.Font = Enum.Font.Gotham
+turboSpinButton.TextSize = 14
+turboSpinButton.Parent = generalFrame
+
+-- 旋转功能实现
+local spinning = false
+local spinSpeed = 0
+
+local function spinCharacter()
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:WaitForChild("Humanoid")
     
-    local ButtonCorner = Instance.new("UICorner")
-    ButtonCorner.CornerRadius = UDim.new(0, 10)
-    ButtonCorner.Parent = ButtonFrame
-    
-    local Button = Instance.new("TextButton")
-    Button.Name = "Button"
-    Button.Size = UDim2.new(1, 0, 1, 0)
-    Button.BackgroundTransparency = 1
-    Button.Text = ""
-    Button.Parent = ButtonFrame
-    
-    local ButtonIcon = Instance.new("ImageLabel")
-    ButtonIcon.Name = "ButtonIcon"
-    ButtonIcon.Size = UDim2.new(0, 40, 0, 40)
-    ButtonIcon.Position = UDim2.new(0, 15, 0.5, -20)
-    ButtonIcon.BackgroundTransparency = 1
-    ButtonIcon.Image = "rbxassetid://7072717834"
-    ButtonIcon.Parent = ButtonFrame
-    
-    local ButtonTitle = Instance.new("TextLabel")
-    ButtonTitle.Name = "ButtonTitle"
-    ButtonTitle.Size = UDim2.new(1, -80, 0, 30)
-    ButtonTitle.Position = UDim2.new(0, 70, 0, 15)
-    ButtonTitle.BackgroundTransparency = 1
-    ButtonTitle.Text = text
-    ButtonTitle.TextColor3 = Color3.new(1, 1, 1)
-    ButtonTitle.TextSize = 16
-    ButtonTitle.Font = Enum.Font.GothamBold
-    ButtonTitle.TextXAlignment = Enum.TextXAlignment.Left
-    ButtonTitle.Parent = ButtonFrame
-    
-    local ButtonDesc = Instance.new("TextLabel")
-    ButtonDesc.Name = "ButtonDesc"
-    ButtonDesc.Size = UDim2.new(1, -80, 0, 20)
-    ButtonDesc.Position = UDim2.new(0, 70, 0, 45)
-    ButtonDesc.BackgroundTransparency = 1
-    ButtonDesc.Text = description
-    ButtonDesc.TextColor3 = Color3.fromRGB(180, 180, 180)
-    ButtonDesc.TextSize = 12
-    ButtonDesc.Font = Enum.Font.Gotham
-    ButtonDesc.TextXAlignment = Enum.TextXAlignment.Left
-    ButtonDesc.Parent = ButtonFrame
-    
-    if isR15Only then
-        local R15Label = Instance.new("TextLabel")
-        R15Label.Name = "R15Label"
-        R15Label.Size = UDim2.new(0, 70, 0, 20)
-        R15Label.Position = UDim2.new(1, -75, 0.5, -10)
-        R15Label.BackgroundColor3 = Color3.fromRGB(100, 150, 255)
-        R15Label.Text = "仅限R15"
-        R15Label.TextColor3 = Color3.new(1, 1, 1)
-        R15Label.TextSize = 11
-        R15Label.Font = Enum.Font.GothamBold
-        R15Label.Parent = ButtonFrame
-        
-        local R15Corner = Instance.new("UICorner")
-        R15Corner.CornerRadius = UDim.new(0, 5)
-        R15Corner.Parent = R15Label
+    while spinning do
+        humanoid.CameraOffset = Vector3.new(0, 0, 0)
+        humanoid.CameraOffset = Vector3.new(0, 0, 0)
+        humanoid.CameraOffset = Vector3.new(0, 0, 0)
+        humanoid.CameraOffset = Vector3.new(0, 0, 0)
+        wait()
     end
+end
+
+fastSpinButton.MouseButton1Click:Connect(function()
+    spinning = not spinning
+    spinSpeed = 25
+    if spinning then
+        fastSpinButton.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+        turboSpinButton.BackgroundColor3 = Color3.fromRGB(80, 80, 120)
+        coroutine.wrap(spinCharacter)()
+    else
+        fastSpinButton.BackgroundColor3 = Color3.fromRGB(80, 80, 120)
+    end
+end)
+
+turboSpinButton.MouseButton1Click:Connect(function()
+    spinning = not spinning
+    spinSpeed = 50
+    if spinning then
+        turboSpinButton.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+        fastSpinButton.BackgroundColor3 = Color3.fromRGB(80, 80, 120)
+        coroutine.wrap(spinCharacter)()
+    else
+        turboSpinButton.BackgroundColor3 = Color3.fromRGB(80, 80, 120)
+    end
+end)
+
+-- 跳跃功能组
+createSectionTitle("跳跃功能", 0.37)
+
+-- 无限跳跃按钮
+local infiniteJumpButton = Instance.new("TextButton")
+infiniteJumpButton.Name = "InfiniteJumpButton"
+infiniteJumpButton.Size = UDim2.new(0.6, 0, 0.1, 0)
+infiniteJumpButton.Position = UDim2.new(0.05, 0, 0.45, 0)
+infiniteJumpButton.BackgroundColor3 = Color3.fromRGB(80, 80, 120)
+infiniteJumpButton.BackgroundTransparency = 0.4
+infiniteJumpButton.BorderSizePixel = 0
+infiniteJumpButton.Text = "无限跳跃"
+infiniteJumpButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+infiniteJumpButton.Font = Enum.Font.Gotham
+infiniteJumpButton.TextSize = 14
+infiniteJumpButton.Parent = generalFrame
+
+-- 无限跳跃开关按钮
+local infiniteJumpToggle = Instance.new("TextButton")
+infiniteJumpToggle.Name = "InfiniteJumpToggle"
+infiniteJumpToggle.Size = UDim2.new(0.25, 0, 0.1, 0)
+infiniteJumpToggle.Position = UDim2.new(0.7, 0, 0.45, 0)
+infiniteJumpToggle.BackgroundColor3 = Color3.fromRGB(120, 120, 120)
+infiniteJumpToggle.BackgroundTransparency = 0.4
+infiniteJumpToggle.BorderSizePixel = 0
+infiniteJumpToggle.Text = "OFF"
+infiniteJumpToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+infiniteJumpToggle.Font = Enum.Font.GothamBold
+infiniteJumpToggle.TextSize = 14
+infiniteJumpToggle.Parent = generalFrame
+
+-- 超级跳跃按钮
+local superJumpButton = Instance.new("TextButton")
+superJumpButton.Name = "SuperJumpButton"
+superJumpButton.Size = UDim2.new(0.9, 0, 0.1, 0)
+superJumpButton.Position = UDim2.new(0.05, 0, 0.57, 0)
+superJumpButton.BackgroundColor3 = Color3.fromRGB(80, 80, 120)
+superJumpButton.BackgroundTransparency = 0.4
+superJumpButton.BorderSizePixel = 0
+superJumpButton.Text = "超级跳跃 (高度100)"
+superJumpButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+superJumpButton.Font = Enum.Font.Gotham
+superJumpButton.TextSize = 14
+superJumpButton.Parent = generalFrame
+
+-- 跳跃功能实现
+local infiniteJumpEnabled = false
+local superJumpEnabled = false
+local originalJumpPower
+
+local function updateToggleState()
+    if infiniteJumpEnabled then
+        infiniteJumpToggle.Text = "ON"
+        infiniteJumpToggle.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+    else
+        infiniteJumpToggle.Text = "OFF"
+        infiniteJumpToggle.BackgroundColor3 = Color3.fromRGB(120, 120, 120)
+    end
+end
+
+local function enableInfiniteJump()
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:WaitForChild("Humanoid")
     
-    -- 按钮点击效果
-    Button.MouseButton1Click:Connect(function()
-        -- 显示状态
-        StatusLabel.Visible = true
-        StatusLabel.Text = "正在加载脚本..."
-        StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 100)
-        
-        -- 点击反馈
-        TweenService:Create(ButtonFrame, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(60, 60, 70)}):Play()
-        wait(0.1)
-        TweenService:Create(ButtonFrame, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(40, 40, 50)}):Play()
-        
-        -- 延迟执行以避免UI卡顿
-        wait(0.1)
-        
-        -- 执行脚本
-        local success, err = pcall(function()
-            if scriptUrl then
-                StatusLabel.Text = "下载脚本中..."
-                
-                -- 获取脚本代码
-                local scriptCode = safeHttpGet(scriptUrl)
-                
-                StatusLabel.Text = "执行脚本中..."
-                
-                -- 加载并执行脚本
-                local scriptFunction = safeLoadstring(scriptCode)
-                if scriptFunction then
-                    scriptFunction()
-                    StatusLabel.Text = "脚本执行成功!"
-                    StatusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
-                    
-                    -- 3秒后隐藏状态
-                    delay(3, function()
-                        if StatusLabel then
-                            StatusLabel.Visible = false
-                        end
-                    end)
-                else
-                    error("无法加载脚本函数")
-                end
-            else
-                -- 如果没有URL，执行内置功能
-                if text == "飞行功能" then
-                    StatusLabel.Text = "激活飞行模式..."
-                    -- 这里可以添加内置的飞行脚本
-                    loadstring(game:HttpGet("https://raw.githubusercontent.com/396abc/Script/refs/heads/main/MobileFly.lua"))()
-                elseif text == "无敌模式" then
-                    StatusLabel.Text = "激活无敌模式..."
-                    -- 这里可以添加内置的无敌脚本
-                end
-            end
-        end)
-        
-        if not success then
-            StatusLabel.Text = "错误: " .. tostring(err)
-            StatusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-            warn("脚本执行错误: " .. tostring(err))
-            
-            -- 5秒后隐藏状态
-            delay(5, function()
-                if StatusLabel then
-                    StatusLabel.Visible = false
-                end
-            end)
+    originalJumpPower = humanoid.JumpPower
+    
+    humanoid.JumpPower = 50
+    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+    
+    game:GetService("UserInputService").JumpRequest:Connect(function()
+        if infiniteJumpEnabled then
+            humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
         end
     end)
-    
-    -- 悬停效果
-    Button.MouseEnter:Connect(function()
-        TweenService:Create(ButtonFrame, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(50, 50, 60)}):Play()
-    end)
-    
-    Button.MouseLeave:Connect(function()
-        TweenService:Create(ButtonFrame, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(40, 40, 50)}):Play()
-    end)
-    
-    return ButtonFrame
 end
 
--- 添加功能按钮（使用正确的URL）
-local mobileFlyButton = createMobileFeatureButton("飞行功能", "触摸控制飞行", "https://raw.githubusercontent.com/396abc/Script/refs/heads/main/MobileFly.lua", true)
-mobileFlyButton.Parent = ButtonsContainer
+local function enableSuperJump()
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:WaitForChild("Humanoid")
+    humanoid.JumpPower = 100
+end
 
-local godButton = createMobileFeatureButton("无敌模式", "角色无敌状态", "https://raw.githubusercontent.com/396abc/Script/refs/heads/main/MobileGodMode.lua", false)
-godButton.Parent = ButtonsContainer
-
-local speedButton = createMobileFeatureButton("移动加速", "提升移动速度", "https://raw.githubusercontent.com/396abc/Script/refs/heads/main/MobileSpeed.lua", false)
-speedButton.Parent = ButtonsContainer
-
-local noclipButton = createMobileFeatureButton("穿墙模式", "穿透物体", "https://raw.githubusercontent.com/396abc/Script/refs/heads/main/MobileNoclip.lua", false)
-noclipButton.Parent = ButtonsContainer
-
--- 备用内置功能按钮（如果URL不可用）
-local simpleFlyButton = createMobileFeatureButton("简易飞行", "基础飞行功能", nil, true)
-simpleFlyButton.Parent = ButtonsContainer
-
--- 更新滚动区域大小
-UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-    ButtonsContainer.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 10)
-end)
-
--- 手机端拖动功能
-local dragging = false
-local dragStart
-local startPos
-
-local function updateTouch(input)
-    if dragging then
-        local delta = input.Position - dragStart
-        MainWindow.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+local function disableJumpModifications()
+    if originalJumpPower then
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+        humanoid.JumpPower = originalJumpPower
     end
 end
 
-TitleBar.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.Touch then
+infiniteJumpButton.MouseButton1Click:Connect(function()
+    infiniteJumpEnabled = not infiniteJumpEnabled
+    superJumpEnabled = false
+    
+    if infiniteJumpEnabled then
+        infiniteJumpButton.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+        superJumpButton.BackgroundColor3 = Color3.fromRGB(80, 80, 120)
+        enableInfiniteJump()
+    else
+        infiniteJumpButton.BackgroundColor3 = Color3.fromRGB(80, 80, 120)
+        disableJumpModifications()
+    end
+    updateToggleState()
+end)
+
+infiniteJumpToggle.MouseButton1Click:Connect(function()
+    infiniteJumpEnabled = not infiniteJumpEnabled
+    superJumpEnabled = false
+    
+    if infiniteJumpEnabled then
+        infiniteJumpButton.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+        superJumpButton.BackgroundColor3 = Color3.fromRGB(80, 80, 120)
+        enableInfiniteJump()
+    else
+        infiniteJumpButton.BackgroundColor3 = Color3.fromRGB(80, 80, 120)
+        disableJumpModifications()
+    end
+    updateToggleState()
+end)
+
+superJumpButton.MouseButton1Click:Connect(function()
+    superJumpEnabled = not superJumpEnabled
+    infiniteJumpEnabled = false
+    
+    if superJumpEnabled then
+        superJumpButton.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+        infiniteJumpButton.BackgroundColor3 = Color3.fromRGB(80, 80, 120)
+        infiniteJumpToggle.Text = "OFF"
+        infiniteJumpToggle.BackgroundColor3 = Color3.fromRGB(120, 120, 120)
+        enableSuperJump()
+    else
+        superJumpButton.BackgroundColor3 = Color3.fromRGB(80, 80, 120)
+        disableJumpModifications()
+    end
+end)
+
+-- 视觉功能组
+createSectionTitle("视觉特效", 0.69)
+
+-- 夜视模式按钮
+local nightVisionButton = Instance.new("TextButton")
+nightVisionButton.Name = "NightVisionButton"
+nightVisionButton.Size = UDim2.new(0.9, 0, 0.1, 0)
+nightVisionButton.Position = UDim2.new(0.05, 0, 0.77, 0)
+nightVisionButton.BackgroundColor3 = Color3.fromRGB(80, 80, 120)
+nightVisionButton.BackgroundTransparency = 0.4
+nightVisionButton.BorderSizePixel = 0
+nightVisionButton.Text = "夜视模式"
+nightVisionButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+nightVisionButton.Font = Enum.Font.Gotham
+nightVisionButton.TextSize = 14
+nightVisionButton.Parent = generalFrame
+
+-- X光透视按钮
+local xrayButton = Instance.new("TextButton")
+xrayButton.Name = "XrayButton"
+xrayButton.Size = UDim2.new(0.9, 0, 0.1, 0)
+xrayButton.Position = UDim2.new(0.05, 0, 0.89, 0)
+xrayButton.BackgroundColor3 = Color3.fromRGB(80, 80, 120)
+xrayButton.BackgroundTransparency = 0.4
+xrayButton.BorderSizePixel = 0
+xrayButton.Text = "X光透视"
+xrayButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+xrayButton.Font = Enum.Font.Gotham
+xrayButton.TextSize = 14
+xrayButton.Parent = generalFrame
+
+-- 视觉功能实现
+local nightVisionEnabled = false
+local xrayEnabled = false
+
+local function enableNightVision()
+    local lighting = game:GetService("Lighting")
+    lighting.Ambient = Color3.fromRGB(0, 255, 0)
+    lighting.Brightness = 2
+    lighting.OutdoorAmbient = Color3.fromRGB(0, 100, 0)
+end
+
+local function enableXray()
+    local character = player.Character or player.CharacterAdded:Wait()
+    for _, part in ipairs(character:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.LocalTransparencyModifier = 0.5
+        end
+    end
+end
+
+local function disableVisualEffects()
+    local lighting = game:GetService("Lighting")
+    lighting.Ambient = Color3.fromRGB(0.5, 0.5, 0.5)
+    lighting.Brightness = 1
+    lighting.OutdoorAmbient = Color3.fromRGB(0.5, 0.5, 0.5)
+    
+    local character = player.Character
+    if character then
+        for _, part in ipairs(character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.LocalTransparencyModifier = 0
+            end
+        end
+    end
+end
+
+nightVisionButton.MouseButton1Click:Connect(function()
+    nightVisionEnabled = not nightVisionEnabled
+    xrayEnabled = false
+    
+    if nightVisionEnabled then
+        nightVisionButton.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+        xrayButton.BackgroundColor3 = Color3.fromRGB(80, 80, 120)
+        enableNightVision()
+    else
+        nightVisionButton.BackgroundColor3 = Color3.fromRGB(80, 80, 120)
+        disableVisualEffects()
+    end
+end)
+
+xrayButton.MouseButton1Click:Connect(function()
+    xrayEnabled = not xrayEnabled
+    nightVisionEnabled = false
+    
+    if xrayEnabled then
+        xrayButton.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+        nightVisionButton.BackgroundColor3 = Color3.fromRGB(80, 80, 120)
+        enableXray()
+    else
+        xrayButton.BackgroundColor3 = Color3.fromRGB(80, 80, 120)
+        disableVisualEffects()
+    end
+end)
+
+-- 按钮功能实现
+closeButton.MouseButton1Click:Connect(function()
+    gui:Destroy()
+end)
+
+local minimized = false
+local minimizedButton = nil
+
+minimizeButton.MouseButton1Click:Connect(function()
+    if not minimized then
+        mainFrame.Visible = false
+        minimizedButton = Instance.new("TextButton")
+        minimizedButton.Name = "MinimizedButton"
+        minimizedButton.Size = UDim2.new(0.1, 0, 0.05, 0)
+        minimizedButton.Position = UDim2.new(0.9, 0, 0, 0)
+        minimizedButton.BackgroundColor3 = Color3.fromRGB(50, 50, 200)
+        minimizedButton.BackgroundTransparency = 0.5
+        minimizedButton.BorderSizePixel = 0
+        minimizedButton.Text = "展开"
+        minimizedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        minimizedButton.Font = Enum.Font.GothamBold
+        minimizedButton.TextSize = 14
+        minimizedButton.Parent = gui
+        
+        minimizedButton.MouseButton1Click:Connect(function()
+            mainFrame.Visible = true
+            minimizedButton:Destroy()
+            minimized = false
+        end)
+        
+        minimized = true
+    end
+end)
+
+local resizing = false
+local startSize = nil
+local startPos = nil
+
+resizeButton.MouseButton1Down:Connect(function()
+    resizing = true
+    startSize = mainFrame.Size
+    startPos = mainFrame.Position
+end)
+
+resizeButton.MouseButton1Up:Connect(function()
+    resizing = false
+end)
+
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if resizing and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local mouse = game:GetService("Players").LocalPlayer:GetMouse()
+        local delta = Vector2.new(mouse.X, mouse.Y) - Vector2.new(startPos.X.Offset, startPos.Y.Offset)
+        mainFrame.Size = UDim2.new(startSize.X.Scale, startSize.X.Offset + delta.X, 
+                                  startSize.Y.Scale, startSize.Y.Offset + delta.Y)
+    end
+end)
+
+-- 使窗口可拖动
+local dragging = false
+local dragStart = nil
+local startPos = nil
+
+titleBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
         dragging = true
         dragStart = input.Position
-        startPos = MainWindow.Position
+        startPos = mainFrame.Position
     end
 end)
 
-TitleBar.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.Touch then
+titleBar.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
         dragging = false
     end
-end
-
-UserInputService.TouchMoved:Connect(updateTouch)
-
--- 显示/隐藏菜单
-local function toggleMenu()
-    if permanentClose then return end
-    
-    local isVisible = Background.Visible
-    
-    if isVisible then
-        -- 隐藏动画
-        TweenService:Create(MainWindow, TweenInfo.new(0.3), {Size = UDim2.new(0, 0, 0, 450)}):Play()
-        TweenService:Create(Background, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
-        wait(0.3)
-        Background.Visible = false
-        MainWindow.Visible = false
-        OpenButton.Visible = true
-    else
-        -- 显示动画
-        OpenButton.Visible = false
-        Background.Visible = true
-        MainWindow.Visible = true
-        MainWindow.Size = UDim2.new(0, 0, 0, 450)
-        TweenService:Create(MainWindow, TweenInfo.new(0.3), {Size = UDim2.new(0.9, 0, 0, 450)}):Play()
-        TweenService:Create(Background, TweenInfo.new(0.3), {BackgroundTransparency = 0.7}):Play()
-    end
-end
-
--- 打开按钮功能
-OpenButton.MouseButton1Click:Connect(function()
-    toggleMenu()
 end)
 
--- 关闭按钮功能
-CloseButton.MouseButton1Click:Connect(function()
-    permanentClose = true
-    TweenService:Create(MainWindow, TweenInfo.new(0.3), {Size = UDim2.new(0, 0, 0, 450)}):Play()
-    TweenService:Create(Background, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(OpenButton, TweenInfo.new(0.3), {BackgroundTransparency = 1, ImageTransparency = 1}):Play()
-    wait(0.3)
-    ScreenGui:Destroy()
-end)
-
--- 背景点击关闭
-Background.MouseButton1Click:Connect(function()
-    toggleMenu()
-end)
-
--- 适配手机屏幕安全区域
-local function updateSafeZone()
-    local safeArea = GuiService:GetGuiInset()
-    MainWindow.Position = UDim2.new(0.5, 0, 0.5, safeArea.Y)
-    OpenButton.Position = UDim2.new(0, 20, 0.5, -30 + safeArea.Y)
-end
-
--- 初始设置
-ScreenGui.Parent = player:WaitForChild("PlayerGui")
-updateSafeZone()
-
--- 屏幕尺寸变化时更新安全区域
-GuiService:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateSafeZone)
-
-print("📱 手机端高级功能菜单已加载！")
-print("点击屏幕左侧的蓝色按钮打开菜单")
-
--- 显示就绪状态
-StatusLabel.Visible = true
-StatusLabel.Text = "菜单加载完成"
-delay(2, function()
-    if StatusLabel then
-        StatusLabel.Visible = false
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, 
+                                     startPos.Y.Scale, startPos.Y.Offset + delta.Y)
     end
 end)
+
+-- 状态保存
+local function saveSettings()
+    local settings = {
+        windowSize = mainFrame.Size,
+        windowPosition = mainFrame.Position,
+        infiniteJumpEnabled = infiniteJumpEnabled,
+        superJumpEnabled = superJumpEnabled,
+        nightVisionEnabled = nightVisionEnabled,
+        xrayEnabled = xrayEnabled,
+        spinning = spinning,
+        spinSpeed = spinSpeed
+    }
+    -- 这里可以添加将settings保存到玩家数据的代码
+end
+
+-- 状态加载
+local function loadSettings()
+    -- 这里可以添加从玩家数据加载设置的代码
+    -- 示例: mainFrame.Size = savedSettings.windowSize
+end
+
+-- 初始化加载设置
+loadSettings()
