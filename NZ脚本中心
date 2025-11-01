@@ -1,4 +1,4 @@
--- NZ脚本中心完整版
+-- NZ脚本中心高级完整版
 -- 主作者:南烛
 
 local Players = game:GetService("Players")
@@ -10,69 +10,121 @@ local Mouse = LocalPlayer:GetMouse()
 
 -- 创建主屏幕GUI
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "NZScriptCenter"
+ScreenGui.Name = "NZScriptCenterPremium"
 ScreenGui.Parent = game.CoreGui
 
--- 创建卡密验证界面
+-- 创建高级卡密验证界面
 local KeyFrame = Instance.new("Frame")
 KeyFrame.Name = "KeyFrame"
-KeyFrame.Size = UDim2.new(0, 400, 0, 250)
-KeyFrame.Position = UDim2.new(0.5, -200, 0.5, -125)
-KeyFrame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.3)
+KeyFrame.Size = UDim2.new(0, 500, 0, 350)
+KeyFrame.Position = UDim2.new(0.5, -250, 0.5, -175)
+KeyFrame.BackgroundColor3 = Color3.new(0.08, 0.08, 0.16)
 KeyFrame.BorderSizePixel = 0
 KeyFrame.Parent = ScreenGui
+
+-- 3D卡片效果
+local CardEffect = Instance.new("ImageLabel")
+CardEffect.Name = "CardEffect"
+CardEffect.Size = UDim2.new(1, 0, 1, 0)
+CardEffect.Image = "rbxassetid://5553946656"
+CardEffect.ImageColor3 = Color3.new(0.2, 0, 0.4)
+CardEffect.ScaleType = Enum.ScaleType.Slice
+CardEffect.SliceCenter = Rect.new(24, 24, 24, 24)
+CardEffect.Parent = KeyFrame
+
+-- 动态光影效果
+local LightEffect = Instance.new("ImageLabel")
+LightEffect.Name = "LightEffect"
+LightEffect.Size = UDim2.new(1, 0, 1, 0)
+LightEffect.Image = "rbxassetid://4965711615"
+LightEffect.ImageTransparency = 0.8
+LightEffect.BackgroundTransparency = 1
+LightEffect.Parent = KeyFrame
 
 -- 卡密验证标题
 local KeyTitle = Instance.new("TextLabel")
 KeyTitle.Name = "KeyTitle"
-KeyTitle.Text = "NZ脚本中心 - 卡密验证"
-KeyTitle.Size = UDim2.new(1, 0, 0, 40)
-KeyTitle.Position = UDim2.new(0, 0, 0, 10)
+KeyTitle.Text = "NZ脚本中心 - 安全验证"
+KeyTitle.Size = UDim2.new(1, 0, 0, 60)
+KeyTitle.Position = UDim2.new(0, 0, 0, 20)
 KeyTitle.BackgroundTransparency = 1
 KeyTitle.TextColor3 = Color3.new(1, 1, 1)
-KeyTitle.TextSize = 24
-KeyTitle.Font = Enum.Font.SourceSansBold
+KeyTitle.TextSize = 32
+KeyTitle.Font = Enum.Font.GothamBold
 KeyTitle.Parent = KeyFrame
+
+-- 作者留言
+local AuthorMessage = Instance.new("TextLabel")
+AuthorMessage.Name = "AuthorMessage"
+AuthorMessage.Text = "欢迎使用本脚本！为确保脚本功能稳定及账号安全，严禁将脚本配套的卡密外传或分享给他人，违规可能导致卡密失效，感谢你的配合！"
+AuthorMessage.Size = UDim2.new(0.9, 0, 0, 80)
+AuthorMessage.Position = UDim2.new(0.05, 0, 0.15, 0)
+AuthorMessage.BackgroundTransparency = 1
+AuthorMessage.TextColor3 = Color3.new(1, 1, 0.5)
+AuthorMessage.TextSize = 16
+AuthorMessage.TextWrapped = true
+AuthorMessage.Parent = KeyFrame
 
 -- 卡密输入框
 local KeyInput = Instance.new("TextBox")
 KeyInput.Name = "KeyInput"
-KeyInput.PlaceholderText = "请输入正确的卡密"
-KeyInput.Size = UDim2.new(0.8, 0, 0, 40)
-KeyInput.Position = UDim2.new(0.1, 0, 0.3, 0)
-KeyInput.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
+KeyInput.PlaceholderText = "请输入您的卡密"
+KeyInput.Size = UDim2.new(0.8, 0, 0, 50)
+KeyInput.Position = UDim2.new(0.1, 0, 0.4, 0)
+KeyInput.BackgroundColor3 = Color3.new(0.15, 0.15, 0.25)
 KeyInput.TextColor3 = Color3.new(1, 1, 1)
-KeyInput.TextSize = 18
-KeyInput.Font = Enum.Font.SourceSans
+KeyInput.TextSize = 20
+KeyInput.Font = Enum.Font.Gotham
 KeyInput.Parent = KeyFrame
+
+-- 输入框发光效果
+local InputGlow = Instance.new("Frame")
+InputGlow.Name = "InputGlow"
+InputGlow.Size = UDim2.new(1, 6, 1, 6)
+InputGlow.Position = UDim2.new(0, -3, 0, -3)
+InputGlow.BackgroundColor3 = Color3.new(0, 0.5, 1)
+InputGlow.BorderSizePixel = 0
+InputGlow.ZIndex = -1
+InputGlow.Parent = KeyInput
 
 -- 验证按钮
 local VerifyButton = Instance.new("TextButton")
 VerifyButton.Name = "VerifyButton"
-VerifyButton.Text = "验证卡密"
-VerifyButton.Size = UDim2.new(0.6, 0, 0, 40)
-VerifyButton.Position = UDim2.new(0.2, 0, 0.5, 0)
+VerifyButton.Text = "验 证"
+VerifyButton.Size = UDim2.new(0.6, 0, 0, 50)
+VerifyButton.Position = UDim2.new(0.2, 0, 0.6, 0)
 VerifyButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.6)
 VerifyButton.TextColor3 = Color3.new(1, 1, 1)
+VerifyButton.TextSize = 22
+VerifyButton.Font = Enum.Font.GothamBold
 VerifyButton.Parent = KeyFrame
 
--- QQ群信息
+-- 按钮悬浮效果
+VerifyButton.MouseEnter:Connect(function()
+    TweenService:Create(VerifyButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.new(0.3, 0.3, 0.8)}):Play()
+end)
+
+VerifyButton.MouseLeave:Connect(function()
+    TweenService:Create(VerifyButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.new(0.2, 0.2, 0.6)}):Play()
+end)
+
+-- 群信息
 local GroupInfo = Instance.new("TextLabel")
 GroupInfo.Name = "GroupInfo"
-GroupInfo.Text = "进入🐧QQ群:813128648 获取卡密"
+GroupInfo.Text = "进入QQ群:813128648 获取卡密"
 GroupInfo.Size = UDim2.new(1, 0, 0, 30)
-GroupInfo.Position = UDim2.new(0, 0, 0.7, 0)
+GroupInfo.Position = UDim2.new(0, 0, 0.8, 0)
 GroupInfo.BackgroundTransparency = 1
 GroupInfo.TextColor3 = Color3.new(0.8, 0.8, 1)
-GroupInfo.TextSize = 16
+GroupInfo.TextSize = 18
 GroupInfo.Parent = KeyFrame
 
 -- 复制群号按钮
 local CopyButton = Instance.new("TextButton")
 CopyButton.Name = "CopyButton"
 CopyButton.Text = "复制群号"
-CopyButton.Size = UDim2.new(0.4, 0, 0, 30)
-CopyButton.Position = UDim2.new(0.3, 0, 0.8, 0)
+CopyButton.Size = UDim2.new(0.4, 0, 0, 35)
+CopyButton.Position = UDim2.new(0.3, 0, 0.85, 0)
 CopyButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
 CopyButton.TextColor3 = Color3.new(1, 1, 1)
 CopyButton.Parent = KeyFrame
@@ -80,30 +132,36 @@ CopyButton.Parent = KeyFrame
 -- 创建主弹窗
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 600, 0, 500)
-MainFrame.Position = UDim2.new(0.5, -300, 0.5, -250)
+MainFrame.Size = UDim2.new(0, 650, 0, 550)
+MainFrame.Position = UDim2.new(0.5, -325, 0.5, -275)
 MainFrame.BackgroundColor3 = Color3.new(0.05, 0.05, 0.15)
-MainFrame.BorderSizePixel = 2
-MainFrame.BorderColor3 = Color3.new(1, 0, 0)
+MainFrame.BorderSizePixel = 0
 MainFrame.Visible = false
 MainFrame.Parent = ScreenGui
 
--- 边框发光效果
-local Glow = Instance.new("ImageLabel")
-Glow.Name = "Glow"
-Glow.Size = UDim2.new(1, 10, 1, 10)
-Glow.Position = UDim2.new(0, -5, 0, -5)
-Glow.BackgroundTransparency = 1
-Glow.Image = "rbxassetid://5028857084"
-Glow.ImageColor3 = Color3.new(0, 0.5, 1)
-Glow.ScaleType = Enum.ScaleType.Slice
-Glow.SliceCenter = Rect.new(24, 24, 24, 24)
-Glow.Parent = MainFrame
+-- 3D卡片效果
+local MainCardEffect = Instance.new("ImageLabel")
+MainCardEffect.Name = "MainCardEffect"
+MainCardEffect.Size = UDim2.new(1, 0, 1, 0)
+MainCardEffect.Image = "rbxassetid://5553946656"
+MainCardEffect.ImageColor3 = Color3.new(0.1, 0.1, 0.3)
+MainCardEffect.ScaleType = Enum.ScaleType.Slice
+MainCardEffect.SliceCenter = Rect.new(24, 24, 24, 24)
+MainCardEffect.Parent = MainFrame
+
+-- 动态光影效果
+local MainLightEffect = Instance.new("ImageLabel")
+MainLightEffect.Name = "MainLightEffect"
+MainLightEffect.Size = UDim2.new(1, 0, 1, 0)
+MainLightEffect.Image = "rbxassetid://4965711615"
+MainLightEffect.ImageTransparency = 0.85
+MainLightEffect.BackgroundTransparency = 1
+MainLightEffect.Parent = MainFrame
 
 -- 标题栏
 local TitleBar = Instance.new("Frame")
 TitleBar.Name = "TitleBar"
-TitleBar.Size = UDim2.new(1, 0, 0, 40)
+TitleBar.Size = UDim2.new(1, 0, 0, 45)
 TitleBar.BackgroundColor3 = Color3.new(0.1, 0.1, 0.3)
 TitleBar.Parent = MainFrame
 
@@ -111,12 +169,12 @@ TitleBar.Parent = MainFrame
 local TitleText = Instance.new("TextLabel")
 TitleText.Name = "TitleText"
 TitleText.Text = "NZ脚本中心"
-TitleText.Size = UDim2.new(0, 150, 1, 0)
-TitleText.Position = UDim2.new(0, 10, 0, 0)
+TitleText.Size = UDim2.new(0, 180, 1, 0)
+TitleText.Position = UDim2.new(0, 15, 0, 0)
 TitleText.BackgroundTransparency = 1
 TitleText.TextColor3 = Color3.new(1, 1, 1)
-TitleText.TextSize = 24
-TitleText.Font = Enum.Font.SourceSansBold
+TitleText.TextSize = 26
+TitleText.Font = Enum.Font.GothamBold
 TitleText.TextXAlignment = Enum.TextXAlignment.Left
 TitleText.Parent = TitleBar
 
@@ -124,18 +182,19 @@ TitleText.Parent = TitleBar
 local MinimizeButton = Instance.new("TextButton")
 MinimizeButton.Name = "MinimizeButton"
 MinimizeButton.Text = "-"
-MinimizeButton.Size = UDim2.new(0, 30, 0, 30)
-MinimizeButton.Position = UDim2.new(1, -70, 0, 5)
+MinimizeButton.Size = UDim2.new(0, 35, 0, 35)
+MinimizeButton.Position = UDim2.new(1, -85, 0, 5)
 MinimizeButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
 MinimizeButton.TextColor3 = Color3.new(1, 1, 1)
+MinimizeButton.ZIndex = 2
 MinimizeButton.Parent = TitleBar
 
 -- 关闭按钮
 local CloseButton = Instance.new("TextButton")
 CloseButton.Name = "CloseButton"
 CloseButton.Text = "×"
-CloseButton.Size = UDim2.new(0, 30, 0, 30)
-CloseButton.Position = UDim2.new(1, -35, 0, 5)
+CloseButton.Size = UDim2.new(0, 35, 0, 35)
+CloseButton.Position = UDim2.new(1, -45, 0, 5)
 CloseButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
 CloseButton.TextColor3 = Color3.new(1, 1, 1)
 CloseButton.Parent = TitleBar
@@ -144,7 +203,7 @@ CloseButton.Parent = TitleBar
 local RestoreButton = Instance.new("TextButton")
 RestoreButton.Name = "RestoreButton"
 RestoreButton.Text = "NZ脚本中心"
-RestoreButton.Size = UDim2.new(0, 150, 0, 30)
+RestoreButton.Size = UDim2.new(0, 200, 0, 40)
 RestoreButton.Position = UDim2.new(0, 40, 0, 5)
 RestoreButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.3)
 RestoreButton.TextColor3 = Color3.new(1, 1, 1)
@@ -159,24 +218,33 @@ DragHandle.Size = UDim2.new(0, 25, 0, 25)
 DragHandle.Position = UDim2.new(0, 5, 0, 5)
 DragHandle.BackgroundTransparency = 1
 DragHandle.TextColor3 = Color3.new(1, 1, 1)
+DragHandle.TextSize = 24
 DragHandle.Parent = RestoreButton
 
--- 边框发光效果
-local RestoreGlow = Instance.new("ImageLabel")
-RestoreGlow.Name = "RestoreGlow"
-RestoreGlow.Size = UDim2.new(1, 10, 1, 10)
-RestoreGlow.Position = UDim2.new(0, -5, 0, -5)
-RestoreGlow.BackgroundTransparency = 1
-RestoreGlow.Image = "rbxassetid://5028857084"
-RestoreGlow.ScaleType = Enum.ScaleType.Slice
-RestoreGlow.SliceCenter = Rect.new(24, 24, 24, 24)
-RestoreGlow.Parent = RestoreButton
+-- 3D卡片效果
+local RestoreCardEffect = Instance.new("ImageLabel")
+RestoreCardEffect.Name = "RestoreCardEffect"
+RestoreCardEffect.Size = UDim2.new(1, 0, 1, 0)
+RestoreCardEffect.Image = "rbxassetid://5553946656"
+RestoreCardEffect.ImageColor3 = Color3.new(0.1, 0.1, 0.3)
+RestoreCardEffect.ScaleType = Enum.ScaleType.Slice
+RestoreCardEffect.SliceCenter = Rect.new(24, 24, 24, 24)
+RestoreCardEffect.Parent = RestoreButton
+
+-- 动态光影效果
+local RestoreLightEffect = Instance.new("ImageLabel")
+RestoreLightEffect.Name = "RestoreLightEffect"
+RestoreLightEffect.Size = UDim2.new(1, 0, 1, 0)
+RestoreLightEffect.Image = "rbxassetid://4965711615"
+RestoreLightEffect.ImageTransparency = 0.85
+RestoreLightEffect.BackgroundTransparency = 1
+RestoreLightEffect.Parent = RestoreButton
 
 -- 左侧导航栏
 local NavBar = Instance.new("Frame")
 NavBar.Name = "NavBar"
-NavBar.Size = UDim2.new(0, 120, 1, -40)
-NavBar.Position = UDim2.new(0, 0, 0, 40)
+NavBar.Size = UDim2.new(0, 140, 1, -45)
+NavBar.Position = UDim2.new(0, 0, 0, 45)
 NavBar.BackgroundColor3 = Color3.new(0.07, 0.07, 0.17)
 NavBar.Parent = MainFrame
 
@@ -193,27 +261,55 @@ NavDivider.Parent = NavBar
 local GeneralButton = Instance.new("TextButton")
 GeneralButton.Name = "GeneralButton"
 GeneralButton.Text = "通用功能"
-GeneralButton.Size = UDim2.new(1, -10, 0, 40)
+GeneralButton.Size = UDim2.new(1, -10, 0, 45)
 GeneralButton.Position = UDim2.new(0, 5, 0, 10)
 GeneralButton.BackgroundColor3 = Color3.new(0.15, 0.15, 0.3)
 GeneralButton.TextColor3 = Color3.new(1, 1, 1)
+GeneralButton.TextSize = 18
+GeneralButton.Font = Enum.Font.Gotham
 GeneralButton.Parent = NavBar
+
+-- 开发人员按钮
+local DeveloperButton = Instance.new("TextButton")
+DeveloperButton.Name = "DeveloperButton"
+DeveloperButton.Text = "开发人员"
+DeveloperButton.Size = UDim2.new(1, -10, 0, 45)
+DeveloperButton.Position = UDim2.new(0, 5, 0, 65)
+DeveloperButton.BackgroundColor3 = Color3.new(0.15, 0.15, 0.3)
+DeveloperButton.TextColor3 = Color3.new(1, 1, 1)
+DeveloperButton.TextSize = 18
+DeveloperButton.Font = Enum.Font.Gotham
+DeveloperButton.Parent = NavBar
 
 -- ESP功能按钮
 local ESPButton = Instance.new("TextButton")
 ESPButton.Name = "ESPButton"
 ESPButton.Text = "ESP功能"
-ESPButton.Size = UDim2.new(1, -10, 0, 40)
-ESPButton.Position = UDim2.new(0, 5, 0, 60)
+ESPButton.Size = UDim2.new(1, -10, 0, 45)
+ESPButton.Position = UDim2.new(0, 5, 0, 120)
 ESPButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
 ESPButton.TextColor3 = Color3.new(1, 1, 1)
+ESPButton.TextSize = 18
+ESPButton.Font = Enum.Font.Gotham
 ESPButton.Parent = NavBar
+
+-- 其他脚本按钮
+local OtherScriptsButton = Instance.new("TextButton")
+OtherScriptsButton.Name = "OtherScriptsButton"
+OtherScriptsButton.Text = "其他脚本"
+OtherScriptsButton.Size = UDim2.new(1, -10, 0, 45)
+OtherScriptsButton.Position = UDim2.new(0, 5, 0, 175)
+OtherScriptsButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+OtherScriptsButton.TextColor3 = Color3.new(1, 1, 1)
+OtherScriptsButton.TextSize = 18
+OtherScriptsButton.Font = Enum.Font.Gotham
+OtherScriptsButton.Parent = NavBar
 
 -- 内容区域
 local ContentFrame = Instance.new("Frame")
 ContentFrame.Name = "ContentFrame"
-ContentFrame.Size = UDim2.new(1, -130, 1, -50)
-ContentFrame.Position = UDim2.new(0, 125, 0, 45)
+ContentFrame.Size = UDim2.new(1, -150, 1, -50)
+ContentFrame.Position = UDim2.new(0, 145, 0, 50)
 ContentFrame.BackgroundTransparency = 1
 ContentFrame.Parent = MainFrame
 
@@ -250,7 +346,7 @@ local InfiniteJumpButton = Instance.new("TextButton")
 InfiniteJumpButton.Name = "InfiniteJumpButton"
 InfiniteJumpButton.Text = "无限跳跃"
 InfiniteJumpButton.Size = UDim2.new(1, 0, 0, 40)
-InfiniteJumpButton.Position = UDim2.new(0, 0, 0, 120)
+InfiniteJumpButton.Position = UDim2.new(0, 0, 0, 110)
 InfiniteJumpButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
 InfiniteJumpButton.TextColor3 = Color3.new(1, 1, 1)
 InfiniteJumpButton.Parent = GeneralFrame
@@ -264,6 +360,27 @@ FlightButton.Position = UDim2.new(0, 0, 0, 160)
 FlightButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
 FlightButton.TextColor3 = Color3.new(1, 1, 1)
 FlightButton.Parent = GeneralFrame
+
+-- 开发人员页面
+local DeveloperFrame = Instance.new("Frame")
+DeveloperFrame.Name = "DeveloperFrame"
+DeveloperFrame.Size = UDim2.new(1, 0, 1, 0)
+DeveloperFrame.BackgroundTransparency = 1
+DeveloperFrame.Visible = false
+DeveloperFrame.Parent = ContentFrame
+
+-- 开发人员列表
+local DeveloperList = Instance.new("TextLabel")
+DeveloperList.Name = "DeveloperList"
+DeveloperList.Text = "主作者:南烛\n副作者:逍遥\n经理:深拥情话梦一场\n代理:孙笑川\n代理:以后\n代理:星云\n星云大号:相信"
+DeveloperList.Size = UDim2.new(1, 0, 1, 0)
+DeveloperList.Position = UDim2.new(0, 0, 0, 0)
+DeveloperList.BackgroundTransparency = 1
+DeveloperList.TextColor3 = Color3.new(1, 1, 1)
+DeveloperList.TextSize = 18
+DeveloperList.TextXAlignment = Enum.TextXAlignment.Left
+DeveloperList.TextYAlignment = Enum.TextYAlignment.Top
+DeveloperList.Parent = DeveloperFrame
 
 -- ESP功能页面
 local ESPFrame = Instance.new("Frame")
@@ -292,6 +409,54 @@ TeamDetectToggle.Position = UDim2.new(0, 0, 0, 60)
 TeamDetectToggle.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
 TeamDetectToggle.TextColor3 = Color3.new(1, 1, 1)
 TeamDetectToggle.Parent = ESPFrame
+
+-- 其他脚本页面
+local OtherScriptsFrame = Instance.new("Frame")
+OtherScriptsFrame.Name = "OtherScriptsFrame"
+OtherScriptsFrame.Size = UDim2.new(1, 0, 1, 0)
+OtherScriptsFrame.BackgroundTransparency = 1
+OtherScriptsFrame.Visible = false
+OtherScriptsFrame.Parent = ContentFrame
+
+-- SN.hub脚本按钮
+local SNHubButton = Instance.new("TextButton")
+SNHubButton.Name = "SNHubButton"
+SNHubButton.Text = "SN.hub"
+SNHubButton.Size = UDim2.new(1, 0, 0, 40)
+SNHubButton.Position = UDim2.new(0, 0, 0, 10)
+SNHubButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
+SNHubButton.TextColor3 = Color3.new(1, 1, 1)
+SNHubButton.Parent = OtherScriptsFrame
+
+-- 叶脚本按钮
+local YeScriptButton = Instance.new("TextButton")
+YeScriptButton.Name = "YeScriptButton"
+YeScriptButton.Text = "叶脚本"
+YeScriptButton.Size = UDim2.new(1, 0, 0, 40)
+YeScriptButton.Position = UDim2.new(0, 0, 0, 60)
+YeScriptButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
+YeScriptButton.TextColor3 = Color3.new(1, 1, 1)
+YeScriptButton.Parent = OtherScriptsFrame
+
+-- 天脚本按钮
+local TianScriptButton = Instance.new("TextButton")
+TianScriptButton.Name = "TianScriptButton"
+TianScriptButton.Text = "天脚本"
+TianScriptButton.Size = UDim2.new(1, 0, 0, 40)
+TianScriptButton.Position = UDim2.new(0, 0, 0, 110)
+TianScriptButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
+TianScriptButton.TextColor3 = Color3.new(1, 1, 1)
+TianScriptButton.Parent = OtherScriptsFrame
+
+-- TX.退休脚本按钮
+local TXRetireButton = Instance.new("TextButton")
+TXRetireButton.Name = "TXRetireButton"
+TXRetireButton.Text = "TX.退休"
+TXRetireButton.Size = UDim2.new(1, 0, 0, 40)
+TXRetireButton.Position = UDim2.new(0, 0, 0, 160)
+TXRetireButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
+TXRetireButton.TextColor3 = Color3.new(1, 1, 1)
+TXRetireButton.Parent = OtherScriptsFrame
 
 -- 状态提示
 local StatusText = Instance.new("TextLabel")
@@ -397,18 +562,50 @@ end)
 -- 导航按钮功能
 GeneralButton.MouseButton1Click:Connect(function()
     GeneralFrame.Visible = true
+    DeveloperFrame.Visible = false
     ESPFrame.Visible = false
+    OtherScriptsFrame.Visible = false
     GeneralButton.BackgroundColor3 = Color3.new(0.15, 0.15, 0.3)
+    DeveloperButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
     ESPButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    OtherScriptsButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
     StatusText.Text = "切换到通用功能"
+end)
+
+DeveloperButton.MouseButton1Click:Connect(function()
+    GeneralFrame.Visible = false
+    DeveloperFrame.Visible = true
+    ESPFrame.Visible = false
+    OtherScriptsFrame.Visible = false
+    GeneralButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    DeveloperButton.BackgroundColor3 = Color3.new(0.15, 0.15, 0.3)
+    ESPButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    OtherScriptsButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    StatusText.Text = "切换到开发人员信息"
 end)
 
 ESPButton.MouseButton1Click:Connect(function()
     GeneralFrame.Visible = false
+    DeveloperFrame.Visible = false
     ESPFrame.Visible = true
+    OtherScriptsFrame.Visible = false
     GeneralButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    DeveloperButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
     ESPButton.BackgroundColor3 = Color3.new(0.15, 0.15, 0.3)
+    OtherScriptsButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
     StatusText.Text = "切换到ESP功能"
+end)
+
+OtherScriptsButton.MouseButton1Click:Connect(function()
+    GeneralFrame.Visible = false
+    DeveloperFrame.Visible = false
+    ESPFrame.Visible = false
+    OtherScriptsFrame.Visible = true
+    GeneralButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    DeveloperButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    ESPButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    OtherScriptsButton.BackgroundColor3 = Color3.new(0.15, 0.15, 0.3)
+    StatusText.Text = "切换到其他脚本"
 end)
 
 -- 更新ESP显示
@@ -480,6 +677,104 @@ TeamDetectToggle.MouseButton1Click:Connect(function()
     end
 end)
 
+-- 快速旋转功能
+FastSpinButton.MouseButton1Click:Connect(function()
+    StatusText.Text = "快速旋转已激活"
+    
+    local function startFastSpin(character)
+        local humanoid = character:WaitForChild("Humanoid")
+        humanoid.AutoRotate = false
+        
+        local connection = game:GetService("RunService").Heartbeat:Connect(function()
+            if humanoid and humanoid.Parent then
+                humanoid.RootPart.CFrame = humanoid.RootPart.CFrame * CFrame.Angles(0, math.rad(50), 0)
+            end
+        end)
+        
+        table.insert(activeFunctions, connection)
+    end
+    
+    LocalPlayer.CharacterAdded:Connect(startFastSpin)
+    
+    if LocalPlayer.Character then
+        startFastSpin(LocalPlayer.Character)
+    end
+end)
+
+-- 极速旋转功能
+SuperSpinButton.MouseButton1Click:Connect(function()
+    StatusText.Text = "极速旋转已激活"
+    
+    local function startSuperSpin(character)
+        local humanoid = character:WaitForChild("Humanoid")
+        humanoid.AutoRotate = false
+        
+        local connection = game:GetService("RunService").Heartbeat:Connect(function()
+            if humanoid and humanoid.Parent then
+                humanoid.RootPart.CFrame = humanoid.RootPart.CFrame * CFrame.Angles(0, math.rad(100), 0)
+            end
+        end)
+        
+        table.insert(activeFunctions, connection)
+    end
+    
+    LocalPlayer.CharacterAdded:Connect(startSuperSpin)
+    
+    if LocalPlayer.Character then
+        startSuperSpin(LocalPlayer.Character)
+    end
+end)
+
+-- 无限跳功能
+InfiniteJumpButton.MouseButton1Click:Connect(function()
+    StatusText.Text = "无限跳跃已激活"
+    
+    local function startInfiniteJump(character)
+        local humanoid = character:WaitForChild("Humanoid")
+        
+        local connection = UserInputService.JumpRequest:Connect(function()
+            humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        end)
+        
+        table.insert(activeFunctions, connection)
+    end
+    
+    LocalPlayer.CharacterAdded:Connect(startInfiniteJump)
+    
+    if LocalPlayer.Character then
+        startInfiniteJump(LocalPlayer.Character)
+    end
+end)
+
+-- 飞行功能
+FlightButton.MouseButton1Click:Connect(function()
+    StatusText.Text = "正在加载飞行脚本..."
+    loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Invinicible-Flight-R15-45414"))()
+end)
+
+-- 其他脚本功能
+SNHubButton.MouseButton1Click:Connect(function()
+    StatusText.Text = "正在加载SN.hub脚本..."
+    loadstring("\108\111\97\100\115\116\114\105\110\103\40\103\97\109\101\58\72\116\116\112\71\101\116\40\34\104\116\116\112\115\58\47\47\114\97\119\46\103\105\116\104\117\98\117\115\101\114\99\111\110\116\101\110\116\46\99\111\109\47\120\105\97\110\105\110\103\49\53\49\47\83\78\72\85\66\47\109\97\105\110\47\83\78\104\117\98\46\108\117\97\34\41\41\40\41")()
+end)
+
+YeScriptButton.MouseButton1Click:Connect(function()
+    StatusText.Text = "正在加载叶脚本..."
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/roblox-ye/QQ515966991/refs/heads/main/ROBLOX-CNVIP-XIAOYE.lua"))()
+end)
+
+TianScriptButton.MouseButton1Click:Connect(function()
+    StatusText.Text = "正在加载天脚本..."
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/lyyanai/tianscript/refs/heads/main/ScriptHub.lua"))()
+end)
+
+TXRetireButton.MouseButton1Click:Connect(function()
+    StatusText.Text = "正在加载TX.退休脚本..."
+    TX = "脚本群:160369111"
+    Script = "Free永久免费"
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/JsYb666/TX-Free-YYDS/refs/heads/main/FREE-TX-TEAM"))()
+end)
+
 -- 玩家加入/离开时更新ESP
 Players.PlayerAdded:Connect(function(player)
     player.CharacterAdded:Connect(function(character)
@@ -517,11 +812,47 @@ end)
 
 -- 边框颜色变化效果
 spawn(function()
-    while RestoreGlow and RestoreGlow.Parent do
+    while RestoreLightEffect and RestoreLightEffect.Parent do
         for i = 0, 1, 0.01 do
-            if not RestoreGlow or not RestoreGlow.Parent then break end
-            RestoreGlow.ImageColor3 = Color3.fromHSV(i, 0.8, 1)
+            if not RestoreLightEffect or not RestoreLightEffect.Parent then break end
+            RestoreLightEffect.ImageColor3 = Color3.fromHSV(i, 0.8, 1)
             task.wait(0.05)
         end
     end
 end)
+
+-- 按钮悬浮效果
+local function setupButtonHoverEffects()
+    local buttons = {
+        GeneralButton, DeveloperButton, ESPButton, OtherScriptsButton,
+        MinimizeButton, CloseButton, CopyButton, VerifyButton,
+        FastSpinButton, SuperSpinButton, InfiniteJumpButton, FlightButton,
+        ESPToggle, TeamDetectToggle, SNHubButton, YeScriptButton,
+        TianScriptButton, TXRetireButton
+    }
+    
+    for _, button in pairs(buttons) do
+        button.MouseEnter:Connect(function()
+            TweenService:Create(button, TweenInfo.new(0.2), {
+                BackgroundColor3 = Color3.new(
+                    button.BackgroundColor3.R + 0.1,
+                    button.BackgroundColor3.G + 0.1,
+                    button.BackgroundColor3.B + 0.1
+                )
+            }):Play()
+        end)
+        
+        button.MouseLeave:Connect(function()
+            TweenService:Create(button, TweenInfo.new(0.2), {
+                BackgroundColor3 = Color3.new(
+                    button.BackgroundColor3.R - 0.1,
+                    button.BackgroundColor3.G - 0.1,
+                    button.BackgroundColor3.B - 0.1
+                )
+            }):Play()
+        end)
+    end
+end
+
+-- 初始化按钮效果
+setupButtonHoverEffects()
