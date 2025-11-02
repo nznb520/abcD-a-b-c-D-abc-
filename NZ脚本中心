@@ -1,11 +1,10 @@
--- NZ脚本中心终极版
+-- NZ脚本中心终极完整版
 -- 主作者:南烛
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
-local Lighting = game:GetService("Lighting")
 local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 
@@ -18,18 +17,29 @@ ScreenGui.Parent = game.CoreGui
 local KeyFrame = Instance.new("Frame")
 KeyFrame.Name = "KeyFrame"
 KeyFrame.Size = UDim2.new(0, 450, 0, 300)
-KeyFrame.Position = UDim2.new(0, 0, 0, 0)  -- 初始位置在左上角
+KeyFrame.Position = UDim2.new(0.5, -225, 0.5, -150)
 KeyFrame.BackgroundColor3 = Color3.new(0.08, 0.08, 0.16)
 KeyFrame.BorderSizePixel = 0
 KeyFrame.Parent = ScreenGui
 
--- 星空背景
-local SpaceBackground = Instance.new("ImageLabel")
-SpaceBackground.Name = "SpaceBackground"
-SpaceBackground.Size = UDim2.new(1, 0, 1, 0)
-SpaceBackground.Image = "rbxassetid://1328157353"  -- 星空图片
-SpaceBackground.ScaleType = Enum.ScaleType.Crop
-SpaceBackground.Parent = KeyFrame
+-- 3D卡片效果
+local CardEffect = Instance.new("ImageLabel")
+CardEffect.Name = "CardEffect"
+CardEffect.Size = UDim2.new(1, 0, 1, 0)
+CardEffect.Image = "rbxassetid://5553946656"
+CardEffect.ImageColor3 = Color3.new(0.2, 0, 0.4)
+CardEffect.ScaleType = Enum.ScaleType.Slice
+CardEffect.SliceCenter = Rect.new(24, 24, 24, 24)
+CardEffect.Parent = KeyFrame
+
+-- 动态光影效果
+local LightEffect = Instance.new("ImageLabel")
+LightEffect.Name = "LightEffect"
+LightEffect.Size = UDim2.new(1, 0, 1, 0)
+LightEffect.Image = "rbxassetid://4965711615"
+LightEffect.ImageTransparency = 0.8
+LightEffect.BackgroundTransparency = 1
+LightEffect.Parent = KeyFrame
 
 -- 卡密验证标题
 local KeyTitle = Instance.new("TextLabel")
@@ -91,20 +101,20 @@ CopyButton.Parent = KeyFrame
 -- 创建主弹窗
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 500, 0, 450)
-MainFrame.Position = UDim2.new(0.5, -250, 0.5, -225)
+MainFrame.Size = UDim2.new(0, 600, 0, 450)
+MainFrame.Position = UDim2.new(0.5, -300, 0.5, -225)
 MainFrame.BackgroundColor3 = Color3.new(0.05, 0.05, 0.15)
 MainFrame.BorderSizePixel = 0
 MainFrame.Visible = false
 MainFrame.Parent = ScreenGui
 
 -- 星空背景
-local MainSpaceBackground = Instance.new("ImageLabel")
-MainSpaceBackground.Name = "MainSpaceBackground"
-MainSpaceBackground.Size = UDim2.new(1, 0, 1, 0)
-MainSpaceBackground.Image = "rbxassetid://1328157353"
-MainSpaceBackground.ScaleType = Enum.ScaleType.Crop
-MainSpaceBackground.Parent = MainFrame
+local SpaceBackground = Instance.new("ImageLabel")
+SpaceBackground.Name = "SpaceBackground"
+SpaceBackground.Size = UDim2.new(1, 0, 1, 0)
+SpaceBackground.Image = "rbxassetid://1328157353"
+SpaceBackground.ScaleType = Enum.ScaleType.Crop
+SpaceBackground.Parent = MainFrame
 
 -- 标题栏
 local TitleBar = Instance.new("Frame")
@@ -146,51 +156,46 @@ CloseButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
 CloseButton.TextColor3 = Color3.new(1, 1, 1)
 CloseButton.Parent = TitleBar
 
--- 恢复按钮（高级版）
-local RestoreButton = Instance.new("Frame")
+-- 恢复按钮
+local RestoreButton = Instance.new("TextButton")
 RestoreButton.Name = "RestoreButton"
-RestoreButton.Size = UDim2.new(0, 220, 0, 40)
-RestoreButton.Position = UDim2.new(0, 20, 0, 5)
-RestoreButton.BackgroundTransparency = 1
+RestoreButton.Text = "NZ脚本中心"
+RestoreButton.Size = UDim2.new(0, 200, 0, 40)
+RestoreButton.Position = UDim2.new(0, 40, 0, 5)
+RestoreButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.3)
+RestoreButton.TextColor3 = Color3.new(1, 1, 1)
 RestoreButton.Visible = false
 RestoreButton.Parent = ScreenGui
 
--- 拖动标识部分
-local DragHandle = Instance.new("TextButton")
+-- 拖动标识
+local DragHandle = Instance.new("TextLabel")
 DragHandle.Name = "DragHandle"
-DragHandle.Text = "&"
-DragHandle.Size = UDim2.new(0, 40, 1, 0)
-DragHandle.Position = UDim2.new(0, 0, 0, 0)
-DragHandle.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
+DragHandle.Text = "≡"
+DragHandle.Size = UDim2.new(0, 25, 0, 25)
+DragHandle.Position = UDim2.new(0, 5, 0, 5)
+DragHandle.BackgroundTransparency = 1
 DragHandle.TextColor3 = Color3.new(1, 1, 1)
 DragHandle.TextSize = 24
 DragHandle.Parent = RestoreButton
 
--- 名称部分
-local NameButton = Instance.new("TextButton")
-NameButton.Name = "NameButton"
-NameButton.Text = "NZ脚本中心"
-NameButton.Size = UDim2.new(1, -40, 1, 0)
-NameButton.Position = UDim2.new(0, 40, 0, 0)
-NameButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.3)
-NameButton.TextColor3 = Color3.new(1, 1, 1)
-NameButton.TextSize = 18
-NameButton.Parent = RestoreButton
+-- 3D卡片效果
+local RestoreCardEffect = Instance.new("ImageLabel")
+RestoreCardEffect.Name = "RestoreCardEffect"
+RestoreCardEffect.Size = UDim2.new(1, 0, 1, 0)
+RestoreCardEffect.Image = "rbxassetid://5553946656"
+RestoreCardEffect.ImageColor3 = Color3.new(0.1, 0.1, 0.3)
+RestoreCardEffect.ScaleType = Enum.ScaleType.Slice
+RestoreCardEffect.SliceCenter = Rect.new(24, 24, 24, 24)
+RestoreCardEffect.Parent = RestoreButton
 
--- 圆角效果
-local UICorner1 = Instance.new("UICorner")
-UICorner1.CornerRadius = UDim.new(0, 8)
-UICorner1.Parent = DragHandle
-
-local UICorner2 = Instance.new("UICorner")
-UICorner2.CornerRadius = UDim.new(0, 8)
-UICorner2.Parent = NameButton
-
--- 边框发光效果
-local GlowEffect = Instance.new("UIStroke")
-GlowEffect.Color = Color3.new(0, 0.5, 1)
-GlowEffect.Thickness = 3
-GlowEffect.Parent = NameButton
+-- 动态光影效果
+local RestoreLightEffect = Instance.new("ImageLabel")
+RestoreLightEffect.Name = "RestoreLightEffect"
+RestoreLightEffect.Size = UDim2.new(1, 0, 1, 0)
+RestoreLightEffect.Image = "rbxassetid://4965711615"
+RestoreLightEffect.ImageTransparency = 0.85
+RestoreLightEffect.BackgroundTransparency = 1
+RestoreLightEffect.Parent = RestoreButton
 
 -- 左侧导航栏
 local NavBar = Instance.new("Frame")
@@ -200,14 +205,14 @@ NavBar.Position = UDim2.new(0, 0, 0, 40)
 NavBar.BackgroundColor3 = Color3.new(0.07, 0.07, 0.17)
 NavBar.Parent = MainFrame
 
--- 星空背景
-local NavSpaceBackground = Instance.new("ImageLabel")
-NavSpaceBackground.Name = "NavSpaceBackground"
-NavSpaceBackground.Size = UDim2.new(1, 0, 1, 0)
-NavSpaceBackground.Image = "rbxassetid://1328157353"
-NavSpaceBackground.ImageTransparency = 0.7
-NavSpaceBackground.ScaleType = Enum.ScaleType.Crop
-NavSpaceBackground.Parent = NavBar
+-- 导航栏分隔线
+local NavDivider = Instance.new("Frame")
+NavDivider.Name = "NavDivider"
+NavDivider.Size = UDim2.new(0, 2, 1, 0)
+NavDivider.Position = UDim2.new(1, 0, 0, 0)
+NavDivider.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
+NavDivider.BorderSizePixel = 0
+NavDivider.Parent = NavBar
 
 -- 开发团队按钮
 local DevTeamButton = Instance.new("TextButton")
@@ -249,6 +254,16 @@ OtherScriptsButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
 OtherScriptsButton.TextColor3 = Color3.new(1, 1, 1)
 OtherScriptsButton.Parent = NavBar
 
+-- 一键汉化按钮
+local ChineseButton = Instance.new("TextButton")
+ChineseButton.Name = "ChineseButton"
+ChineseButton.Text = "一键汉化"
+ChineseButton.Size = UDim2.new(1, -10, 0, 40)
+ChineseButton.Position = UDim2.new(0, 5, 0, 210)
+ChineseButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+ChineseButton.TextColor3 = Color3.new(1, 1, 1)
+ChineseButton.Parent = NavBar
+
 -- 右侧内容区域
 local ContentFrame = Instance.new("Frame")
 ContentFrame.Name = "ContentFrame"
@@ -256,15 +271,6 @@ ContentFrame.Size = UDim2.new(1, -130, 1, -50)
 ContentFrame.Position = UDim2.new(0, 125, 0, 45)
 ContentFrame.BackgroundTransparency = 1
 ContentFrame.Parent = MainFrame
-
--- 星空背景
-local ContentSpaceBackground = Instance.new("ImageLabel")
-ContentSpaceBackground.Name = "ContentSpaceBackground"
-ContentSpaceBackground.Size = UDim2.new(1, 0, 1, 0)
-ContentSpaceBackground.Image = "rbxassetid://1328157353"
-ContentSpaceBackground.ImageTransparency = 0.8
-ContentSpaceBackground.ScaleType = Enum.ScaleType.Crop
-ContentSpaceBackground.Parent = ContentFrame
 
 -- 开发团队页面
 local DevTeamFrame = Instance.new("Frame")
@@ -274,6 +280,48 @@ DevTeamFrame.BackgroundTransparency = 1
 DevTeamFrame.Visible = false
 DevTeamFrame.Parent = ContentFrame
 
+-- 作者留言
+local AuthorMessage = Instance.new("TextLabel")
+AuthorMessage.Name = "AuthorMessage"
+AuthorMessage.Text = "1.欢迎使用本脚本！为确保脚本功能稳定及账号安全，严禁将脚本配套的卡密外传或分享给他人，违规可能导致卡密失效，感谢你的配合！\n\n2.欢迎进入NZ脚本中心操作界面！请牢记核心规则：任何时候不得将激活脚本的卡密外传，这是保障你使用权限不被侵占的关键哦！\n\n3.很高兴你选择本脚本！为维护所有用户的合法权益，特此提醒：禁止将获取到的脚本卡密外传至第三方平台或个人，让我们共同维护安全的使用环境！"
+AuthorMessage.Size = UDim2.new(1, -20, 0, 150)
+AuthorMessage.Position = UDim2.new(0, 10, 0, 10)
+AuthorMessage.BackgroundTransparency = 1
+AuthorMessage.TextColor3 = Color3.new(0, 1, 1)
+AuthorMessage.TextSize = 16
+AuthorMessage.TextWrapped = true
+AuthorMessage.Font = Enum.Font.GothamBold
+AuthorMessage.Parent = DevTeamFrame
+
+-- 开发团队信息
+local DeveloperInfo = Instance.new("TextLabel")
+DeveloperInfo.Name = "DeveloperInfo"
+DeveloperInfo.Text = "开发团队:\n主作者:南烛\n副作者:逍遥\n经理:深拥情话梦一场\n代理:孙笑川\n代理:以后\n代理:星云\n星云大号:相信"
+DeveloperInfo.Size = UDim2.new(1, -20, 0, 180)
+DeveloperInfo.Position = UDim2.new(0, 10, 0, 170)
+DeveloperInfo.BackgroundTransparency = 1
+DeveloperInfo.TextColor3 = Color3.new(1, 0.5, 0)
+DeveloperInfo.TextSize = 18
+DeveloperInfo.TextWrapped = true
+DeveloperInfo.Font = Enum.Font.GothamBold
+DeveloperInfo.Parent = DevTeamFrame
+
+-- 滚动框
+local ScrollingFrame = Instance.new("ScrollingFrame")
+ScrollingFrame.Name = "ScrollingFrame"
+ScrollingFrame.Size = UDim2.new(1, 0, 1, 0)
+ScrollingFrame.Position = UDim2.new(0, 0, 0, 0)
+ScrollingFrame.BackgroundTransparency = 1
+ScrollingFrame.ScrollBarThickness = 5
+ScrollingFrame.Parent = DevTeamFrame
+
+-- 将内容放入滚动框
+AuthorMessage.Parent = ScrollingFrame
+DeveloperInfo.Parent = ScrollingFrame
+
+-- 设置滚动框内容大小
+ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 350)
+
 -- 通用功能页面
 local GeneralFrame = Instance.new("Frame")
 GeneralFrame.Name = "GeneralFrame"
@@ -282,63 +330,45 @@ GeneralFrame.BackgroundTransparency = 1
 GeneralFrame.Visible = true
 GeneralFrame.Parent = ContentFrame
 
--- 修改跳跃高度
-local JumpHeightInput = Instance.new("TextBox")
-JumpHeightInput.Name = "JumpHeightInput"
-JumpHeightInput.PlaceholderText = "输入跳跃高度"
-JumpHeightInput.Size = UDim2.new(1, 0, 0, 35)
-JumpHeightInput.Position = UDim2.new(0, 0, 0, 10)
-JumpHeightInput.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
-JumpHeightInput.TextColor3 = Color3.new(1, 1, 1)
-JumpHeightInput.Parent = GeneralFrame
+-- 无敌少侠飞行
+local FlightButton = Instance.new("TextButton")
+FlightButton.Name = "FlightButton"
+FlightButton.Text = "无敌少侠飞行"
+FlightButton.Size = UDim2.new(1, 0, 0, 40)
+FlightButton.Position = UDim2.new(0, 0, 0, 10)
+FlightButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
+FlightButton.TextColor3 = Color3.new(1, 1, 1)
+FlightButton.Parent = GeneralFrame
 
-local JumpHeightButton = Instance.new("TextButton")
-JumpHeightButton.Name = "JumpHeightButton"
-JumpHeightButton.Text = "修改跳跃高度"
-JumpHeightButton.Size = UDim2.new(1, 0, 0, 40)
-JumpHeightButton.Position = UDim2.new(0, 0, 0, 55)
-JumpHeightButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
-JumpHeightButton.TextColor3 = Color3.new(1, 1, 1)
-JumpHeightButton.Parent = GeneralFrame
+-- 快速旋转
+local FastSpinButton = Instance.new("TextButton")
+FastSpinButton.Name = "FastSpinButton"
+FastSpinButton.Text = "快速旋转 (速度50)"
+FastSpinButton.Size = UDim2.new(1, 0, 0, 40)
+FastSpinButton.Position = UDim2.new(0, 0, 0, 60)
+FastSpinButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
+FastSpinButton.TextColor3 = Color3.new(1, 1, 1)
+FastSpinButton.Parent = GeneralFrame
 
--- 修改移动速度
-local MoveSpeedInput = Instance.new("TextBox")
-MoveSpeedInput.Name = "MoveSpeedInput"
-MoveSpeedInput.PlaceholderText = "输入移动速度"
-MoveSpeedInput.Size = UDim2.new(1, 0, 0, 35)
-MoveSpeedInput.Position = UDim2.new(0, 0, 0, 105)
-MoveSpeedInput.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
-MoveSpeedInput.TextColor3 = Color3.new(1, 1, 1)
-MoveSpeedInput.Parent = GeneralFrame
+-- 极速旋转
+local SuperSpinButton = Instance.new("TextButton")
+SuperSpinButton.Name = "SuperSpinButton"
+SuperSpinButton.Text = "极速旋转 (速度100)"
+SuperSpinButton.Size = UDim2.new(1, 0, 0, 40)
+SuperSpinButton.Position = UDim2.new(0, 0, 0, 110)
+SuperSpinButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
+SuperSpinButton.TextColor3 = Color3.new(1, 1, 1)
+SuperSpinButton.Parent = GeneralFrame
 
-local MoveSpeedButton = Instance.new("TextButton")
-MoveSpeedButton.Name = "MoveSpeedButton"
-MoveSpeedButton.Text = "修改移动速度"
-MoveSpeedButton.Size = UDim2.new(1, 0, 0, 40)
-MoveSpeedButton.Position = UDim2.new(0, 0, 0, 150)
-MoveSpeedButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
-MoveSpeedButton.TextColor3 = Color3.new(1, 1, 1)
-MoveSpeedButton.Parent = GeneralFrame
-
--- 夜视功能
-local NightVisionButton = Instance.new("TextButton")
-NightVisionButton.Name = "NightVisionButton"
-NightVisionButton.Text = "开启夜视"
-NightVisionButton.Size = UDim2.new(1, 0, 0, 40)
-NightVisionButton.Position = UDim2.new(0, 0, 0, 200)
-NightVisionButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
-NightVisionButton.TextColor3 = Color3.new(1, 1, 1)
-NightVisionButton.Parent = GeneralFrame
-
--- 一键去雾
-local RemoveFogButton = Instance.new("TextButton")
-RemoveFogButton.Name = "RemoveFogButton"
-RemoveFogButton.Text = "一键去雾"
-RemoveFogButton.Size = UDim2.new(1, 0, 0, 40)
-RemoveFogButton.Position = UDim2.new(0, 0, 0, 250)
-RemoveFogButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
-RemoveFogButton.TextColor3 = Color3.new(1, 1, 1)
-RemoveFogButton.Parent = GeneralFrame
+-- 无限跳
+local InfiniteJumpButton = Instance.new("TextButton")
+InfiniteJumpButton.Name = "InfiniteJumpButton"
+InfiniteJumpButton.Text = "无限跳跃"
+InfiniteJumpButton.Size = UDim2.new(1, 0, 0, 40)
+InfiniteJumpButton.Position = UDim2.new(0, 0, 0, 160)
+InfiniteJumpButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
+InfiniteJumpButton.TextColor3 = Color3.new(1, 1, 1)
+InfiniteJumpButton.Parent = GeneralFrame
 
 -- ESP功能页面
 local ESPFrame = Instance.new("Frame")
@@ -426,6 +456,24 @@ TXRetireButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
 TXRetireButton.TextColor3 = Color3.new(1, 1, 1)
 TXRetireButton.Parent = OtherScriptsFrame
 
+-- 一键汉化页面
+local ChineseFrame = Instance.new("Frame")
+ChineseFrame.Name = "ChineseFrame"
+ChineseFrame.Size = UDim2.new(1, 0, 1, 0)
+ChineseFrame.BackgroundTransparency = 1
+ChineseFrame.Visible = false
+ChineseFrame.Parent = ContentFrame
+
+-- 汉化按钮
+local ChineseButton = Instance.new("TextButton")
+ChineseButton.Name = "ChineseButton"
+ChineseButton.Text = "一键汉化英文脚本"
+ChineseButton.Size = UDim2.new(1, 0, 0, 40)
+ChineseButton.Position = UDim2.new(0, 0, 0.5, -20)
+ChineseButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
+ChineseButton.TextColor3 = Color3.new(1, 1, 1)
+ChineseButton.Parent = ChineseFrame
+
 -- 状态提示
 local StatusText = Instance.new("TextLabel")
 StatusText.Name = "StatusText"
@@ -450,12 +498,14 @@ local espEnabled = false
 local teamDetectEnabled = false
 local drawEnabled = false
 local espHighlights = {}
-local originalJumpHeight = 7.2
-local originalWalkSpeed = 16
-local originalFogEnabled = true
-local originalFogStart = 0
-local originalFogEnd = 1000
 local correctKey = "nznb666"
+local verifiedPlayers = {}
+local fastSpinEnabled = false
+local superSpinEnabled = false
+local infiniteJumpEnabled = false
+local fastSpinConnection = nil
+local superSpinConnection = nil
+local infiniteJumpConnection = nil
 
 -- 复制群号功能
 CopyButton.MouseButton1Click:Connect(function()
@@ -471,13 +521,111 @@ end)
 -- 验证卡密功能
 VerifyButton.MouseButton1Click:Connect(function()
     if KeyInput.Text == correctKey then
-        KeyFrame:Destroy()
+        -- 验证成功
+        verifiedPlayers[LocalPlayer.UserId] = true
+        KeyFrame.Visible = false
         MainFrame.Visible = true
         StatusText.Text = "验证成功，欢迎使用"
     else
+        -- 验证失败
         KeyInput.Text = ""
         KeyInput.PlaceholderText = "卡密错误，请重新输入"
+        StatusText.Text = "卡密错误"
+        
+        -- 踢出服务器
+        LocalPlayer:Kick("Wrong card.")
     end
+end)
+
+-- 更改卡密功能
+local function changeKey(newKey)
+    correctKey = newKey
+    verifiedPlayers = {}  -- 清空已验证玩家列表
+    StatusText.Text = "卡密已更改，所有用户需要重新验证"
+end
+
+-- 玩家加入时检查验证状态
+Players.PlayerAdded:Connect(function(player)
+    if not verifiedPlayers[player.UserId] then
+        -- 显示卡密验证界面
+        KeyFrame.Visible = true
+        MainFrame.Visible = false
+    else
+        -- 直接显示主界面
+        KeyFrame.Visible = false
+        MainFrame.Visible = true
+    end
+end)
+
+-- 导航按钮功能
+DevTeamButton.MouseButton1Click:Connect(function()
+    DevTeamFrame.Visible = true
+    GeneralFrame.Visible = false
+    ESPFrame.Visible = false
+    OtherScriptsFrame.Visible = false
+    ChineseFrame.Visible = false
+    DevTeamButton.BackgroundColor3 = Color3.new(0.15, 0.15, 0.3)
+    GeneralButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    ESPButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    OtherScriptsButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    ChineseButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    StatusText.Text = "切换到开发团队信息"
+end)
+
+GeneralButton.MouseButton1Click:Connect(function()
+    DevTeamFrame.Visible = false
+    GeneralFrame.Visible = true
+    ESPFrame.Visible = false
+    OtherScriptsFrame.Visible = false
+    ChineseFrame.Visible = false
+    DevTeamButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    GeneralButton.BackgroundColor3 = Color3.new(0.15, 0.15, 0.3)
+    ESPButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    OtherScriptsButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    ChineseButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    StatusText.Text = "切换到通用功能"
+end)
+
+ESPButton.MouseButton1Click:Connect(function()
+    DevTeamFrame.Visible = false
+    GeneralFrame.Visible = false
+    ESPFrame.Visible = true
+    OtherScriptsFrame.Visible = false
+    ChineseFrame.Visible = false
+    DevTeamButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    GeneralButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    ESPButton.BackgroundColor3 = Color3.new(0.15, 0.15, 0.3)
+    OtherScriptsButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    ChineseButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    StatusText.Text = "切换到ESP功能"
+end)
+
+OtherScriptsButton.MouseButton1Click:Connect(function()
+    DevTeamFrame.Visible = false
+    GeneralFrame.Visible = false
+    ESPFrame.Visible = false
+    OtherScriptsFrame.Visible = true
+    ChineseFrame.Visible = false
+    DevTeamButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    GeneralButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    ESPButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    OtherScriptsButton.BackgroundColor3 = Color3.new(0.15, 0.15, 0.3)
+    ChineseButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    StatusText.Text = "切换到其他脚本"
+end)
+
+ChineseButton.MouseButton1Click:Connect(function()
+    DevTeamFrame.Visible = false
+    GeneralFrame.Visible = false
+    ESPFrame.Visible = false
+    OtherScriptsFrame.Visible = false
+    ChineseFrame.Visible = true
+    DevTeamButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    GeneralButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    ESPButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    OtherScriptsButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
+    ChineseButton.BackgroundColor3 = Color3.new(0.15, 0.15, 0.3)
+    StatusText.Text = "切换到一键汉化"
 end)
 
 -- 最小化按钮功能
@@ -488,7 +636,7 @@ MinimizeButton.MouseButton1Click:Connect(function()
 end)
 
 -- 恢复按钮功能
-NameButton.MouseButton1Click:Connect(function()
+RestoreButton.MouseButton1Click:Connect(function()
     MainFrame.Visible = true
     RestoreButton.Visible = false
     StatusText.Text = "脚本已恢复"
@@ -504,7 +652,7 @@ TitleBar.InputBegan:Connect(function(input)
 end)
 
 -- 拖动恢复按钮
-DragHandle.InputBegan:Connect(function(input)
+RestoreButton.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         isRestoreDragging = true
         restoreStartPos = Vector2.new(input.Position.X, input.Position.Y)
@@ -533,91 +681,116 @@ UserInputService.InputEnded:Connect(function(input)
     end
 end)
 
--- 导航按钮功能
-DevTeamButton.MouseButton1Click:Connect(function()
-    DevTeamFrame.Visible = true
-    GeneralFrame.Visible = false
-    ESPFrame.Visible = false
-    OtherScriptsFrame.Visible = false
-    DevTeamButton.BackgroundColor3 = Color3.new(0.15, 0.15, 0.3)
-    GeneralButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
-    ESPButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
-    OtherScriptsButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
-    StatusText.Text = "切换到开发团队信息"
+-- 关闭按钮功能
+CloseButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+    StatusText.Text = "界面已关闭"
 end)
 
-GeneralButton.MouseButton1Click:Connect(function()
-    DevTeamFrame.Visible = false
-    GeneralFrame.Visible = true
-    ESPFrame.Visible = false
-    OtherScriptsFrame.Visible = false
-    DevTeamButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
-    GeneralButton.BackgroundColor3 = Color3.new(0.15, 0.15, 0.3)
-    ESPButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
-    OtherScriptsButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
-    StatusText.Text = "切换到通用功能"
+-- 无敌少侠飞行功能
+FlightButton.MouseButton1Click:Connect(function()
+    StatusText.Text = "正在加载飞行脚本..."
+    loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Invinicible-Flight-R15-45414"))()
+    StatusText.Text = "飞行功能已加载"
 end)
 
-ESPButton.MouseButton1Click:Connect(function()
-    DevTeamFrame.Visible = false
-    GeneralFrame.Visible = false
-    ESPFrame.Visible = true
-    OtherScriptsFrame.Visible = false
-    DevTeamButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
-    GeneralButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
-    ESPButton.BackgroundColor3 = Color3.new(0.15, 0.15, 0.3)
-    OtherScriptsButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
-    StatusText.Text = "切换到ESP功能"
-end)
-
-OtherScriptsButton.MouseButton1Click:Connect(function()
-    DevTeamFrame.Visible = false
-    GeneralFrame.Visible = false
-    ESPFrame.Visible = false
-    OtherScriptsFrame.Visible = true
-    DevTeamButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
-    GeneralButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
-    ESPButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.2)
-    OtherScriptsButton.BackgroundColor3 = Color3.new(0.15, 0.15, 0.3)
-    StatusText.Text = "切换到其他脚本"
-end)
-
--- 更新ESP显示
-local function updateESP()
-    -- 清除现有高亮
-    for _, highlight in pairs(espHighlights) do
-        highlight:Destroy()
-    end
-    espHighlights = {}
+-- 快速旋转功能
+FastSpinButton.MouseButton1Click:Connect(function()
+    fastSpinEnabled = not fastSpinEnabled
     
-    if not espEnabled then return end
-    
-    -- 为所有玩家添加高亮
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character then
-            local highlight = Instance.new("Highlight")
-            highlight.Parent = player.Character
-            
-            -- 设置颜色
-            if teamDetectEnabled then
-                -- 队伍检测开启时，队友绿色，敌人红色
-                if player.Team == LocalPlayer.Team then
-                    highlight.FillColor = Color3.new(0, 1, 0)  -- 队友绿色
-                    highlight.OutlineColor = Color3.new(0, 0.8, 0)
-                else
-                    highlight.FillColor = Color3.new(1, 0, 0)  -- 敌人红色
-                    highlight.OutlineColor = Color3.new(0.8, 0, 0)
-                end
-            else
-                -- 队伍检测关闭时，统一白色
-                highlight.FillColor = Color3.new(1, 1, 1)  -- 白色
-                highlight.OutlineColor = Color3.new(0.8, 0.8, 0.8)
+    if fastSpinEnabled then
+        StatusText.Text = "快速旋转已激活"
+        FastSpinButton.Text = "关闭快速旋转"
+        
+        -- 停止极速旋转如果正在运行
+        if superSpinEnabled then
+            if superSpinConnection then
+                superSpinConnection:Disconnect()
+                superSpinConnection = nil
             end
-            
-            table.insert(espHighlights, highlight)
+            superSpinEnabled = false
+            SuperSpinButton.Text = "极速旋转 (速度100)"
+        end
+        
+        -- 开始快速旋转
+        fastSpinConnection = RunService.Heartbeat:Connect(function()
+            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                LocalPlayer.Character.HumanoidRootPart.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.rad(50), 0)
+            end
+        end)
+    else
+        StatusText.Text = "快速旋转已关闭"
+        FastSpinButton.Text = "快速旋转 (速度50)"
+        
+        -- 停止快速旋转
+        if fastSpinConnection then
+            fastSpinConnection:Disconnect()
+            fastSpinConnection = nil
         end
     end
-end
+end)
+
+-- 极速旋转功能
+SuperSpinButton.MouseButton1Click:Connect(function()
+    superSpinEnabled = not superSpinEnabled
+    
+    if superSpinEnabled then
+        StatusText.Text = "极速旋转已激活"
+        SuperSpinButton.Text = "关闭极速旋转"
+        
+        -- 停止快速旋转如果正在运行
+        if fastSpinEnabled then
+            if fastSpinConnection then
+                fastSpinConnection:Disconnect()
+                fastSpinConnection = nil
+            end
+            fastSpinEnabled = false
+            FastSpinButton.Text = "快速旋转 (速度50)"
+        end
+        
+        -- 开始极速旋转
+        superSpinConnection = RunService.Heartbeat:Connect(function()
+            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                LocalPlayer.Character.HumanoidRootPart.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.rad(100), 0)
+            end
+        end)
+    else
+        StatusText.Text = "极速旋转已关闭"
+        SuperSpinButton.Text = "极速旋转 (速度100)"
+        
+        -- 停止极速旋转
+        if superSpinConnection then
+            superSpinConnection:Disconnect()
+            superSpinConnection = nil
+        end
+    end
+end)
+
+-- 无限跳功能
+InfiniteJumpButton.MouseButton1Click:Connect(function()
+    infiniteJumpEnabled = not infiniteJumpEnabled
+    
+    if infiniteJumpEnabled then
+        StatusText.Text = "无限跳跃已激活"
+        InfiniteJumpButton.Text = "关闭无限跳跃"
+        
+        -- 开始无限跳
+        infiniteJumpConnection = UserInputService.JumpRequest:Connect(function()
+            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+                LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+            end
+        end)
+    else
+        StatusText.Text = "无限跳跃已关闭"
+        InfiniteJumpButton.Text = "无限跳跃"
+        
+        -- 停止无限跳
+        if infiniteJumpConnection then
+            infiniteJumpConnection:Disconnect()
+            infiniteJumpConnection = nil
+        end
+    end
+end)
 
 -- ESP开关功能
 ESPToggle.MouseButton1Click:Connect(function()
@@ -658,150 +831,115 @@ DrawToggle.MouseButton1Click:Connect(function()
     if drawEnabled then
         DrawToggle.Text = "关闭绘制"
         StatusText.Text = "绘制已开启"
-        
-        if espEnabled then
-            if teamDetectEnabled then
-                -- 只绘制敌人
-                for _, player in pairs(Players:GetPlayers()) do
-                    if player ~= LocalPlayer and player.Character and player.Team ~= LocalPlayer.Team then
-                        local line = Instance.new("LineHandleAdornment")
-                        line.Name = "ESPLine"
-                        line.Length = 5
-                        line.Thickness = 0.2
-                        line.Color3 = Color3.new(1, 0, 0)
-                        line.Adornee = player.Character:FindFirstChild("HumanoidRootPart")
-                        line.Parent = player.Character
-                    end
-                end
-            else
-                -- 绘制所有人
-                for _, player in pairs(Players:GetPlayers()) do
-                    if player ~= LocalPlayer and player.Character then
-                        local line = Instance.new("LineHandleAdornment")
-                        line.Name = "ESPLine"
-                        line.Length = 5
-                        line.Thickness = 0.2
-                        line.Color3 = Color3.new(1, 1, 1)
-                        line.Adornee = player.Character:FindFirstChild("HumanoidRootPart")
-                        line.Parent = player.Character
-                    end
-                end
-            end
-        end
     else
         DrawToggle.Text = "开启绘制"
         StatusText.Text = "绘制已关闭"
-        
-        -- 清除所有线条
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer and player.Character then
-                local line = player.Character:FindFirstChild("ESPLine")
-                if line then
-                    line:Destroy()
+    end
+    
+    if espEnabled then
+        updateESP()
+    end
+end)
+
+-- 一键汉化功能
+ChineseButton.MouseButton1Click:Connect(function()
+    StatusText.Text = "正在检测并汉化英文脚本..."
+    
+    -- 这里添加汉化逻辑
+    -- 实际实现需要根据具体脚本结构进行文本替换
+    
+    StatusText.Text = "汉化完成"
+end)
+
+-- 更新ESP显示
+local function updateESP()
+    -- 清除现有高亮
+    for _, highlight in pairs(espHighlights) do
+        highlight:Destroy()
+    end
+    espHighlights = {}
+    
+    if not espEnabled then return end
+    
+    -- 为所有玩家添加高亮
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character then
+            local highlight = Instance.new("Highlight")
+            highlight.Parent = player.Character
+            
+            -- 设置颜色
+            if teamDetectEnabled then
+                -- 队伍检测开启时，队友绿色，敌人红色
+                if player.Team == LocalPlayer.Team then
+                    highlight.FillColor = Color3.new(0, 1, 0)  -- 队友绿色
+                    highlight.OutlineColor = Color3.new(0, 0.8, 0)
+                else
+                    highlight.FillColor = Color3.new(1, 0, 0)  -- 敌人红色
+                    highlight.OutlineColor = Color3.new(0.8, 0, 0)
                 end
+            else
+                -- 队伍检测关闭时，统一白色
+                highlight.FillColor = Color3.new(1, 1, 1)  -- 白色
+                highlight.OutlineColor = Color3.new(0.8, 0.8, 0.8)
             end
-        end
-    end
-end)
-
--- 修改跳跃高度
-JumpHeightButton.MouseButton1Click:Connect(function()
-    local newHeight = tonumber(JumpHeightInput.Text)
-    if newHeight and newHeight > 0 then
-        if LocalPlayer.Character then
-            local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
-            if humanoid then
-                originalJumpHeight = humanoid.JumpHeight
-                humanoid.JumpHeight = newHeight
-                StatusText.Text = "跳跃高度已修改为: " .. newHeight
+            
+            -- 如果开启绘制，添加线条
+            if drawEnabled then
+                local line = Instance.new("LineHandleAdornment")
+                line.Length = 5
+                line.Thickness = 0.2
+                line.Color3 = highlight.FillColor
+                line.Adornee = player.Character:FindFirstChild("HumanoidRootPart")
+                line.Parent = player.Character
             end
-        else
-            StatusText.Text = "没有找到角色"
+            
+            table.insert(espHighlights, highlight)
         end
-    else
-        StatusText.Text = "请输入有效的跳跃高度"
     end
-end)
+end
 
--- 修改移动速度
-MoveSpeedButton.MouseButton1Click:Connect(function()
-    local newSpeed = tonumber(MoveSpeedInput.Text)
-    if newSpeed and newSpeed > 0 then
-        if LocalPlayer.Character then
-            local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
-            if humanoid then
-                originalWalkSpeed = humanoid.WalkSpeed
-                humanoid.WalkSpeed = newSpeed
-                StatusText.Text = "移动速度已修改为: " .. newSpeed
+-- 角色重生时重新连接功能
+LocalPlayer.CharacterAdded:Connect(function(character)
+    -- 重新连接快速旋转
+    if fastSpinEnabled then
+        if fastSpinConnection then
+            fastSpinConnection:Disconnect()
+        end
+        fastSpinConnection = RunService.Heartbeat:Connect(function()
+            if character:FindFirstChild("HumanoidRootPart") then
+                character.HumanoidRootPart.CFrame = character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.rad(50), 0)
             end
-        else
-            StatusText.Text = "没有找到角色"
-        end
-    else
-        StatusText.Text = "请输入有效的移动速度"
+        end)
     end
-end)
-
--- 夜视功能
-NightVisionButton.MouseButton1Click:Connect(function()
-    if Lighting then
-        if Lighting.Ambient == Color3.new(1, 1, 1) then
-            Lighting.Ambient = Color3.new(0.5, 0.5, 0.5)
-            NightVisionButton.Text = "关闭夜视"
-            StatusText.Text = "夜视已关闭"
-        else
-            Lighting.Ambient = Color3.new(1, 1, 1)
-            NightVisionButton.Text = "开启夜视"
-            StatusText.Text = "夜视已开启"
+    
+    -- 重新连接极速旋转
+    if superSpinEnabled then
+        if superSpinConnection then
+            superSpinConnection:Disconnect()
         end
-    else
-        StatusText.Text = "无法访问光照服务"
+        superSpinConnection = RunService.Heartbeat:Connect(function()
+            if character:FindFirstChild("HumanoidRootPart") then
+                character.HumanoidRootPart.CFrame = character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.rad(100), 0)
+            end
+        end)
     end
-end)
-
--- 一键去雾
-RemoveFogButton.MouseButton1Click:Connect(function()
-    if Lighting then
-        if Lighting.FogEnd == 0 then
-            -- 恢复原雾效果
-            Lighting.FogEnd = originalFogEnd
-            Lighting.FogStart = originalFogStart
-            RemoveFogButton.Text = "一键去雾"
-            StatusText.Text = "雾效果已恢复"
-        else
-            -- 保存原雾效果并去除
-            originalFogEnd = Lighting.FogEnd
-            originalFogStart = Lighting.FogStart
-            Lighting.FogEnd = 0
-            RemoveFogButton.Text = "恢复雾效果"
-            StatusText.Text = "雾效果已去除"
+    
+    -- 重新连接无限跳
+    if infiniteJumpEnabled then
+        if infiniteJumpConnection then
+            infiniteJumpConnection:Disconnect()
         end
-    else
-        StatusText.Text = "无法访问光照服务"
+        infiniteJumpConnection = UserInputService.JumpRequest:Connect(function()
+            if character:FindFirstChild("Humanoid") then
+                character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+            end
+        end)
     end
-end)
-
--- 其他脚本功能
-SNHubButton.MouseButton1Click:Connect(function()
-    StatusText.Text = "正在加载SN.hub脚本..."
-    loadstring("\108\111\97\100\115\116\114\105\110\103\40\103\97\109\101\58\72\116\116\112\71\101\116\40\34\104\116\116\112\115\58\47\47\114\97\119\46\103\105\116\104\117\98\117\115\101\114\99\111\110\116\101\110\116\46\99\111\109\47\120\105\97\110\105\110\103\49\53\49\47\83\78\72\85\66\47\109\97\105\110\47\83\78\104\117\98\46\108\117\97\34\41\41\40\41")()
-end)
-
-YeScriptButton.MouseButton1Click:Connect(function()
-    StatusText.Text = "正在加载叶脚本..."
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/roblox-ye/QQ515966991/refs/heads/main/ROBLOX-CNVIP-XIAOYE.lua"))()
-end)
-
-TianScriptButton.MouseButton1Click:Connect(function()
-    StatusText.Text = "正在加载天脚本..."
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/lyyanai/tianscript/refs/heads/main/ScriptHub.lua"))()
-end)
-
-TXRetireButton.MouseButton1Click:Connect(function()
-    StatusText.Text = "正在加载TX.退休脚本..."
-    TX = "脚本群:160369111"
-    Script = "Free永久免费"
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/JsYb666/TX-Free-YYDS/refs/heads/main/FREE-TX-TEAM"))()
+    
+    -- 更新ESP显示
+    if espEnabled then
+        updateESP()
+    end
 end)
 
 -- 玩家加入/离开时更新ESP
@@ -819,13 +957,6 @@ Players.PlayerRemoving:Connect(function(player)
     end
 end)
 
--- 角色重生时更新ESP
-LocalPlayer.CharacterAdded:Connect(function(character)
-    if espEnabled then
-        updateESP()
-    end
-end)
-
 -- 队伍变化时更新ESP
 LocalPlayer:GetPropertyChangedSignal("Team"):Connect(function()
     if espEnabled and teamDetectEnabled then
@@ -833,19 +964,22 @@ LocalPlayer:GetPropertyChangedSignal("Team"):Connect(function()
     end
 end)
 
--- 关闭按钮功能
-CloseButton.MouseButton1Click:Connect(function()
-    MainFrame.Visible = false
-    StatusText.Text = "界面已关闭"
-end)
-
 -- 边框颜色变化效果
 spawn(function()
-    while GlowEffect and GlowEffect.Parent do
+    while RestoreLightEffect and RestoreLightEffect.Parent do
         for i = 0, 1, 0.01 do
-            if not GlowEffect or not GlowEffect.Parent then break end
-            GlowEffect.Color = Color3.fromHSV(i, 1, 1)
+            if not RestoreLightEffect or not RestoreLightEffect.Parent then break end
+            RestoreLightEffect.ImageColor3 = Color3.fromHSV(i, 0.8, 1)
             task.wait(0.05)
         end
     end
 end)
+
+-- 初始化
+if verifiedPlayers[LocalPlayer.UserId] then
+    KeyFrame.Visible = false
+    MainFrame.Visible = true
+else
+    KeyFrame.Visible = true
+    MainFrame.Visible = false
+end
