@@ -1,6 +1,6 @@
--- NZ脚本中心暗黑科技完整版
+-- NZ脚本中心暗黑科技终极版 - 整合悬浮球功能
 -- 主作者:南烛
--- 版本:3.0 终极版
+-- 版本:3.1 悬浮球整合版
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
@@ -24,7 +24,7 @@ local COLOR_SCHEME = {
 
 -- 创建主屏幕GUI
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "NZScriptCenterDarkTechComplete"
+ScreenGui.Name = "NZScriptCenterDarkTechUltimate"
 ScreenGui.Parent = game.CoreGui
 
 -- 创建卡密验证界面
@@ -36,10 +36,21 @@ KeyFrame.BackgroundColor3 = COLOR_SCHEME.BACKGROUND
 KeyFrame.BorderSizePixel = 0
 KeyFrame.Parent = ScreenGui
 
+-- 渐变背景效果
+local KeyFrameGradient = Instance.new("UIGradient")
+KeyFrameGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, COLOR_SCHEME.ACCENT_BLUE),
+    ColorSequenceKeypoint.new(1, COLOR_SCHEME.ACCENT_PURPLE)
+})
+KeyFrameGradient.Rotation = 45
+KeyFrameGradient.Parent = KeyFrame
+
+-- 圆角效果
 local KeyFrameCorner = Instance.new("UICorner")
 KeyFrameCorner.CornerRadius = UDim.new(0, 12)
 KeyFrameCorner.Parent = KeyFrame
 
+-- 边框效果
 local KeyFrameStroke = Instance.new("UIStroke")
 KeyFrameStroke.Color = COLOR_SCHEME.BORDER
 KeyFrameStroke.Thickness = 2
@@ -81,10 +92,12 @@ KeyInput.TextSize = 22
 KeyInput.Font = Enum.Font.Gotham
 KeyInput.Parent = KeyFrame
 
+-- 输入框圆角效果
 local KeyInputCorner = Instance.new("UICorner")
 KeyInputCorner.CornerRadius = UDim.new(0, 8)
 KeyInputCorner.Parent = KeyInput
 
+-- 输入框边框效果
 local KeyInputStroke = Instance.new("UIStroke")
 KeyInputStroke.Color = COLOR_SCHEME.ACCENT_BLUE
 KeyInputStroke.Thickness = 2
@@ -102,10 +115,12 @@ VerifyButton.TextSize = 24
 VerifyButton.Font = Enum.Font.GothamBold
 VerifyButton.Parent = KeyFrame
 
+-- 按钮圆角效果
 local VerifyButtonCorner = Instance.new("UICorner")
 VerifyButtonCorner.CornerRadius = UDim.new(0, 8)
 VerifyButtonCorner.Parent = VerifyButton
 
+-- 按钮边框效果
 local VerifyButtonStroke = Instance.new("UIStroke")
 VerifyButtonStroke.Color = COLOR_SCHEME.ACCENT_PURPLE
 VerifyButtonStroke.Thickness = 2
@@ -132,16 +147,18 @@ CopyButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
 CopyButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
 CopyButton.Parent = KeyFrame
 
+-- 按钮圆角效果
 local CopyButtonCorner = Instance.new("UICorner")
 CopyButtonCorner.CornerRadius = UDim.new(0, 8)
 CopyButtonCorner.Parent = CopyButton
 
+-- 按钮边框效果
 local CopyButtonStroke = Instance.new("UIStroke")
 CopyButtonStroke.Color = COLOR_SCHEME.BORDER
 CopyButtonStroke.Thickness = 1
 CopyButtonStroke.Parent = CopyButton
 
--- 消息发送选择弹窗
+-- 创建消息发送选择弹窗
 local MessagePrompt = Instance.new("Frame")
 MessagePrompt.Name = "MessagePrompt"
 MessagePrompt.Size = UDim2.new(0, 400, 0, 200)
@@ -151,10 +168,21 @@ MessagePrompt.BorderSizePixel = 0
 MessagePrompt.Visible = false
 MessagePrompt.Parent = ScreenGui
 
+-- 渐变背景效果
+local MessagePromptGradient = Instance.new("UIGradient")
+MessagePromptGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, COLOR_SCHEME.ACCENT_BLUE),
+    ColorSequenceKeypoint.new(1, COLOR_SCHEME.ACCENT_PURPLE)
+})
+MessagePromptGradient.Rotation = 45
+MessagePromptGradient.Parent = MessagePrompt
+
+-- 圆角效果
 local MessagePromptCorner = Instance.new("UICorner")
 MessagePromptCorner.CornerRadius = UDim.new(0, 12)
 MessagePromptCorner.Parent = MessagePrompt
 
+-- 边框效果
 local MessagePromptStroke = Instance.new("UIStroke")
 MessagePromptStroke.Color = COLOR_SCHEME.BORDER
 MessagePromptStroke.Thickness = 2
@@ -182,10 +210,12 @@ SendButton.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
 SendButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
 SendButton.Parent = MessagePrompt
 
+-- 按钮圆角效果
 local SendButtonCorner = Instance.new("UICorner")
 SendButtonCorner.CornerRadius = UDim.new(0, 8)
 SendButtonCorner.Parent = SendButton
 
+-- 按钮边框效果
 local SendButtonStroke = Instance.new("UIStroke")
 SendButtonStroke.Color = Color3.fromRGB(0, 150, 0)
 SendButtonStroke.Thickness = 2
@@ -201,10 +231,12 @@ NoSendButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
 NoSendButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
 NoSendButton.Parent = MessagePrompt
 
+-- 按钮圆角效果
 local NoSendButtonCorner = Instance.new("UICorner")
 NoSendButtonCorner.CornerRadius = UDim.new(0, 8)
 NoSendButtonCorner.Parent = NoSendButton
 
+-- 按钮边框效果
 local NoSendButtonStroke = Instance.new("UIStroke")
 NoSendButtonStroke.Color = Color3.fromRGB(150, 0, 0)
 NoSendButtonStroke.Thickness = 2
@@ -220,10 +252,22 @@ MainFrame.BorderSizePixel = 0
 MainFrame.Visible = false
 MainFrame.Parent = ScreenGui
 
+-- 渐变背景效果
+local MainFrameGradient = Instance.new("UIGradient")
+MainFrameGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, COLOR_SCHEME.ACCENT_BLUE),
+    ColorSequenceKeypoint.new(0.5, COLOR_SCHEME.ACCENT_PURPLE),
+    ColorSequenceKeypoint.new(1, COLOR_SCHEME.ACCENT_BLUE)
+})
+MainFrameGradient.Rotation = 45
+MainFrameGradient.Parent = MainFrame
+
+-- 圆角效果
 local MainFrameCorner = Instance.new("UICorner")
 MainFrameCorner.CornerRadius = UDim.new(0, 12)
 MainFrameCorner.Parent = MainFrame
 
+-- 边框效果
 local MainFrameStroke = Instance.new("UIStroke")
 MainFrameStroke.Color = COLOR_SCHEME.BORDER
 MainFrameStroke.Thickness = 2
@@ -236,9 +280,14 @@ TitleBar.Size = UDim2.new(1, 0, 0, 45)
 TitleBar.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
 TitleBar.Parent = MainFrame
 
-local TitleBarCorner = Instance.new("UICorner")
-TitleBarCorner.CornerRadius = UDim.new(0, 12, 0, 0)
-TitleBarCorner.Parent = TitleBar
+-- 标题栏渐变效果
+local TitleBarGradient = Instance.new("UIGradient")
+TitleBarGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, COLOR_SCHEME.ACCENT_BLUE),
+    ColorSequenceKeypoint.new(1, COLOR_SCHEME.ACCENT_PURPLE)
+})
+TitleBarGradient.Rotation = 0
+TitleBarGradient.Parent = TitleBar
 
 -- 标题文本
 local TitleText = Instance.new("TextLabel")
@@ -256,7 +305,7 @@ TitleText.Parent = TitleBar
 -- 作者信息
 local MainAuthorText = Instance.new("TextLabel")
 MainAuthorText.Name = "MainAuthorText"
-MainAuthorText.Text = "主作者:南烛 | 版本3.0"
+MainAuthorText.Text = "主作者:南烛 | 版本3.1"
 MainAuthorText.Size = UDim2.new(0, 180, 1, 0)
 MainAuthorText.Position = UDim2.new(0, 180, 0, 0)
 MainAuthorText.BackgroundTransparency = 1
@@ -276,10 +325,12 @@ MinimizeButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
 MinimizeButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
 MinimizeButton.Parent = TitleBar
 
+-- 按钮圆角效果
 local MinimizeButtonCorner = Instance.new("UICorner")
 MinimizeButtonCorner.CornerRadius = UDim.new(0, 8)
 MinimizeButtonCorner.Parent = MinimizeButton
 
+-- 按钮边框效果
 local MinimizeButtonStroke = Instance.new("UIStroke")
 MinimizeButtonStroke.Color = COLOR_SCHEME.BORDER
 MinimizeButtonStroke.Thickness = 1
@@ -295,14 +346,151 @@ CloseButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
 CloseButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
 CloseButton.Parent = TitleBar
 
+-- 按钮圆角效果
 local CloseButtonCorner = Instance.new("UICorner")
 CloseButtonCorner.CornerRadius = UDim.new(0, 8)
 CloseButtonCorner.Parent = CloseButton
 
+-- 按钮边框效果
 local CloseButtonStroke = Instance.new("UIStroke")
 CloseButtonStroke.Color = COLOR_SCHEME.BORDER
 CloseButtonStroke.Thickness = 1
 CloseButtonStroke.Parent = CloseButton
+
+-- 整合的悬浮球功能 - 使用您提供的代码替换原有悬浮球
+local CLOSED_IMAGE_ID = "123947581167369"  -- 关闭状态图片
+local OPENED_IMAGE_ID = "108010245085057"  -- 打开状态图片
+
+-- 创建悬浮球
+local FloatingBall = Instance.new("ImageButton")
+FloatingBall.Name = "FloatingBall"
+FloatingBall.Size = UDim2.new(0, 80, 0, 80)
+FloatingBall.Position = UDim2.new(0.5, -40, 0.8, -40)  -- 屏幕底部中央
+FloatingBall.AnchorPoint = Vector2.new(0.5, 0.5)
+FloatingBall.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+FloatingBall.BackgroundTransparency = 1
+FloatingBall.Image = "rbxassetid://" .. CLOSED_IMAGE_ID
+FloatingBall.ScaleType = Enum.ScaleType.Fit
+FloatingBall.Visible = false
+FloatingBall.Parent = ScreenGui
+
+-- 添加圆角效果
+local FloatingBallCorner = Instance.new("UICorner")
+FloatingBallCorner.CornerRadius = UDim.new(1, 0)
+FloatingBallCorner.Parent = FloatingBall
+
+-- 悬浮球边框效果
+local FloatingBallStroke = Instance.new("UIStroke")
+FloatingBallStroke.Color = COLOR_SCHEME.ACCENT_PURPLE
+FloatingBallStroke.Thickness = 2
+FloatingBallStroke.Parent = FloatingBall
+
+-- 悬浮球状态变量
+local isScriptEnabled = false
+local isDragging = false
+local dragStartPosition = Vector2.new(0, 0)
+local ballStartPosition = Vector2.new(0, 0)
+local longPressTime = 0.5  -- 长按时间阈值（秒）
+local longPressTimer = 0
+local isLongPressing = false
+
+-- 更新图片函数
+local function updateBallImage()
+    if isScriptEnabled then
+        FloatingBall.Image = "rbxassetid://" .. OPENED_IMAGE_ID
+    else
+        FloatingBall.Image = "rbxassetid://" .. CLOSED_IMAGE_ID
+    end
+end
+
+-- 平滑移动函数
+local function smoothMoveTo(position)
+    local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+    local tween = TweenService:Create(FloatingBall, tweenInfo, {Position = position})
+    tween:Play()
+end
+
+-- 输入开始处理
+FloatingBall.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+        isDragging = true
+        dragStartPosition = Vector2.new(input.Position.X, input.Position.Y)
+        ballStartPosition = Vector2.new(FloatingBall.Position.X.Offset, FloatingBall.Position.Y.Offset)
+        longPressTimer = 0
+        isLongPressing = false
+        
+        -- 开始检测长按
+        local longPressThread = coroutine.create(function()
+            while isDragging and longPressTimer < longPressTime do
+                wait(0.1)
+                longPressTimer = longPressTimer + 0.1
+            end
+            
+            if isDragging and longPressTimer >= longPressTime then
+                isLongPressing = true
+            end
+        end)
+        coroutine.resume(longPressThread)
+    end
+end)
+
+-- 输入改变处理（拖拽）
+FloatingBall.InputChanged:Connect(function(input)
+    if isDragging and isLongPressing and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then
+        local currentPosition = Vector2.new(input.Position.X, input.Position.Y)
+        local delta = currentPosition - dragStartPosition
+        
+        local newX = ballStartPosition.X + delta.X
+        local newY = ballStartPosition.Y + delta.Y
+        
+        -- 限制在屏幕范围内
+        newX = math.max(0, math.min(newX, ScreenGui.AbsoluteSize.X - FloatingBall.AbsoluteSize.X))
+        newY = math.max(0, math.min(newY, ScreenGui.AbsoluteSize.Y - FloatingBall.AbsoluteSize.Y))
+        
+        FloatingBall.Position = UDim2.new(0, newX, 0, newY)
+    end
+end)
+
+-- 输入结束处理
+FloatingBall.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+        isDragging = false
+        
+        if not isLongPressing then
+            -- 点击事件：切换脚本状态
+            isScriptEnabled = not isScriptEnabled
+            updateBallImage()
+            
+            -- 切换主界面显示/隐藏
+            if isScriptEnabled then
+                MainFrame.Visible = true
+                FloatingBall.BackgroundColor3 = COLOR_SCHEME.ACCENT_BLUE
+            else
+                MainFrame.Visible = false
+                FloatingBall.BackgroundColor3 = COLOR_SCHEME.ACCENT_PURPLE
+            end
+        end
+        
+        isLongPressing = false
+    end
+end)
+
+-- 屏幕尺寸变化时重新定位
+ScreenGui:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+    if not isDragging then
+        local currentPos = FloatingBall.Position
+        local screenSize = ScreenGui.AbsoluteSize
+        local ballSize = FloatingBall.AbsoluteSize
+        
+        -- 确保悬浮球不会超出屏幕边界
+        local newX = math.max(0, math.min(currentPos.X.Offset, screenSize.X - ballSize.X))
+        local newY = math.max(0, math.min(currentPos.Y.Offset, screenSize.Y - ballSize.Y))
+        
+        if newX ~= currentPos.X.Offset or newY ~= currentPos.Y.Offset then
+            smoothMoveTo(UDim2.new(0, newX, 0, newY))
+        end
+    end
+end)
 
 -- 左侧导航栏
 local NavBar = Instance.new("Frame")
@@ -312,6 +500,7 @@ NavBar.Position = UDim2.new(0, 0, 0, 45)
 NavBar.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
 NavBar.Parent = MainFrame
 
+-- 导航栏边框效果
 local NavBarStroke = Instance.new("UIStroke")
 NavBarStroke.Color = COLOR_SCHEME.BORDER
 NavBarStroke.Thickness = 2
@@ -327,10 +516,12 @@ DevTeamButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
 DevTeamButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
 DevTeamButton.Parent = NavBar
 
+-- 按钮圆角效果
 local DevTeamButtonCorner = Instance.new("UICorner")
 DevTeamButtonCorner.CornerRadius = UDim.new(0, 8)
 DevTeamButtonCorner.Parent = DevTeamButton
 
+-- 按钮边框效果
 local DevTeamButtonStroke = Instance.new("UIStroke")
 DevTeamButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
 DevTeamButtonStroke.Thickness = 1
@@ -346,10 +537,12 @@ GeneralButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
 GeneralButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
 GeneralButton.Parent = NavBar
 
+-- 按钮圆角效果
 local GeneralButtonCorner = Instance.new("UICorner")
 GeneralButtonCorner.CornerRadius = UDim.new(0, 8)
 GeneralButtonCorner.Parent = GeneralButton
 
+-- 按钮边框效果
 local GeneralButtonStroke = Instance.new("UIStroke")
 GeneralButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
 GeneralButtonStroke.Thickness = 1
@@ -365,10 +558,12 @@ ESPButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
 ESPButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
 ESPButton.Parent = NavBar
 
+-- 按钮圆角效果
 local ESPButtonCorner = Instance.new("UICorner")
 ESPButtonCorner.CornerRadius = UDim.new(0, 8)
 ESPButtonCorner.Parent = ESPButton
 
+-- 按钮边框效果
 local ESPButtonStroke = Instance.new("UIStroke")
 ESPButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
 ESPButtonStroke.Thickness = 1
@@ -384,10 +579,12 @@ OtherScriptsButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
 OtherScriptsButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
 OtherScriptsButton.Parent = NavBar
 
+-- 按钮圆角效果
 local OtherScriptsButtonCorner = Instance.new("UICorner")
 OtherScriptsButtonCorner.CornerRadius = UDim.new(0, 8)
 OtherScriptsButtonCorner.Parent = OtherScriptsButton
 
+-- 按钮边框效果
 local OtherScriptsButtonStroke = Instance.new("UIStroke")
 OtherScriptsButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
 OtherScriptsButtonStroke.Thickness = 1
@@ -403,10 +600,12 @@ ChineseButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
 ChineseButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
 ChineseButton.Parent = NavBar
 
+-- 按钮圆角效果
 local ChineseButtonCorner = Instance.new("UICorner")
 ChineseButtonCorner.CornerRadius = UDim.new(0, 8)
 ChineseButtonCorner.Parent = ChineseButton
 
+-- 按钮边框效果
 local ChineseButtonStroke = Instance.new("UIStroke")
 ChineseButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
 ChineseButtonStroke.Thickness = 1
@@ -422,16 +621,18 @@ PirateWarButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
 PirateWarButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
 PirateWarButton.Parent = NavBar
 
+-- 按钮圆角效果
 local PirateWarButtonCorner = Instance.new("UICorner")
 PirateWarButtonCorner.CornerRadius = UDim.new(0, 8)
 PirateWarButtonCorner.Parent = PirateWarButton
 
+-- 按钮边框效果
 local PirateWarButtonStroke = Instance.new("UIStroke")
 PirateWarButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
 PirateWarButtonStroke.Thickness = 1
 PirateWarButtonStroke.Parent = PirateWarButton
 
--- 枪战竞技场按钮（新增）
+-- 枪战竞技场按钮
 local GunArenaButton = Instance.new("TextButton")
 GunArenaButton.Name = "GunArenaButton"
 GunArenaButton.Text = "枪战竞技场"
@@ -441,10 +642,12 @@ GunArenaButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
 GunArenaButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
 GunArenaButton.Parent = NavBar
 
+-- 按钮圆角效果
 local GunArenaButtonCorner = Instance.new("UICorner")
 GunArenaButtonCorner.CornerRadius = UDim.new(0, 8)
 GunArenaButtonCorner.Parent = GunArenaButton
 
+-- 按钮边框效果
 local GunArenaButtonStroke = Instance.new("UIStroke")
 GunArenaButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
 GunArenaButtonStroke.Thickness = 1
@@ -465,7 +668,7 @@ StatusText.Text = "就绪"
 StatusText.Size = UDim2.new(1, 0, 0, 20)
 StatusText.Position = UDim2.new(0, 0, 1, -25)
 StatusText.BackgroundTransparency = 1
-StatusText.TextColor3 = Color3.new(0, 1, 0)
+StatusText.TextColor3 = Color3.fromRGB(0, 1, 0)
 StatusText.TextSize = 14
 StatusText.Font = Enum.Font.SourceSans
 StatusText.TextXAlignment = Enum.TextXAlignment.Left
@@ -482,7 +685,7 @@ DevTeamFrame.Parent = ContentFrame
 -- 作者留言
 local AuthorMessage = Instance.new("TextLabel")
 AuthorMessage.Name = "AuthorMessage"
-AuthorMessage.Text = "欢迎使用本脚本！为确保脚本功能稳定及账号安全，严禁将脚本配套的卡密外传或分享给他人，违规可能导致卡密失效，感谢你的配合！"
+AuthorMessage.Text = "欢迎使用NZ脚本中心暗黑科技版！为确保脚本功能稳定及账号安全，严禁将脚本配套的卡密外传或分享给他人，违规可能导致卡密失效，感谢你的配合！"
 AuthorMessage.Size = UDim2.new(1, -20, 0, 120)
 AuthorMessage.Position = UDim2.new(0, 10, 0, 10)
 AuthorMessage.BackgroundTransparency = 1
@@ -499,7 +702,7 @@ DeveloperInfo.Text = "开发团队:\n主作者:南烛\n副作者:逍遥\n经理:
 DeveloperInfo.Size = UDim2.new(1, -20, 0, 180)
 DeveloperInfo.Position = UDim2.new(0, 10, 0, 140)
 DeveloperInfo.BackgroundTransparency = 1
-DeveloperInfo.TextColor3 = Color3.new(1, 0.5, 0)
+DeveloperInfo.TextColor3 = Color3.fromRGB(1, 0.5, 0)
 DeveloperInfo.TextSize = 18
 DeveloperInfo.TextWrapped = true
 DeveloperInfo.Font = Enum.Font.GothamBold
@@ -513,7 +716,7 @@ GeneralFrame.BackgroundTransparency = 1
 GeneralFrame.Visible = true
 GeneralFrame.Parent = ContentFrame
 
--- 无敌少侠飞行
+-- 无敌少侠飞行按钮
 local FlightButton = Instance.new("TextButton")
 FlightButton.Name = "FlightButton"
 FlightButton.Text = "无敌少侠飞行"
@@ -523,16 +726,18 @@ FlightButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
 FlightButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
 FlightButton.Parent = GeneralFrame
 
+-- 按钮圆角效果
 local FlightButtonCorner = Instance.new("UICorner")
 FlightButtonCorner.CornerRadius = UDim.new(0, 8)
 FlightButtonCorner.Parent = FlightButton
 
+-- 按钮边框效果
 local FlightButtonStroke = Instance.new("UIStroke")
 FlightButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
 FlightButtonStroke.Thickness = 1
 FlightButtonStroke.Parent = FlightButton
 
--- 快速旋转
+-- 快速旋转按钮
 local FastSpinButton = Instance.new("TextButton")
 FastSpinButton.Name = "FastSpinButton"
 FastSpinButton.Text = "快速旋转 (速度50)"
@@ -542,16 +747,18 @@ FastSpinButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
 FastSpinButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
 FastSpinButton.Parent = GeneralFrame
 
+-- 按钮圆角效果
 local FastSpinButtonCorner = Instance.new("UICorner")
 FastSpinButtonCorner.CornerRadius = UDim.new(0, 8)
 FastSpinButtonCorner.Parent = FastSpinButton
 
+-- 按钮边框效果
 local FastSpinButtonStroke = Instance.new("UIStroke")
 FastSpinButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
 FastSpinButtonStroke.Thickness = 1
 FastSpinButtonStroke.Parent = FastSpinButton
 
--- 极速旋转
+-- 极速旋转按钮
 local SuperSpinButton = Instance.new("TextButton")
 SuperSpinButton.Name = "SuperSpinButton"
 SuperSpinButton.Text = "极速旋转 (速度100)"
@@ -561,16 +768,18 @@ SuperSpinButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
 SuperSpinButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
 SuperSpinButton.Parent = GeneralFrame
 
+-- 按钮圆角效果
 local SuperSpinButtonCorner = Instance.new("UICorner")
 SuperSpinButtonCorner.CornerRadius = UDim.new(0, 8)
 SuperSpinButtonCorner.Parent = SuperSpinButton
 
+-- 按钮边框效果
 local SuperSpinButtonStroke = Instance.new("UIStroke")
 SuperSpinButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
 SuperSpinButtonStroke.Thickness = 1
 SuperSpinButtonStroke.Parent = SuperSpinButton
 
--- 无限跳
+-- 无限跳按钮
 local InfiniteJumpButton = Instance.new("TextButton")
 InfiniteJumpButton.Name = "InfiniteJumpButton"
 InfiniteJumpButton.Text = "无限跳跃"
@@ -580,16 +789,18 @@ InfiniteJumpButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
 InfiniteJumpButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
 InfiniteJumpButton.Parent = GeneralFrame
 
+-- 按钮圆角效果
 local InfiniteJumpButtonCorner = Instance.new("UICorner")
 InfiniteJumpButtonCorner.CornerRadius = UDim.new(0, 8)
 InfiniteJumpButtonCorner.Parent = InfiniteJumpButton
 
+-- 按钮边框效果
 local InfiniteJumpButtonStroke = Instance.new("UIStroke")
 InfiniteJumpButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
 InfiniteJumpButtonStroke.Thickness = 1
 InfiniteJumpButtonStroke.Parent = InfiniteJumpButton
 
--- 夜视功能
+-- 夜视功能按钮
 local NightVisionButton = Instance.new("TextButton")
 NightVisionButton.Name = "NightVisionButton"
 NightVisionButton.Text = "夜视功能"
@@ -599,10 +810,12 @@ NightVisionButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
 NightVisionButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
 NightVisionButton.Parent = GeneralFrame
 
+-- 按钮圆角效果
 local NightVisionButtonCorner = Instance.new("UICorner")
 NightVisionButtonCorner.CornerRadius = UDim.new(0, 8)
 NightVisionButtonCorner.Parent = NightVisionButton
 
+-- 按钮边框效果
 local NightVisionButtonStroke = Instance.new("UIStroke")
 NightVisionButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
 NightVisionButtonStroke.Thickness = 1
@@ -616,7 +829,7 @@ ESPFrame.BackgroundTransparency = 1
 ESPFrame.Visible = false
 ESPFrame.Parent = ContentFrame
 
--- ESP开关
+-- ESP开关按钮
 local ESPToggle = Instance.new("TextButton")
 ESPToggle.Name = "ESPToggle"
 ESPToggle.Text = "开启ESP"
@@ -626,16 +839,18 @@ ESPToggle.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
 ESPToggle.TextColor3 = COLOR_SCHEME.TEXT_WHITE
 ESPToggle.Parent = ESPFrame
 
+-- 按钮圆角效果
 local ESPToggleCorner = Instance.new("UICorner")
 ESPToggleCorner.CornerRadius = UDim.new(0, 8)
 ESPToggleCorner.Parent = ESPToggle
 
+-- 按钮边框效果
 local ESPToggleStroke = Instance.new("UIStroke")
 ESPToggleStroke.Color = COLOR_SCHEME.ACCENT_BLUE
 ESPToggleStroke.Thickness = 1
 ESPToggleStroke.Parent = ESPToggle
 
--- 队伍检测开关
+-- 队伍检测开关按钮
 local TeamDetectToggle = Instance.new("TextButton")
 TeamDetectToggle.Name = "TeamDetectToggle"
 TeamDetectToggle.Text = "开启队伍检测"
@@ -645,10 +860,12 @@ TeamDetectToggle.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
 TeamDetectToggle.TextColor3 = COLOR_SCHEME.TEXT_WHITE
 TeamDetectToggle.Parent = ESPFrame
 
+-- 按钮圆角效果
 local TeamDetectToggleCorner = Instance.new("UICorner")
 TeamDetectToggleCorner.CornerRadius = UDim.new(0, 8)
 TeamDetectToggleCorner.Parent = TeamDetectToggle
 
+-- 按钮边框效果
 local TeamDetectToggleStroke = Instance.new("UIStroke")
 TeamDetectToggleStroke.Color = COLOR_SCHEME.ACCENT_BLUE
 TeamDetectToggleStroke.Thickness = 1
@@ -672,10 +889,12 @@ SNHubButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
 SNHubButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
 SNHubButton.Parent = OtherScriptsFrame
 
+-- 按钮圆角效果
 local SNHubButtonCorner = Instance.new("UICorner")
 SNHubButtonCorner.CornerRadius = UDim.new(0, 8)
 SNHubButtonCorner.Parent = SNHubButton
 
+-- 按钮边框效果
 local SNHubButtonStroke = Instance.new("UIStroke")
 SNHubButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
 SNHubButtonStroke.Thickness = 1
@@ -691,10 +910,12 @@ YeScriptButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
 YeScriptButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
 YeScriptButton.Parent = OtherScriptsFrame
 
+-- 按钮圆角效果
 local YeScriptButtonCorner = Instance.new("UICorner")
 YeScriptButtonCorner.CornerRadius = UDim.new(0, 8)
 YeScriptButtonCorner.Parent = YeScriptButton
 
+-- 按钮边框效果
 local YeScriptButtonStroke = Instance.new("UIStroke")
 YeScriptButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
 YeScriptButtonStroke.Thickness = 1
@@ -710,10 +931,12 @@ TianScriptButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
 TianScriptButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
 TianScriptButton.Parent = OtherScriptsFrame
 
+-- 按钮圆角效果
 local TianScriptButtonCorner = Instance.new("UICorner")
 TianScriptButtonCorner.CornerRadius = UDim.new(0, 8)
 TianScriptButtonCorner.Parent = TianScriptButton
 
+-- 按钮边框效果
 local TianScriptButtonStroke = Instance.new("UIStroke")
 TianScriptButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
 TianScriptButtonStroke.Thickness = 1
@@ -729,10 +952,12 @@ TXRetireButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
 TXRetireButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
 TXRetireButton.Parent = OtherScriptsFrame
 
+-- 按钮圆角效果
 local TXRetireButtonCorner = Instance.new("UICorner")
 TXRetireButtonCorner.CornerRadius = UDim.new(0, 8)
 TXRetireButtonCorner.Parent = TXRetireButton
 
+-- 按钮边框效果
 local TXRetireButtonStroke = Instance.new("UIStroke")
 TXRetireButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
 TXRetireButtonStroke.Thickness = 1
@@ -756,10 +981,12 @@ ChineseButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
 ChineseButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
 ChineseButton.Parent = ChineseFrame
 
+-- 按钮圆角效果
 local ChineseButtonCorner = Instance.new("UICorner")
 ChineseButtonCorner.CornerRadius = UDim.new(0, 8)
 ChineseButtonCorner.Parent = ChineseButton
 
+-- 按钮边框效果
 local ChineseButtonStroke = Instance.new("UIStroke")
 ChineseButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
 ChineseButtonStroke.Thickness = 1
@@ -783,16 +1010,18 @@ RemoveCooldownButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
 RemoveCooldownButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
 RemoveCooldownButton.Parent = PirateWarFrame
 
+-- 按钮圆角效果
 local RemoveCooldownButtonCorner = Instance.new("UICorner")
 RemoveCooldownButtonCorner.CornerRadius = UDim.new(0, 8)
 RemoveCooldownButtonCorner.Parent = RemoveCooldownButton
 
+-- 按钮边框效果
 local RemoveCooldownButtonStroke = Instance.new("UIStroke")
 RemoveCooldownButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
 RemoveCooldownButtonStroke.Thickness = 1
 RemoveCooldownButtonStroke.Parent = RemoveCooldownButton
 
--- 枪战竞技场页面（新增）
+-- 枪战竞技场页面
 local GunArenaFrame = Instance.new("Frame")
 GunArenaFrame.Name = "GunArenaFrame"
 GunArenaFrame.Size = UDim2.new(1, 0, 1, 0)
@@ -800,212 +1029,26 @@ GunArenaFrame.BackgroundTransparency = 1
 GunArenaFrame.Visible = false
 GunArenaFrame.Parent = ContentFrame
 
--- 主要功能标题
-local MainFunctionTitle = Instance.new("TextLabel")
-MainFunctionTitle.Name = "MainFunctionTitle"
-MainFunctionTitle.Text = "主要功能"
-MainFunctionTitle.Size = UDim2.new(1, 0, 0, 30)
-MainFunctionTitle.Position = UDim2.new(0, 0, 0, 10)
-MainFunctionTitle.BackgroundTransparency = 1
-MainFunctionTitle.TextColor3 = COLOR_SCHEME.ACCENT_PURPLE
-MainFunctionTitle.TextSize = 20
-MainFunctionTitle.Font = Enum.Font.GothamBold
-MainFunctionTitle.TextXAlignment = Enum.TextXAlignment.Left
-MainFunctionTitle.Parent = GunArenaFrame
-
 -- 自动农场按钮
 local AutoFarmButton = Instance.new("TextButton")
 AutoFarmButton.Name = "AutoFarmButton"
 AutoFarmButton.Text = "自动农场"
 AutoFarmButton.Size = UDim2.new(1, 0, 0, 45)
-AutoFarmButton.Position = UDim2.new(0, 0, 0, 50)
+AutoFarmButton.Position = UDim2.new(0, 0, 0, 10)
 AutoFarmButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
 AutoFarmButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
 AutoFarmButton.Parent = GunArenaFrame
 
+-- 按钮圆角效果
 local AutoFarmButtonCorner = Instance.new("UICorner")
 AutoFarmButtonCorner.CornerRadius = UDim.new(0, 8)
 AutoFarmButtonCorner.Parent = AutoFarmButton
 
+-- 按钮边框效果
 local AutoFarmButtonStroke = Instance.new("UIStroke")
 AutoFarmButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
 AutoFarmButtonStroke.Thickness = 1
 AutoFarmButtonStroke.Parent = AutoFarmButton
-
--- 自动农场描述
-local AutoFarmDescription = Instance.new("TextLabel")
-AutoFarmDescription.Name = "AutoFarmDescription"
-AutoFarmDescription.Text = "需要你手动开火。自动农场的功能是会直接传送到其他玩家的后面并且准心瞄准他的头部。当这个玩家打死以后自动切换到其他玩家。只传送到敌人后面不会传送到队友后面。会在敌人后面一直待着直到对方死亡换到其他人后面一直待着。"
-AutoFarmDescription.Size = UDim2.new(1, 0, 0, 60)
-AutoFarmDescription.Position = UDim2.new(0, 0, 0, 100)
-AutoFarmDescription.BackgroundTransparency = 1
-AutoFarmDescription.TextColor3 = COLOR_SCHEME.TEXT_GRAY
-AutoFarmDescription.TextSize = 12
-AutoFarmDescription.TextWrapped = true
-AutoFarmDescription.TextXAlignment = Enum.TextXAlignment.Left
-AutoFarmDescription.Parent = GunArenaFrame
-
--- 碰撞箱功能标题
-local HitboxTitle = Instance.new("TextLabel")
-HitboxTitle.Name = "HitboxTitle"
-HitboxTitle.Text = "碰撞箱功能"
-HitboxTitle.Size = UDim2.new(1, 0, 0, 30)
-HitboxTitle.Position = UDim2.new(0, 0, 0, 170)
-HitboxTitle.BackgroundTransparency = 1
-HitboxTitle.TextColor3 = COLOR_SCHEME.ACCENT_PURPLE
-HitboxTitle.TextSize = 20
-HitboxTitle.Font = Enum.Font.GothamBold
-HitboxTitle.TextXAlignment = Enum.TextXAlignment.Left
-HitboxTitle.Parent = GunArenaFrame
-
--- 碰撞箱大小滑块
-local HitboxSizeSlider = Instance.new("TextLabel")
-HitboxSizeSlider.Name = "HitboxSizeSlider"
-HitboxSizeSlider.Text = "碰撞箱大小: 1"
-HitboxSizeSlider.Size = UDim2.new(1, 0, 0, 20)
-HitboxSizeSlider.Position = UDim2.new(0, 0, 0, 210)
-HitboxSizeSlider.BackgroundTransparency = 1
-HitboxSizeSlider.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-HitboxSizeSlider.TextSize = 14
-HitboxSizeSlider.TextXAlignment = Enum.TextXAlignment.Left
-HitboxSizeSlider.Parent = GunArenaFrame
-
-local HitboxSizeBar = Instance.new("Frame")
-HitboxSizeBar.Name = "HitboxSizeBar"
-HitboxSizeBar.Size = UDim2.new(1, 0, 0, 10)
-HitboxSizeBar.Position = UDim2.new(0, 0, 0, 235)
-HitboxSizeBar.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-HitboxSizeBar.Parent = GunArenaFrame
-
-local HitboxSizeBarCorner = Instance.new("UICorner")
-HitboxSizeBarCorner.CornerRadius = UDim.new(0, 5)
-HitboxSizeBarCorner.Parent = HitboxSizeBar
-
-local HitboxSizeFill = Instance.new("Frame")
-HitboxSizeFill.Name = "HitboxSizeFill"
-HitboxSizeFill.Size = UDim2.new(0.2, 0, 1, 0)
-HitboxSizeFill.BackgroundColor3 = COLOR_SCHEME.ACCENT_BLUE
-HitboxSizeFill.Parent = HitboxSizeBar
-
-local HitboxSizeFillCorner = Instance.new("UICorner")
-HitboxSizeFillCorner.CornerRadius = UDim.new(0, 5)
-HitboxSizeFillCorner.Parent = HitboxSizeFill
-
--- 碰撞箱透明度滑块
-local HitboxTransparencySlider = Instance.new("TextLabel")
-HitboxTransparencySlider.Name = "HitboxTransparencySlider"
-HitboxTransparencySlider.Text = "碰撞箱透明度: 0.2"
-HitboxTransparencySlider.Size = UDim2.new(1, 0, 0, 20)
-HitboxTransparencySlider.Position = UDim2.new(0, 0, 0, 255)
-HitboxTransparencySlider.BackgroundTransparency = 1
-HitboxTransparencySlider.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-HitboxTransparencySlider.TextSize = 14
-HitboxTransparencySlider.TextXAlignment = Enum.TextXAlignment.Left
-HitboxTransparencySlider.Parent = GunArenaFrame
-
-local HitboxTransparencyBar = Instance.new("Frame")
-HitboxTransparencyBar.Name = "HitboxTransparencyBar"
-HitboxTransparencyBar.Size = UDim2.new(1, 0, 0, 10)
-HitboxTransparencyBar.Position = UDim2.new(0, 0, 0, 280)
-HitboxTransparencyBar.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-HitboxTransparencyBar.Parent = GunArenaFrame
-
-local HitboxTransparencyBarCorner = Instance.new("UICorner")
-HitboxTransparencyBarCorner.CornerRadius = UDim.new(0, 5)
-HitboxTransparencyBarCorner.Parent = HitboxTransparencyBar
-
-local HitboxTransparencyFill = Instance.new("Frame")
-HitboxTransparencyFill.Name = "HitboxTransparencyFill"
-HitboxTransparencyFill.Size = UDim2.new(0.2, 0, 1, 0)
-HitboxTransparencyFill.BackgroundColor3 = COLOR_SCHEME.ACCENT_BLUE
-HitboxTransparencyFill.Parent = HitboxTransparencyBar
-
-local HitboxTransparencyFillCorner = Instance.new("UICorner")
-HitboxTransparencyFillCorner.CornerRadius = UDim.new(0, 5)
-HitboxTransparencyFillCorner.Parent = HitboxTransparencyFill
-
--- 提交更改按钮
-local SubmitHitboxButton = Instance.new("TextButton")
-SubmitHitboxButton.Name = "SubmitHitboxButton"
-SubmitHitboxButton.Text = "提交更改"
-SubmitHitboxButton.Size = UDim2.new(1, 0, 0, 40)
-SubmitHitboxButton.Position = UDim2.new(0, 0, 0, 300)
-SubmitHitboxButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-SubmitHitboxButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-SubmitHitboxButton.Parent = GunArenaFrame
-
-local SubmitHitboxButtonCorner = Instance.new("UICorner")
-SubmitHitboxButtonCorner.CornerRadius = UDim.new(0, 8)
-SubmitHitboxButtonCorner.Parent = SubmitHitboxButton
-
-local SubmitHitboxButtonStroke = Instance.new("UIStroke")
-SubmitHitboxButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
-SubmitHitboxButtonStroke.Thickness = 1
-SubmitHitboxButtonStroke.Parent = SubmitHitboxButton
-
--- 美化功能标题
-local SkinTitle = Instance.new("TextLabel")
-SkinTitle.Name = "SkinTitle"
-SkinTitle.Text = "美化功能"
-SkinTitle.Size = UDim2.new(1, 0, 0, 30)
-SkinTitle.Position = UDim2.new(0, 0, 0, 350)
-SkinTitle.BackgroundTransparency = 1
-SkinTitle.TextColor3 = COLOR_SCHEME.ACCENT_PURPLE
-SkinTitle.TextSize = 20
-SkinTitle.Font = Enum.Font.GothamBold
-SkinTitle.TextXAlignment = Enum.TextXAlignment.Left
-SkinTitle.Parent = GunArenaFrame
-
--- 七彩枪皮按钮
-local RainbowSkinButton = Instance.new("TextButton")
-RainbowSkinButton.Name = "RainbowSkinButton"
-RainbowSkinButton.Text = "七彩枪皮"
-RainbowSkinButton.Size = UDim2.new(1, 0, 0, 45)
-RainbowSkinButton.Position = UDim2.new(0, 0, 0, 390)
-RainbowSkinButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-RainbowSkinButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-RainbowSkinButton.Parent = GunArenaFrame
-
-local RainbowSkinButtonCorner = Instance.new("UICorner")
-RainbowSkinButtonCorner.CornerRadius = UDim.new(0, 8)
-RainbowSkinButtonCorner.Parent = RainbowSkinButton
-
-local RainbowSkinButtonStroke = Instance.new("UIStroke")
-RainbowSkinButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
-RainbowSkinButtonStroke.Thickness = 1
-RainbowSkinButtonStroke.Parent = RainbowSkinButton
-
--- 七彩枪皮描述
-local RainbowSkinDescription = Instance.new("TextLabel")
-RainbowSkinDescription.Name = "RainbowSkinDescription"
-RainbowSkinDescription.Text = "开启后会将玩家所拿的枪械、刀、手雷进行七彩颜色的变换。玩什么枪都可以刀也可以手雷也可以。用户关闭那个按钮就不再进行变换颜色恢复原本的样子。"
-RainbowSkinDescription.Size = UDim2.new(1, 0, 0, 40)
-RainbowSkinDescription.Position = UDim2.new(0, 0, 0, 440)
-RainbowSkinDescription.BackgroundTransparency = 1
-RainbowSkinDescription.TextColor3 = COLOR_SCHEME.TEXT_GRAY
-RainbowSkinDescription.TextSize = 12
-RainbowSkinDescription.TextWrapped = true
-RainbowSkinDescription.TextXAlignment = Enum.TextXAlignment.Left
-RainbowSkinDescription.Parent = GunArenaFrame
-
--- 悬浮球按钮
-local FloatingBall = Instance.new("ImageButton")
-FloatingBall.Name = "FloatingBall"
-FloatingBall.Size = UDim2.new(0, 50, 0, 50)
-FloatingBall.Position = UDim2.new(1, -60, 0.5, -25)
-FloatingBall.Image = "rbxassetid://137091327012662"
-FloatingBall.BackgroundTransparency = 1
-FloatingBall.Visible = false
-FloatingBall.Parent = ScreenGui
-
-local FloatingBallCorner = Instance.new("UICorner")
-FloatingBallCorner.CornerRadius = UDim.new(1, 0)
-FloatingBallCorner.Parent = FloatingBall
-
-local FloatingBallStroke = Instance.new("UIStroke")
-FloatingBallStroke.Color = COLOR_SCHEME.ACCENT_PURPLE
-FloatingBallStroke.Thickness = 2
-FloatingBallStroke.Parent = FloatingBall
 
 -- 退出提示框
 local ExitPrompt = Instance.new("Frame")
@@ -1017,10 +1060,21 @@ ExitPrompt.BorderSizePixel = 0
 ExitPrompt.Visible = false
 ExitPrompt.Parent = ScreenGui
 
+-- 渐变背景效果
+local ExitPromptGradient = Instance.new("UIGradient")
+ExitPromptGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, COLOR_SCHEME.ACCENT_BLUE),
+    ColorSequenceKeypoint.new(1, COLOR_SCHEME.ACCENT_PURPLE)
+})
+ExitPromptGradient.Rotation = 45
+ExitPromptGradient.Parent = ExitPrompt
+
+-- 圆角效果
 local ExitPromptCorner = Instance.new("UICorner")
 ExitPromptCorner.CornerRadius = UDim.new(0, 12)
 ExitPromptCorner.Parent = ExitPrompt
 
+-- 边框效果
 local ExitPromptStroke = Instance.new("UIStroke")
 ExitPromptStroke.Color = COLOR_SCHEME.BORDER
 ExitPromptStroke.Thickness = 2
@@ -1048,10 +1102,12 @@ CancelButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
 CancelButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
 CancelButton.Parent = ExitPrompt
 
+-- 按钮圆角效果
 local CancelButtonCorner = Instance.new("UICorner")
 CancelButtonCorner.CornerRadius = UDim.new(0, 8)
 CancelButtonCorner.Parent = CancelButton
 
+-- 按钮边框效果
 local CancelButtonStroke = Instance.new("UIStroke")
 CancelButtonStroke.Color = COLOR_SCHEME.BORDER
 CancelButtonStroke.Thickness = 1
@@ -1067,10 +1123,12 @@ ConfirmButton.BackgroundColor3 = COLOR_SCHEME.ACCENT_BLUE
 ConfirmButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
 ConfirmButton.Parent = ExitPrompt
 
+-- 按钮圆角效果
 local ConfirmButtonCorner = Instance.new("UICorner")
 ConfirmButtonCorner.CornerRadius = UDim.new(0, 8)
 ConfirmButtonCorner.Parent = ConfirmButton
 
+-- 按钮边框效果
 local ConfirmButtonStroke = Instance.new("UIStroke")
 ConfirmButtonStroke.Color = COLOR_SCHEME.ACCENT_PURPLE
 ConfirmButtonStroke.Thickness = 2
@@ -1086,10 +1144,21 @@ ServerExitNotice.BorderSizePixel = 0
 ServerExitNotice.Visible = false
 ServerExitNotice.Parent = ScreenGui
 
+-- 渐变背景效果
+local ServerExitNoticeGradient = Instance.new("UIGradient")
+ServerExitNoticeGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, COLOR_SCHEME.ACCENT_BLUE),
+    ColorSequenceKeypoint.new(1, COLOR_SCHEME.ACCENT_PURPLE)
+})
+ServerExitNoticeGradient.Rotation = 45
+ServerExitNoticeGradient.Parent = ServerExitNotice
+
+-- 圆角效果
 local ServerExitNoticeCorner = Instance.new("UICorner")
 ServerExitNoticeCorner.CornerRadius = UDim.new(0, 12)
 ServerExitNoticeCorner.Parent = ServerExitNotice
 
+-- 边框效果
 local ServerExitNoticeStroke = Instance.new("UIStroke")
 ServerExitNoticeStroke.Color = COLOR_SCHEME.BORDER
 ServerExitNoticeStroke.Thickness = 2
@@ -1197,19 +1266,6 @@ NoSendButton.MouseButton1Click:Connect(function()
     MainFrame.Visible = true
     FloatingBall.Visible = true
     StatusText.Text = "进入主界面"
-end)
-
--- 悬浮球按钮功能
-FloatingBall.MouseButton1Click:Connect(function()
-    if MainFrame.Visible then
-        MainFrame.Visible = false
-        FloatingBall.BackgroundColor3 = COLOR_SCHEME.ACCENT_PURPLE
-        StatusText.Text = "界面已隐藏"
-    else
-        MainFrame.Visible = true
-        FloatingBall.BackgroundColor3 = COLOR_SCHEME.ACCENT_BLUE
-        StatusText.Text = "界面已显示"
-    end
 end)
 
 -- 最小化按钮功能
@@ -1390,77 +1446,3 @@ FastSpinButton.MouseButton1Click:Connect(function()
             end
         end)
     else
-        StatusText.Text = "快速旋转已关闭"
-        FastSpinButton.Text = "快速旋转 (速度50)"
-        
-        if fastSpinConnection then
-            fastSpinConnection:Disconnect()
-            fastSpinConnection = nil
-        end
-    end
-end)
-
-SuperSpinButton.MouseButton1Click:Connect(function()
-    superSpinEnabled = not superSpinEnabled
-    
-    if superSpinEnabled then
-        StatusText.Text = "极速旋转已激活"
-        SuperSpinButton.Text = "关闭极速旋转"
-        
-        if fastSpinEnabled then
-            if fastSpinConnection then
-                fastSpinConnection:Disconnect()
-                fastSpinConnection = nil
-            end
-            fastSpinEnabled = false
-            FastSpinButton.Text = "快速旋转 (速度50)"
-        end
-        
-        superSpinConnection = RunService.Heartbeat:Connect(function()
-            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                LocalPlayer.Character.HumanoidRootPart.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.rad(100), 0)
-            end
-        end)
-    else
-        StatusText.Text = "极速旋转已关闭"
-        SuperSpinButton.Text = "极速旋转 (速度100)"
-        
-        if superSpinConnection then
-            superSpinConnection:Disconnect()
-            superSpinConnection = nil
-        end
-    end
-end)
-
-InfiniteJumpButton.MouseButton1Click:Connect(function()
-    infiniteJumpEnabled = not infiniteJumpEnabled
-    
-    if infiniteJumpEnabled then
-        StatusText.Text = "无限跳跃已激活"
-        InfiniteJumpButton.Text = "关闭无限跳跃"
-        
-        infiniteJumpConnection = UserInputService.JumpRequest:Connect(function()
-            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-                LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-            end
-        end)
-    else
-        StatusText.Text = "无限跳跃已关闭"
-        InfiniteJumpButton.Text = "无限跳跃"
-        
-        if infiniteJumpConnection then
-            infiniteJumpConnection:Disconnect()
-            infiniteJumpConnection = nil
-        end
-    end
-end)
-
-NightVisionButton.MouseButton1Click:Connect(function()
-    nightVisionEnabled = not nightVisionEnabled
-    
-    if nightVisionEnabled then
-        StatusText.Text = "夜视功能已激活"
-        NightVisionButton.Text = "关闭夜视"
-        
-        Lighting.Brightness = 2
-        Lighting.Ambient = Color3.new(1, 1, 1
