@@ -357,7 +357,7 @@ CloseButtonStroke.Color = COLOR_SCHEME.BORDER
 CloseButtonStroke.Thickness = 1
 CloseButtonStroke.Parent = CloseButton
 
--- 整合的悬浮球功能 - 使用您提供的代码替换原有悬浮球
+-- 整合的悬浮球功能
 local CLOSED_IMAGE_ID = "123947581167369"  -- 关闭状态图片
 local OPENED_IMAGE_ID = "108010245085057"  -- 打开状态图片
 
@@ -611,33 +611,12 @@ ChineseButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
 ChineseButtonStroke.Thickness = 1
 ChineseButtonStroke.Parent = ChineseButton
 
--- 海贼战争按钮
-local PirateWarButton = Instance.new("TextButton")
-PirateWarButton.Name = "PirateWarButton"
-PirateWarButton.Text = "海贼战争"
-PirateWarButton.Size = UDim2.new(1, -10, 0, 45)
-PirateWarButton.Position = UDim2.new(0, 5, 0, 260)
-PirateWarButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-PirateWarButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-PirateWarButton.Parent = NavBar
-
--- 按钮圆角效果
-local PirateWarButtonCorner = Instance.new("UICorner")
-PirateWarButtonCorner.CornerRadius = UDim.new(0, 8)
-PirateWarButtonCorner.Parent = PirateWarButton
-
--- 按钮边框效果
-local PirateWarButtonStroke = Instance.new("UIStroke")
-PirateWarButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
-PirateWarButtonStroke.Thickness = 1
-PirateWarButtonStroke.Parent = PirateWarButton
-
 -- 枪战竞技场按钮
 local GunArenaButton = Instance.new("TextButton")
 GunArenaButton.Name = "GunArenaButton"
 GunArenaButton.Text = "枪战竞技场"
 GunArenaButton.Size = UDim2.new(1, -10, 0, 45)
-GunArenaButton.Position = UDim2.new(0, 5, 0, 310)
+GunArenaButton.Position = UDim2.new(0, 5, 0, 260)
 GunArenaButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
 GunArenaButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
 GunArenaButton.Parent = NavBar
@@ -992,35 +971,6 @@ ChineseButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
 ChineseButtonStroke.Thickness = 1
 ChineseButtonStroke.Parent = ChineseButton
 
--- 海贼战争页面
-local PirateWarFrame = Instance.new("Frame")
-PirateWarFrame.Name = "PirateWarFrame"
-PirateWarFrame.Size = UDim2.new(1, 0, 1, 0)
-PirateWarFrame.BackgroundTransparency = 1
-PirateWarFrame.Visible = false
-PirateWarFrame.Parent = ContentFrame
-
--- 移除冷却按钮
-local RemoveCooldownButton = Instance.new("TextButton")
-RemoveCooldownButton.Name = "RemoveCooldownButton"
-RemoveCooldownButton.Text = "移除所有冷却"
-RemoveCooldownButton.Size = UDim2.new(1, 0, 0, 45)
-RemoveCooldownButton.Position = UDim2.new(0, 0, 0, 10)
-RemoveCooldownButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-RemoveCooldownButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-RemoveCooldownButton.Parent = PirateWarFrame
-
--- 按钮圆角效果
-local RemoveCooldownButtonCorner = Instance.new("UICorner")
-RemoveCooldownButtonCorner.CornerRadius = UDim.new(0, 8)
-RemoveCooldownButtonCorner.Parent = RemoveCooldownButton
-
--- 按钮边框效果
-local RemoveCooldownButtonStroke = Instance.new("UIStroke")
-RemoveCooldownButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
-RemoveCooldownButtonStroke.Thickness = 1
-RemoveCooldownButtonStroke.Parent = RemoveCooldownButton
-
 -- 枪战竞技场页面
 local GunArenaFrame = Instance.new("Frame")
 GunArenaFrame.Name = "GunArenaFrame"
@@ -1049,6 +999,166 @@ local AutoFarmButtonStroke = Instance.new("UIStroke")
 AutoFarmButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
 AutoFarmButtonStroke.Thickness = 1
 AutoFarmButtonStroke.Parent = AutoFarmButton
+
+-- 自动农场描述
+local AutoFarmDescription = Instance.new("TextLabel")
+AutoFarmDescription.Name = "AutoFarmDescription"
+AutoFarmDescription.Text = "需要你手动开火。自动农场的功能是会直接传送到其他玩家的后面并且准心瞄准他的头部。当这个玩家打死以后自动切换到其他玩家。只传送到敌人后面不会传送到队友后面。会在敌人后面一直待着直到对方死亡换到其他人后面一直待着。"
+AutoFarmDescription.Size = UDim2.new(1, 0, 0, 60)
+AutoFarmDescription.Position = UDim2.new(0, 0, 0, 60)
+AutoFarmDescription.BackgroundTransparency = 1
+AutoFarmDescription.TextColor3 = COLOR_SCHEME.TEXT_GRAY
+AutoFarmDescription.TextSize = 12
+AutoFarmDescription.TextWrapped = true
+AutoFarmDescription.TextXAlignment = Enum.TextXAlignment.Left
+AutoFarmDescription.Parent = GunArenaFrame
+
+-- 碰撞箱功能标题
+local HitboxTitle = Instance.new("TextLabel")
+HitboxTitle.Name = "HitboxTitle"
+HitboxTitle.Text = "碰撞箱功能"
+HitboxTitle.Size = UDim2.new(1, 0, 0, 30)
+HitboxTitle.Position = UDim2.new(0, 0, 0, 130)
+HitboxTitle.BackgroundTransparency = 1
+HitboxTitle.TextColor3 = COLOR_SCHEME.ACCENT_PURPLE
+HitboxTitle.TextSize = 20
+HitboxTitle.Font = Enum.Font.GothamBold
+HitboxTitle.TextXAlignment = Enum.TextXAlignment.Left
+HitboxTitle.Parent = GunArenaFrame
+
+-- 碰撞箱大小滑块
+local HitboxSizeSlider = Instance.new("TextLabel")
+HitboxSizeSlider.Name = "HitboxSizeSlider"
+HitboxSizeSlider.Text = "碰撞箱大小: 1"
+HitboxSizeSlider.Size = UDim2.new(1, 0, 0, 20)
+HitboxSizeSlider.Position = UDim2.new(0, 0, 0, 170)
+HitboxSizeSlider.BackgroundTransparency = 1
+HitboxSizeSlider.TextColor3 = COLOR_SCHEME.TEXT_WHITE
+HitboxSizeSlider.TextSize = 14
+HitboxSizeSlider.TextXAlignment = Enum.TextXAlignment.Left
+HitboxSizeSlider.Parent = GunArenaFrame
+
+local HitboxSizeBar = Instance.new("Frame")
+HitboxSizeBar.Name = "HitboxSizeBar"
+HitboxSizeBar.Size = UDim2.new(1, 0, 0, 10)
+HitboxSizeBar.Position = UDim2.new(0, 0, 0, 195)
+HitboxSizeBar.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
+HitboxSizeBar.Parent = GunArenaFrame
+
+local HitboxSizeBarCorner = Instance.new("UICorner")
+HitboxSizeBarCorner.CornerRadius = UDim.new(0, 5)
+HitboxSizeBarCorner.Parent = HitboxSizeBar
+
+local HitboxSizeFill = Instance.new("Frame")
+HitboxSizeFill.Name = "HitboxSizeFill"
+HitboxSizeFill.Size = UDim2.new(0.2, 0, 1, 0)  -- 默认1/5
+HitboxSizeFill.BackgroundColor3 = COLOR_SCHEME.ACCENT_BLUE
+HitboxSizeFill.Parent = HitboxSizeBar
+
+local HitboxSizeFillCorner = Instance.new("UICorner")
+HitboxSizeFillCorner.CornerRadius = UDim.new(0, 5)
+HitboxSizeFillCorner.Parent = HitboxSizeFill
+
+-- 碰撞箱透明度滑块
+local HitboxTransparencySlider = Instance.new("TextLabel")
+HitboxTransparencySlider.Name = "HitboxTransparencySlider"
+HitboxTransparencySlider.Text = "碰撞箱透明度: 0.2"
+HitboxTransparencySlider.Size = UDim2.new(1, 0, 0, 20)
+HitboxTransparencySlider.Position = UDim2.new(0, 0, 0, 215)
+HitboxTransparencySlider.BackgroundTransparency = 1
+HitboxTransparencySlider.TextColor3 = COLOR_SCHEME.TEXT_WHITE
+HitboxTransparencySlider.TextSize = 14
+HitboxTransparencySlider.TextXAlignment = Enum.TextXAlignment.Left
+HitboxTransparencySlider.Parent = GunArenaFrame
+
+local HitboxTransparencyBar = Instance.new("Frame")
+HitboxTransparencyBar.Name = "HitboxTransparencyBar"
+HitboxTransparencyBar.Size = UDim2.new(1, 0, 0, 10)
+HitboxTransparencyBar.Position = UDim2.new(0, 0, 0, 240)
+HitboxTransparencyBar.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
+HitboxTransparencyBar.Parent = GunArenaFrame
+
+local HitboxTransparencyBarCorner = Instance.new("UICorner")
+HitboxTransparencyBarCorner.CornerRadius = UDim.new(0, 5)
+HitboxTransparencyBarCorner.Parent = HitboxTransparencyBar
+
+local HitboxTransparencyFill = Instance.new("Frame")
+HitboxTransparencyFill.Name = "HitboxTransparencyFill"
+HitboxTransparencyFill.Size = UDim2.new(0.2, 0, 1, 0)  -- 默认0.2
+HitboxTransparencyFill.BackgroundColor3 = COLOR_SCHEME.ACCENT_BLUE
+HitboxTransparencyFill.Parent = HitboxTransparencyBar
+
+local HitboxTransparencyFillCorner = Instance.new("UICorner")
+HitboxTransparencyFillCorner.CornerRadius = UDim.new(0, 5)
+HitboxTransparencyFillCorner.Parent = HitboxTransparencyFill
+
+-- 提交更改按钮
+local SubmitHitboxButton = Instance.new("TextButton")
+SubmitHitboxButton.Name = "SubmitHitboxButton"
+SubmitHitboxButton.Text = "提交更改"
+SubmitHitboxButton.Size = UDim2.new(1, 0, 0, 40)
+SubmitHitboxButton.Position = UDim2.new(0, 0, 0, 260)
+SubmitHitboxButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
+SubmitHitboxButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
+SubmitHitboxButton.Parent = GunArenaFrame
+
+-- 按钮圆角效果
+local SubmitHitboxButtonCorner = Instance.new("UICorner")
+SubmitHitboxButtonCorner.CornerRadius = UDim.new(0, 8)
+SubmitHitboxButtonCorner.Parent = SubmitHitboxButton
+
+-- 按钮边框效果
+local SubmitHitboxButtonStroke = Instance.new("UIStroke")
+SubmitHitboxButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
+SubmitHitboxButtonStroke.Thickness = 1
+SubmitHitboxButtonStroke.Parent = SubmitHitboxButton
+
+-- 美化功能标题
+local SkinTitle = Instance.new("TextLabel")
+SkinTitle.Name = "SkinTitle"
+SkinTitle.Text = "美化功能"
+SkinTitle.Size = UDim2.new(1, 0, 0, 30)
+SkinTitle.Position = UDim2.new(0, 0, 0, 310)
+SkinTitle.BackgroundTransparency = 1
+SkinTitle.TextColor3 = COLOR_SCHEME.ACCENT_PURPLE
+SkinTitle.TextSize = 20
+SkinTitle.Font = Enum.Font.GothamBold
+SkinTitle.TextXAlignment = Enum.TextXAlignment.Left
+SkinTitle.Parent = GunArenaFrame
+
+-- 七彩枪皮按钮
+local RainbowSkinButton = Instance.new("TextButton")
+RainbowSkinButton.Name = "RainbowSkinButton"
+RainbowSkinButton.Text = "七彩枪皮"
+RainbowSkinButton.Size = UDim2.new(1, 0, 0, 45)
+RainbowSkinButton.Position = UDim2.new(0, 0, 0, 350)
+RainbowSkinButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
+RainbowSkinButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
+RainbowSkinButton.Parent = GunArenaFrame
+
+-- 按钮圆角效果
+local RainbowSkinButtonCorner = Instance.new("UICorner")
+RainbowSkinButtonCorner.CornerRadius = UDim.new(0, 8)
+RainbowSkinButtonCorner.Parent = RainbowSkinButton
+
+-- 按钮边框效果
+local RainbowSkinButtonStroke = Instance.new("UIStroke")
+RainbowSkinButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
+RainbowSkinButtonStroke.Thickness = 1
+RainbowSkinButtonStroke.Parent = RainbowSkinButton
+
+-- 七彩枪皮描述
+local RainbowSkinDescription = Instance.new("TextLabel")
+RainbowSkinDescription.Name = "RainbowSkinDescription"
+RainbowSkinDescription.Text = "开启后会将玩家所拿的枪械、刀、手雷进行七彩颜色的变换。玩什么枪都可以刀也可以手雷也可以。用户关闭那个按钮就不再进行变换颜色恢复原本的样子。"
+RainbowSkinDescription.Size = UDim2.new(1, 0, 0, 40)
+RainbowSkinDescription.Position = UDim2.new(0, 0, 0, 400)
+RainbowSkinDescription.BackgroundTransparency = 1
+RainbowSkinDescription.TextColor3 = COLOR_SCHEME.TEXT_GRAY
+RainbowSkinDescription.TextSize = 12
+RainbowSkinDescription.TextWrapped = true
+RainbowSkinDescription.TextXAlignment = Enum.TextXAlignment.Left
+RainbowSkinDescription.Parent = GunArenaFrame
 
 -- 退出提示框
 local ExitPrompt = Instance.new("Frame")
@@ -1362,14 +1472,6 @@ ChineseButton.MouseButton1Click:Connect(function()
     StatusText.Text = "切换到一键汉化"
 end)
 
-PirateWarButton.MouseButton1Click:Connect(function()
-    hideAllFrames()
-    PirateWarFrame.Visible = true
-    currentPage = "PirateWar"
-    updateNavButtons()
-    StatusText.Text = "切换到海贼战争功能"
-end)
-
 GunArenaButton.MouseButton1Click:Connect(function()
     hideAllFrames()
     GunArenaFrame.Visible = true
@@ -1385,7 +1487,6 @@ local function hideAllFrames()
     ESPFrame.Visible = false
     OtherScriptsFrame.Visible = false
     ChineseFrame.Visible = false
-    PirateWarFrame.Visible = false
     GunArenaFrame.Visible = false
 end
 
@@ -1393,7 +1494,7 @@ end
 local function updateNavButtons()
     local buttons = {
         DevTeamButton, GeneralButton, ESPButton, OtherScriptsButton, 
-        ChineseButton, PirateWarButton, GunArenaButton
+        ChineseButton, GunArenaButton
     }
     
     for _, button in pairs(buttons) do
@@ -1403,46 +1504,4 @@ local function updateNavButtons()
     if currentPage == "DevTeam" then
         DevTeamButton.BackgroundColor3 = COLOR_SCHEME.ACCENT_BLUE
     elseif currentPage == "General" then
-        GeneralButton.BackgroundColor3 = COLOR_SCHEME.ACCENT_BLUE
-    elseif currentPage == "ESP" then
-        ESPButton.BackgroundColor3 = COLOR_SCHEME.ACCENT_BLUE
-    elseif currentPage == "OtherScripts" then
-        OtherScriptsButton.BackgroundColor3 = COLOR_SCHEME.ACCENT_BLUE
-    elseif currentPage == "Chinese" then
-        ChineseButton.BackgroundColor3 = COLOR_SCHEME.ACCENT_BLUE
-    elseif currentPage == "PirateWar" then
-        PirateWarButton.BackgroundColor3 = COLOR_SCHEME.ACCENT_BLUE
-    elseif currentPage == "GunArena" then
-        GunArenaButton.BackgroundColor3 = COLOR_SCHEME.ACCENT_BLUE
-    end
-end
-
--- 功能按钮实现
-FlightButton.MouseButton1Click:Connect(function()
-    StatusText.Text = "正在加载飞行脚本..."
-    loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Invinicible-Flight-R15-45414"))()
-    StatusText.Text = "飞行功能已加载"
-end)
-
-FastSpinButton.MouseButton1Click:Connect(function()
-    fastSpinEnabled = not fastSpinEnabled
-    
-    if fastSpinEnabled then
-        StatusText.Text = "快速旋转已激活"
-        FastSpinButton.Text = "关闭快速旋转"
-        
-        if superSpinEnabled then
-            if superSpinConnection then
-                superSpinConnection:Disconnect()
-                superSpinConnection = nil
-            end
-            superSpinEnabled = false
-            SuperSpinButton.Text = "极速旋转 (速度100)"
-        end
-        
-        fastSpinConnection = RunService.Heartbeat:Connect(function()
-            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                LocalPlayer.Character.HumanoidRootPart.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.rad(50), 0)
-            end
-        end)
-    else
+        GeneralButton.BackgroundColor3 = COLOR_SCHEME.ACCENT_B
