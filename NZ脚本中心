@@ -1,1507 +1,464 @@
--- NZ脚本中心暗黑科技终极版 - 整合悬浮球功能
--- 主作者:南烛
--- 版本:3.1 悬浮球整合版
+-- NZ脚本中心 - Roblox本地脚本
+-- 作者: 南烛
 
 local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
-local Lighting = game:GetService("Lighting")
-local LocalPlayer = Players.LocalPlayer
-local Mouse = LocalPlayer:GetMouse()
 
--- 暗黑科技风格颜色方案
-local COLOR_SCHEME = {
-    BACKGROUND = Color3.fromRGB(43, 43, 43),
-    PANEL_BG = Color3.fromRGB(35, 35, 35),
-    ACCENT_BLUE = Color3.fromRGB(0, 120, 215),
-    ACCENT_PURPLE = Color3.fromRGB(138, 43, 226),
-    TEXT_WHITE = Color3.fromRGB(255, 255, 255),
-    TEXT_GRAY = Color3.fromRGB(200, 200, 200),
-    BORDER = Color3.fromRGB(60, 60, 60),
-    HOVER = Color3.fromRGB(80, 80, 80)
-}
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
 
--- 创建主屏幕GUI
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "NZScriptCenterDarkTechUltimate"
-ScreenGui.Parent = game.CoreGui
+-- 创建主ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "NZScriptCenter"
+screenGui.ResetOnSpawn = false
 
--- 创建卡密验证界面
-local KeyFrame = Instance.new("Frame")
-KeyFrame.Name = "KeyFrame"
-KeyFrame.Size = UDim2.new(0, 500, 0, 350)
-KeyFrame.Position = UDim2.new(0.5, -250, 0.5, -175)
-KeyFrame.BackgroundColor3 = COLOR_SCHEME.BACKGROUND
-KeyFrame.BorderSizePixel = 0
-KeyFrame.Parent = ScreenGui
-
--- 渐变背景效果
-local KeyFrameGradient = Instance.new("UIGradient")
-KeyFrameGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, COLOR_SCHEME.ACCENT_BLUE),
-    ColorSequenceKeypoint.new(1, COLOR_SCHEME.ACCENT_PURPLE)
-})
-KeyFrameGradient.Rotation = 45
-KeyFrameGradient.Parent = KeyFrame
-
--- 圆角效果
-local KeyFrameCorner = Instance.new("UICorner")
-KeyFrameCorner.CornerRadius = UDim.new(0, 12)
-KeyFrameCorner.Parent = KeyFrame
-
--- 边框效果
-local KeyFrameStroke = Instance.new("UIStroke")
-KeyFrameStroke.Color = COLOR_SCHEME.BORDER
-KeyFrameStroke.Thickness = 2
-KeyFrameStroke.Parent = KeyFrame
-
--- 卡密验证标题
-local KeyTitle = Instance.new("TextLabel")
-KeyTitle.Name = "KeyTitle"
-KeyTitle.Text = "NZ脚本中心 - 安全验证"
-KeyTitle.Size = UDim2.new(1, 0, 0, 70)
-KeyTitle.Position = UDim2.new(0, 0, 0, 20)
-KeyTitle.BackgroundTransparency = 1
-KeyTitle.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-KeyTitle.TextSize = 28
-KeyTitle.Font = Enum.Font.GothamBold
-KeyTitle.Parent = KeyFrame
-
--- 作者信息
-local AuthorText = Instance.new("TextLabel")
-AuthorText.Name = "AuthorText"
-AuthorText.Text = "主作者:南烛 | 暗黑科技版"
-AuthorText.Size = UDim2.new(1, 0, 0, 30)
-AuthorText.Position = UDim2.new(0, 0, 0, 70)
-AuthorText.BackgroundTransparency = 1
-AuthorText.TextColor3 = COLOR_SCHEME.ACCENT_PURPLE
-AuthorText.TextSize = 18
-AuthorText.Font = Enum.Font.Gotham
-AuthorText.Parent = KeyFrame
-
--- 卡密输入框
-local KeyInput = Instance.new("TextBox")
-KeyInput.Name = "KeyInput"
-KeyInput.PlaceholderText = "请输入您的卡密"
-KeyInput.Size = UDim2.new(0.8, 0, 0, 50)
-KeyInput.Position = UDim2.new(0.1, 0, 0.3, 0)
-KeyInput.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-KeyInput.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-KeyInput.TextSize = 22
-KeyInput.Font = Enum.Font.Gotham
-KeyInput.Parent = KeyFrame
-
--- 输入框圆角效果
-local KeyInputCorner = Instance.new("UICorner")
-KeyInputCorner.CornerRadius = UDim.new(0, 8)
-KeyInputCorner.Parent = KeyInput
-
--- 输入框边框效果
-local KeyInputStroke = Instance.new("UIStroke")
-KeyInputStroke.Color = COLOR_SCHEME.ACCENT_BLUE
-KeyInputStroke.Thickness = 2
-KeyInputStroke.Parent = KeyInput
-
--- 验证按钮
-local VerifyButton = Instance.new("TextButton")
-VerifyButton.Name = "VerifyButton"
-VerifyButton.Text = "验 证"
-VerifyButton.Size = UDim2.new(0.6, 0, 0, 55)
-VerifyButton.Position = UDim2.new(0.2, 0, 0.5, 0)
-VerifyButton.BackgroundColor3 = COLOR_SCHEME.ACCENT_BLUE
-VerifyButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-VerifyButton.TextSize = 24
-VerifyButton.Font = Enum.Font.GothamBold
-VerifyButton.Parent = KeyFrame
-
--- 按钮圆角效果
-local VerifyButtonCorner = Instance.new("UICorner")
-VerifyButtonCorner.CornerRadius = UDim.new(0, 8)
-VerifyButtonCorner.Parent = VerifyButton
-
--- 按钮边框效果
-local VerifyButtonStroke = Instance.new("UIStroke")
-VerifyButtonStroke.Color = COLOR_SCHEME.ACCENT_PURPLE
-VerifyButtonStroke.Thickness = 2
-VerifyButtonStroke.Parent = VerifyButton
-
--- 群信息
-local GroupInfo = Instance.new("TextLabel")
-GroupInfo.Name = "GroupInfo"
-GroupInfo.Text = "进入QQ群:813128648 获取卡密"
-GroupInfo.Size = UDim2.new(1, 0, 0, 35)
-GroupInfo.Position = UDim2.new(0, 0, 0.7, 0)
-GroupInfo.BackgroundTransparency = 1
-GroupInfo.TextColor3 = COLOR_SCHEME.TEXT_GRAY
-GroupInfo.TextSize = 18
-GroupInfo.Parent = KeyFrame
-
--- 复制群号按钮
-local CopyButton = Instance.new("TextButton")
-CopyButton.Name = "CopyButton"
-CopyButton.Text = "复制群号"
-CopyButton.Size = UDim2.new(0.4, 0, 0, 40)
-CopyButton.Position = UDim2.new(0.3, 0, 0.8, 0)
-CopyButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-CopyButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-CopyButton.Parent = KeyFrame
-
--- 按钮圆角效果
-local CopyButtonCorner = Instance.new("UICorner")
-CopyButtonCorner.CornerRadius = UDim.new(0, 8)
-CopyButtonCorner.Parent = CopyButton
-
--- 按钮边框效果
-local CopyButtonStroke = Instance.new("UIStroke")
-CopyButtonStroke.Color = COLOR_SCHEME.BORDER
-CopyButtonStroke.Thickness = 1
-CopyButtonStroke.Parent = CopyButton
-
--- 创建消息发送选择弹窗
-local MessagePrompt = Instance.new("Frame")
-MessagePrompt.Name = "MessagePrompt"
-MessagePrompt.Size = UDim2.new(0, 400, 0, 200)
-MessagePrompt.Position = UDim2.new(0.5, -200, 0.5, -100)
-MessagePrompt.BackgroundColor3 = COLOR_SCHEME.BACKGROUND
-MessagePrompt.BorderSizePixel = 0
-MessagePrompt.Visible = false
-MessagePrompt.Parent = ScreenGui
-
--- 渐变背景效果
-local MessagePromptGradient = Instance.new("UIGradient")
-MessagePromptGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, COLOR_SCHEME.ACCENT_BLUE),
-    ColorSequenceKeypoint.new(1, COLOR_SCHEME.ACCENT_PURPLE)
-})
-MessagePromptGradient.Rotation = 45
-MessagePromptGradient.Parent = MessagePrompt
-
--- 圆角效果
-local MessagePromptCorner = Instance.new("UICorner")
-MessagePromptCorner.CornerRadius = UDim.new(0, 12)
-MessagePromptCorner.Parent = MessagePrompt
-
--- 边框效果
-local MessagePromptStroke = Instance.new("UIStroke")
-MessagePromptStroke.Color = COLOR_SCHEME.BORDER
-MessagePromptStroke.Thickness = 2
-MessagePromptStroke.Parent = MessagePrompt
-
--- 消息提示文本
-local MessageText = Instance.new("TextLabel")
-MessageText.Name = "MessageText"
-MessageText.Text = "是否发送聊天消息？"
-MessageText.Size = UDim2.new(1, 0, 0, 60)
-MessageText.Position = UDim2.new(0, 0, 0, 20)
-MessageText.BackgroundTransparency = 1
-MessageText.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-MessageText.TextSize = 20
-MessageText.Font = Enum.Font.GothamBold
-MessageText.Parent = MessagePrompt
-
--- 发送按钮（绿色）
-local SendButton = Instance.new("TextButton")
-SendButton.Name = "SendButton"
-SendButton.Text = "发送"
-SendButton.Size = UDim2.new(0.4, 0, 0, 40)
-SendButton.Position = UDim2.new(0.1, 0, 0.6, 0)
-SendButton.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
-SendButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-SendButton.Parent = MessagePrompt
-
--- 按钮圆角效果
-local SendButtonCorner = Instance.new("UICorner")
-SendButtonCorner.CornerRadius = UDim.new(0, 8)
-SendButtonCorner.Parent = SendButton
-
--- 按钮边框效果
-local SendButtonStroke = Instance.new("UIStroke")
-SendButtonStroke.Color = Color3.fromRGB(0, 150, 0)
-SendButtonStroke.Thickness = 2
-SendButtonStroke.Parent = SendButton
-
--- 不发送按钮（红色）
-local NoSendButton = Instance.new("TextButton")
-NoSendButton.Name = "NoSendButton"
-NoSendButton.Text = "不发送"
-NoSendButton.Size = UDim2.new(0.4, 0, 0, 40)
-NoSendButton.Position = UDim2.new(0.5, 0, 0.6, 0)
-NoSendButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-NoSendButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-NoSendButton.Parent = MessagePrompt
-
--- 按钮圆角效果
-local NoSendButtonCorner = Instance.new("UICorner")
-NoSendButtonCorner.CornerRadius = UDim.new(0, 8)
-NoSendButtonCorner.Parent = NoSendButton
-
--- 按钮边框效果
-local NoSendButtonStroke = Instance.new("UIStroke")
-NoSendButtonStroke.Color = Color3.fromRGB(150, 0, 0)
-NoSendButtonStroke.Thickness = 2
-NoSendButtonStroke.Parent = NoSendButton
-
--- 创建主弹窗
-local MainFrame = Instance.new("Frame")
-MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 650, 0, 500)
-MainFrame.Position = UDim2.new(0.5, -325, 0.5, -250)
-MainFrame.BackgroundColor3 = COLOR_SCHEME.BACKGROUND
-MainFrame.BorderSizePixel = 0
-MainFrame.Visible = false
-MainFrame.Parent = ScreenGui
-
--- 渐变背景效果
-local MainFrameGradient = Instance.new("UIGradient")
-MainFrameGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, COLOR_SCHEME.ACCENT_BLUE),
-    ColorSequenceKeypoint.new(0.5, COLOR_SCHEME.ACCENT_PURPLE),
-    ColorSequenceKeypoint.new(1, COLOR_SCHEME.ACCENT_BLUE)
-})
-MainFrameGradient.Rotation = 45
-MainFrameGradient.Parent = MainFrame
-
--- 圆角效果
-local MainFrameCorner = Instance.new("UICorner")
-MainFrameCorner.CornerRadius = UDim.new(0, 12)
-MainFrameCorner.Parent = MainFrame
-
--- 边框效果
-local MainFrameStroke = Instance.new("UIStroke")
-MainFrameStroke.Color = COLOR_SCHEME.BORDER
-MainFrameStroke.Thickness = 2
-MainFrameStroke.Parent = MainFrame
-
--- 标题栏
-local TitleBar = Instance.new("Frame")
-TitleBar.Name = "TitleBar"
-TitleBar.Size = UDim2.new(1, 0, 0, 45)
-TitleBar.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-TitleBar.Parent = MainFrame
-
--- 标题栏渐变效果
-local TitleBarGradient = Instance.new("UIGradient")
-TitleBarGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, COLOR_SCHEME.ACCENT_BLUE),
-    ColorSequenceKeypoint.new(1, COLOR_SCHEME.ACCENT_PURPLE)
-})
-TitleBarGradient.Rotation = 0
-TitleBarGradient.Parent = TitleBar
-
--- 标题文本
-local TitleText = Instance.new("TextLabel")
-TitleText.Name = "TitleText"
-TitleText.Text = "NZ脚本中心"
-TitleText.Size = UDim2.new(0, 160, 1, 0)
-TitleText.Position = UDim2.new(0, 10, 0, 0)
-TitleText.BackgroundTransparency = 1
-TitleText.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-TitleText.TextSize = 26
-TitleText.Font = Enum.Font.GothamBold
-TitleText.TextXAlignment = Enum.TextXAlignment.Left
-TitleText.Parent = TitleBar
-
--- 作者信息
-local MainAuthorText = Instance.new("TextLabel")
-MainAuthorText.Name = "MainAuthorText"
-MainAuthorText.Text = "主作者:南烛 | 版本3.1"
-MainAuthorText.Size = UDim2.new(0, 180, 1, 0)
-MainAuthorText.Position = UDim2.new(0, 180, 0, 0)
-MainAuthorText.BackgroundTransparency = 1
-MainAuthorText.TextColor3 = COLOR_SCHEME.ACCENT_PURPLE
-MainAuthorText.TextSize = 16
-MainAuthorText.Font = Enum.Font.Gotham
-MainAuthorText.TextXAlignment = Enum.TextXAlignment.Left
-MainAuthorText.Parent = TitleBar
-
--- 最小化按钮
-local MinimizeButton = Instance.new("TextButton")
-MinimizeButton.Name = "MinimizeButton"
-MinimizeButton.Text = "-"
-MinimizeButton.Size = UDim2.new(0, 35, 0, 35)
-MinimizeButton.Position = UDim2.new(1, -70, 0, 5)
-MinimizeButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-MinimizeButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-MinimizeButton.Parent = TitleBar
-
--- 按钮圆角效果
-local MinimizeButtonCorner = Instance.new("UICorner")
-MinimizeButtonCorner.CornerRadius = UDim.new(0, 8)
-MinimizeButtonCorner.Parent = MinimizeButton
-
--- 按钮边框效果
-local MinimizeButtonStroke = Instance.new("UIStroke")
-MinimizeButtonStroke.Color = COLOR_SCHEME.BORDER
-MinimizeButtonStroke.Thickness = 1
-MinimizeButtonStroke.Parent = MinimizeButton
-
--- 关闭按钮
-local CloseButton = Instance.new("TextButton")
-CloseButton.Name = "CloseButton"
-CloseButton.Text = "×"
-CloseButton.Size = UDim2.new(0, 35, 0, 35)
-CloseButton.Position = UDim2.new(1, -35, 0, 5)
-CloseButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-CloseButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-CloseButton.Parent = TitleBar
-
--- 按钮圆角效果
-local CloseButtonCorner = Instance.new("UICorner")
-CloseButtonCorner.CornerRadius = UDim.new(0, 8)
-CloseButtonCorner.Parent = CloseButton
-
--- 按钮边框效果
-local CloseButtonStroke = Instance.new("UIStroke")
-CloseButtonStroke.Color = COLOR_SCHEME.BORDER
-CloseButtonStroke.Thickness = 1
-CloseButtonStroke.Parent = CloseButton
-
--- 整合的悬浮球功能
-local CLOSED_IMAGE_ID = "123947581167369"  -- 关闭状态图片
-local OPENED_IMAGE_ID = "108010245085057"  -- 打开状态图片
-
--- 创建悬浮球
-local FloatingBall = Instance.new("ImageButton")
-FloatingBall.Name = "FloatingBall"
-FloatingBall.Size = UDim2.new(0, 80, 0, 80)
-FloatingBall.Position = UDim2.new(0.5, -40, 0.8, -40)  -- 屏幕底部中央
-FloatingBall.AnchorPoint = Vector2.new(0.5, 0.5)
-FloatingBall.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-FloatingBall.BackgroundTransparency = 1
-FloatingBall.Image = "rbxassetid://" .. CLOSED_IMAGE_ID
-FloatingBall.ScaleType = Enum.ScaleType.Fit
-FloatingBall.Visible = false
-FloatingBall.Parent = ScreenGui
-
--- 添加圆角效果
-local FloatingBallCorner = Instance.new("UICorner")
-FloatingBallCorner.CornerRadius = UDim.new(1, 0)
-FloatingBallCorner.Parent = FloatingBall
-
--- 悬浮球边框效果
-local FloatingBallStroke = Instance.new("UIStroke")
-FloatingBallStroke.Color = COLOR_SCHEME.ACCENT_PURPLE
-FloatingBallStroke.Thickness = 2
-FloatingBallStroke.Parent = FloatingBall
-
--- 悬浮球状态变量
-local isScriptEnabled = false
-local isDragging = false
-local dragStartPosition = Vector2.new(0, 0)
-local ballStartPosition = Vector2.new(0, 0)
-local longPressTime = 0.5  -- 长按时间阈值（秒）
-local longPressTimer = 0
-local isLongPressing = false
-
--- 更新图片函数
-local function updateBallImage()
-    if isScriptEnabled then
-        FloatingBall.Image = "rbxassetid://" .. OPENED_IMAGE_ID
-    else
-        FloatingBall.Image = "rbxassetid://" .. CLOSED_IMAGE_ID
-    end
-end
-
--- 平滑移动函数
-local function smoothMoveTo(position)
-    local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-    local tween = TweenService:Create(FloatingBall, tweenInfo, {Position = position})
+-- 欢迎界面函数
+local function createWelcomeScreen()
+    local welcomeFrame = Instance.new("Frame")
+    welcomeFrame.Size = UDim2.new(1, 0, 1, 0)
+    welcomeFrame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+    welcomeFrame.Parent = screenGui
+    
+    local backgroundImage = Instance.new("ImageLabel")
+    backgroundImage.Image = "rbxassetid://123947581167369"
+    backgroundImage.Size = UDim2.new(0.6, 0, 0.4, 0)
+    backgroundImage.Position = UDim2.new(0.2, 0, 0.2, 0)
+    backgroundImage.BackgroundTransparency = 1
+    backgroundImage.Parent = welcomeFrame
+    
+    local welcomeText = Instance.new("TextLabel")
+    welcomeText.Text = "欢迎使用NZ脚本中心"
+    welcomeText.Size = UDim2.new(0.6, 0, 0.1, 0)
+    welcomeText.Position = UDim2.new(0.2, 0, 0.65, 0)
+    welcomeText.BackgroundTransparency = 1
+    welcomeText.TextColor3 = Color3.new(1, 1, 1)
+    welcomeText.TextScaled = true
+    welcomeText.Font = Enum.Font.GothamBold
+    welcomeText.Parent = welcomeFrame
+    
+    -- 等待3秒后关闭欢迎界面
+    wait(3)
+    
+    local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut)
+    local tween = TweenService:Create(welcomeFrame, tweenInfo, {BackgroundTransparency = 1})
     tween:Play()
+    tween.Completed:Connect(function()
+        welcomeFrame:Destroy()
+        createMainInterface()
+    end)
 end
 
--- 输入开始处理
-FloatingBall.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-        isDragging = true
-        dragStartPosition = Vector2.new(input.Position.X, input.Position.Y)
-        ballStartPosition = Vector2.new(FloatingBall.Position.X.Offset, FloatingBall.Position.Y.Offset)
-        longPressTimer = 0
-        isLongPressing = false
+-- 创建主界面
+local function createMainInterface()
+    local mainFrame = Instance.new("Frame")
+    mainFrame.Size = UDim2.new(0.8, 0, 0.8, 0)
+    mainFrame.Position = UDim2.new(0.1, 0, 0.1, 0)
+    mainFrame.BackgroundTransparency = 0.9
+    mainFrame.BackgroundColor3 = Color3.new(0.05, 0.05, 0.05)
+    mainFrame.BorderSizePixel = 0
+    mainFrame.Parent = screenGui
+    
+    -- 背景图
+    local background = Instance.new("ImageLabel")
+    background.Image = "rbxassetid://105529853851343"
+    background.Size = UDim2.new(1, 0, 1, 0)
+    background.BackgroundTransparency = 1
+    background.Parent = mainFrame
+    
+    -- 标题区域
+    local titleFrame = Instance.new("Frame")
+    titleFrame.Size = UDim2.new(1, 0, 0.1, 0)
+    titleFrame.BackgroundTransparency = 1
+    titleFrame.Parent = mainFrame
+    
+    local title = Instance.new("TextLabel")
+    title.Text = "NZ脚本中心"
+    title.Size = UDim2.new(1, 0, 0.7, 0)
+    title.BackgroundTransparency = 1
+    title.TextColor3 = Color3.new(1, 1, 1)
+    title.TextScaled = true
+    title.Font = Enum.Font.GothamBlack
+    title.TextStrokeTransparency = 0.5
+    title.TextStrokeColor3 = Color3.new(0, 0, 0)
+    title.Parent = titleFrame
+    
+    local author = Instance.new("TextLabel")
+    author.Text = "作者:南烛"
+    author.Size = UDim2.new(1, 0, 0.3, 0)
+    author.Position = UDim2.new(0, 0, 0.7, 0)
+    author.BackgroundTransparency = 1
+    author.TextColor3 = Color3.new(0.8, 0.8, 0.8)
+    author.TextScaled = true
+    author.Font = Enum.Font.Gotham
+    author.Parent = titleFrame
+    
+    -- 控制按钮（右上角）
+    local controlFrame = Instance.new("Frame")
+    controlFrame.Size = UDim2.new(0.1, 0, 0.05, 0)
+    controlFrame.Position = UDim2.new(0.9, 0, 0, 0)
+    controlFrame.BackgroundTransparency = 1
+    controlFrame.Parent = mainFrame
+    
+    local minimizeButton = Instance.new("TextButton")
+    minimizeButton.Text = "_"
+    minimizeButton.Size = UDim2.new(0.4, 0, 1, 0)
+    minimizeButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.8)
+    minimizeButton.TextColor3 = Color3.new(1, 1, 1)
+    minimizeButton.Font = Enum.Font.GothamBold
+    minimizeButton.Parent = controlFrame
+    
+    local closeButton = Instance.new("TextButton")
+    closeButton.Text = "X"
+    closeButton.Size = UDim2.new(0.4, 0, 1, 0)
+    closeButton.Position = UDim2.new(0.5, 0, 0, 0)
+    closeButton.BackgroundColor3 = Color3.new(0.8, 0.2, 0.2)
+    closeButton.TextColor3 = Color3.new(1, 1, 1)
+    closeButton.Font = Enum.Font.GothamBold
+    closeButton.Parent = controlFrame
+    
+    -- 导航栏容器
+    local navContainer = Instance.new("Frame")
+    navContainer.Size = UDim2.new(1, 0, 0.9, 0)
+    navContainer.Position = UDim2.new(0, 0, 0.1, 0)
+    navContainer.BackgroundTransparency = 1
+    navContainer.Parent = mainFrame
+    
+    -- 左侧小导航栏（类型选择）
+    local leftNav = Instance.new("Frame")
+    leftNav.Size = UDim2.new(0.2, 0, 1, 0)
+    leftNav.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+    leftNav.BackgroundTransparency = 0.3
+    leftNav.BorderSizePixel = 0
+    leftNav.Parent = navContainer
+    
+    -- 右侧大导航栏（功能显示）
+    local rightNav = Instance.new("Frame")
+    rightNav.Size = UDim2.new(0.8, 0, 1, 0)
+    rightNav.Position = UDim2.new(0.2, 0, 0, 0)
+    rightNav.BackgroundColor3 = Color3.new(0.15, 0.15, 0.15)
+    rightNav.BackgroundTransparency = 0.2
+    rightNav.BorderSizePixel = 0
+    rightNav.Parent = navContainer
+    
+    -- 类型按钮
+    local function createTypeButton(text, yPosition)
+        local button = Instance.new("TextButton")
+        button.Text = text
+        button.Size = UDim2.new(1, 0, 0.2, 0)
+        button.Position = UDim2.new(0, 0, yPosition, 0)
+        button.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+        button.BackgroundTransparency = 0.5
+        button.TextColor3 = Color3.new(1, 1, 1)
+        button.Font = Enum.Font.Gotham
+        button.TextScaled = true
+        button.Parent = leftNav
         
-        -- 开始检测长按
-        local longPressThread = coroutine.create(function()
-            while isDragging and longPressTimer < longPressTime do
-                wait(0.1)
-                longPressTimer = longPressTimer + 0.1
+        return button
+    end
+    
+    local generalButton = createTypeButton("通用功能", 0)
+    local espButton = createTypeButton("ESP类型", 0.2)
+    local ninjaButton = createTypeButton("忍者传奇", 0.4)
+    
+    -- 功能变量
+    local infiniteJumpEnabled = false
+    local espEnabled = false
+    local autoSwingEnabled = false
+    local espHighlights = {}
+    
+    -- 无限跳跃功能
+    local function setupInfiniteJump()
+        local jumpFrame = Instance.new("Frame")
+        jumpFrame.Size = UDim2.new(1, 0, 1, 0)
+        jumpFrame.BackgroundTransparency = 1
+        jumpFrame.Visible = false
+        jumpFrame.Parent = rightNav
+        
+        local title = Instance.new("TextLabel")
+        title.Text = "无限跳"
+        title.Size = UDim2.new(1, 0, 0.1, 0)
+        title.BackgroundTransparency = 1
+        title.TextColor3 = Color3.new(1, 1, 1)
+        title.TextScaled = true
+        title.Font = Enum.Font.GothamBold
+        title.Parent = jumpFrame
+        
+        local toggleButton = Instance.new("TextButton")
+        toggleButton.Text = "关闭"
+        toggleButton.Size = UDim2.new(0.3, 0, 0.1, 0)
+        toggleButton.Position = UDim2.new(0.35, 0, 0.2, 0)
+        toggleButton.BackgroundColor3 = Color3.new(0.8, 0.2, 0.2)
+        toggleButton.TextColor3 = Color3.new(1, 1, 1)
+        toggleButton.Font = Enum.Font.Gotham
+        toggleButton.TextScaled = true
+        toggleButton.Parent = jumpFrame
+        
+        local function onJumpRequest()
+            if infiniteJumpEnabled then
+                local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+                if humanoid then
+                    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                end
             end
-            
-            if isDragging and longPressTimer >= longPressTime then
-                isLongPressing = true
+        end
+        
+        toggleButton.MouseButton1Click:Connect(function()
+            infiniteJumpEnabled = not infiniteJumpEnabled
+            if infiniteJumpEnabled then
+                toggleButton.Text = "开启"
+                toggleButton.BackgroundColor3 = Color3.new(0.2, 0.8, 0.2)
+                player.CharacterAdded:Connect(function(character)
+                    character:WaitForChild("Humanoid")
+                end)
+            else
+                toggleButton.Text = "关闭"
+                toggleButton.BackgroundColor3 = Color3.new(0.8, 0.2, 0.2)
             end
         end)
-        coroutine.resume(longPressThread)
+        
+        return jumpFrame
     end
-end)
-
--- 输入改变处理（拖拽）
-FloatingBall.InputChanged:Connect(function(input)
-    if isDragging and isLongPressing and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then
-        local currentPosition = Vector2.new(input.Position.X, input.Position.Y)
-        local delta = currentPosition - dragStartPosition
+    
+    -- ESP高亮功能
+    local function setupESP()
+        local espFrame = Instance.new("Frame")
+        espFrame.Size = UDim2.new(1, 0, 1, 0)
+        espFrame.BackgroundTransparency = 1
+        espFrame.Visible = false
+        espFrame.Parent = rightNav
         
-        local newX = ballStartPosition.X + delta.X
-        local newY = ballStartPosition.Y + delta.Y
+        local title = Instance.new("TextLabel")
+        title.Text = "高亮显示人物"
+        title.Size = UDim2.new(1, 0, 0.1, 0)
+        title.BackgroundTransparency = 1
+        title.TextColor3 = Color3.new(1, 1, 1)
+        title.TextScaled = true
+        title.Font = Enum.Font.GothamBold
+        title.Parent = espFrame
         
-        -- 限制在屏幕范围内
-        newX = math.max(0, math.min(newX, ScreenGui.AbsoluteSize.X - FloatingBall.AbsoluteSize.X))
-        newY = math.max(0, math.min(newY, ScreenGui.AbsoluteSize.Y - FloatingBall.AbsoluteSize.Y))
+        local toggleButton = Instance.new("TextButton")
+        toggleButton.Text = "关闭"
+        toggleButton.Size = UDim2.new(0.3, 0, 0.1, 0)
+        toggleButton.Position = UDim2.new(0.35, 0, 0.2, 0)
+        toggleButton.BackgroundColor3 = Color3.new(0.8, 0.2, 0.2)
+        toggleButton.TextColor3 = Color3.new(1, 1, 1)
+        toggleButton.Font = Enum.Font.Gotham
+        toggleButton.TextScaled = true
+        toggleButton.Parent = espFrame
         
-        FloatingBall.Position = UDim2.new(0, newX, 0, newY)
-    end
-end)
-
--- 输入结束处理
-FloatingBall.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-        isDragging = false
-        
-        if not isLongPressing then
-            -- 点击事件：切换脚本状态
-            isScriptEnabled = not isScriptEnabled
-            updateBallImage()
-            
-            -- 切换主界面显示/隐藏
-            if isScriptEnabled then
-                MainFrame.Visible = true
-                FloatingBall.BackgroundColor3 = COLOR_SCHEME.ACCENT_BLUE
-            else
-                MainFrame.Visible = false
-                FloatingBall.BackgroundColor3 = COLOR_SCHEME.ACCENT_PURPLE
+        local function highlightPlayer(otherPlayer)
+            if otherPlayer ~= player and otherPlayer.Character then
+                local highlight = Instance.new("Highlight")
+                highlight.FillColor = Color3.new(1, 0, 0)
+                highlight.OutlineColor = Color3.new(1, 1, 0)
+                highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+                highlight.Parent = otherPlayer.Character
+                espHighlights[otherPlayer] = highlight
             end
         end
         
-        isLongPressing = false
-    end
-end)
-
--- 屏幕尺寸变化时重新定位
-ScreenGui:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
-    if not isDragging then
-        local currentPos = FloatingBall.Position
-        local screenSize = ScreenGui.AbsoluteSize
-        local ballSize = FloatingBall.AbsoluteSize
-        
-        -- 确保悬浮球不会超出屏幕边界
-        local newX = math.max(0, math.min(currentPos.X.Offset, screenSize.X - ballSize.X))
-        local newY = math.max(0, math.min(currentPos.Y.Offset, screenSize.Y - ballSize.Y))
-        
-        if newX ~= currentPos.X.Offset or newY ~= currentPos.Y.Offset then
-            smoothMoveTo(UDim2.new(0, newX, 0, newY))
+        local function removeHighlight(otherPlayer)
+            if espHighlights[otherPlayer] then
+                espHighlights[otherPlayer]:Destroy()
+                espHighlights[otherPlayer] = nil
+            end
         end
+        
+        toggleButton.MouseButton1Click:Connect(function()
+            espEnabled = not espEnabled
+            if espEnabled then
+                toggleButton.Text = "开启"
+                toggleButton.BackgroundColor3 = Color3.new(0.2, 0.8, 0.2)
+                -- 高亮现有玩家
+                for _, otherPlayer in ipairs(Players:GetPlayers()) do
+                    highlightPlayer(otherPlayer)
+                end
+                -- 监听新玩家
+                Players.PlayerAdded:Connect(highlightPlayer)
+                Players.PlayerRemoving:Connect(removeHighlight)
+            else
+                toggleButton.Text = "关闭"
+                toggleButton.BackgroundColor3 = Color3.new(0.8, 0.2, 0.2)
+                -- 移除所有高亮
+                for otherPlayer, highlight in pairs(espHighlights) do
+                    highlight:Destroy()
+                end
+                espHighlights = {}
+            end
+        end)
+        
+        return espFrame
     end
-end)
-
--- 左侧导航栏
-local NavBar = Instance.new("Frame")
-NavBar.Name = "NavBar"
-NavBar.Size = UDim2.new(0, 130, 1, -50)
-NavBar.Position = UDim2.new(0, 0, 0, 45)
-NavBar.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-NavBar.Parent = MainFrame
-
--- 导航栏边框效果
-local NavBarStroke = Instance.new("UIStroke")
-NavBarStroke.Color = COLOR_SCHEME.BORDER
-NavBarStroke.Thickness = 2
-NavBarStroke.Parent = NavBar
-
--- 开发团队按钮
-local DevTeamButton = Instance.new("TextButton")
-DevTeamButton.Name = "DevTeamButton"
-DevTeamButton.Text = "开发团队"
-DevTeamButton.Size = UDim2.new(1, -10, 0, 45)
-DevTeamButton.Position = UDim2.new(0, 5, 0, 10)
-DevTeamButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-DevTeamButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-DevTeamButton.Parent = NavBar
-
--- 按钮圆角效果
-local DevTeamButtonCorner = Instance.new("UICorner")
-DevTeamButtonCorner.CornerRadius = UDim.new(0, 8)
-DevTeamButtonCorner.Parent = DevTeamButton
-
--- 按钮边框效果
-local DevTeamButtonStroke = Instance.new("UIStroke")
-DevTeamButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
-DevTeamButtonStroke.Thickness = 1
-DevTeamButtonStroke.Parent = DevTeamButton
-
--- 通用功能按钮
-local GeneralButton = Instance.new("TextButton")
-GeneralButton.Name = "GeneralButton"
-GeneralButton.Text = "通用功能"
-GeneralButton.Size = UDim2.new(1, -10, 0, 45)
-GeneralButton.Position = UDim2.new(0, 5, 0, 60)
-GeneralButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-GeneralButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-GeneralButton.Parent = NavBar
-
--- 按钮圆角效果
-local GeneralButtonCorner = Instance.new("UICorner")
-GeneralButtonCorner.CornerRadius = UDim.new(0, 8)
-GeneralButtonCorner.Parent = GeneralButton
-
--- 按钮边框效果
-local GeneralButtonStroke = Instance.new("UIStroke")
-GeneralButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
-GeneralButtonStroke.Thickness = 1
-GeneralButtonStroke.Parent = GeneralButton
-
--- ESP功能按钮
-local ESPButton = Instance.new("TextButton")
-ESPButton.Name = "ESPButton"
-ESPButton.Text = "ESP功能"
-ESPButton.Size = UDim2.new(1, -10, 0, 45)
-ESPButton.Position = UDim2.new(0, 5, 0, 110)
-ESPButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-ESPButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-ESPButton.Parent = NavBar
-
--- 按钮圆角效果
-local ESPButtonCorner = Instance.new("UICorner")
-ESPButtonCorner.CornerRadius = UDim.new(0, 8)
-ESPButtonCorner.Parent = ESPButton
-
--- 按钮边框效果
-local ESPButtonStroke = Instance.new("UIStroke")
-ESPButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
-ESPButtonStroke.Thickness = 1
-ESPButtonStroke.Parent = ESPButton
-
--- 其他脚本按钮
-local OtherScriptsButton = Instance.new("TextButton")
-OtherScriptsButton.Name = "OtherScriptsButton"
-OtherScriptsButton.Text = "其他脚本"
-OtherScriptsButton.Size = UDim2.new(1, -10, 0, 45)
-OtherScriptsButton.Position = UDim2.new(0, 5, 0, 160)
-OtherScriptsButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-OtherScriptsButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-OtherScriptsButton.Parent = NavBar
-
--- 按钮圆角效果
-local OtherScriptsButtonCorner = Instance.new("UICorner")
-OtherScriptsButtonCorner.CornerRadius = UDim.new(0, 8)
-OtherScriptsButtonCorner.Parent = OtherScriptsButton
-
--- 按钮边框效果
-local OtherScriptsButtonStroke = Instance.new("UIStroke")
-OtherScriptsButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
-OtherScriptsButtonStroke.Thickness = 1
-OtherScriptsButtonStroke.Parent = OtherScriptsButton
-
--- 一键汉化按钮
-local ChineseButton = Instance.new("TextButton")
-ChineseButton.Name = "ChineseButton"
-ChineseButton.Text = "一键汉化"
-ChineseButton.Size = UDim2.new(1, -10, 0, 45)
-ChineseButton.Position = UDim2.new(0, 5, 0, 210)
-ChineseButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-ChineseButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-ChineseButton.Parent = NavBar
-
--- 按钮圆角效果
-local ChineseButtonCorner = Instance.new("UICorner")
-ChineseButtonCorner.CornerRadius = UDim.new(0, 8)
-ChineseButtonCorner.Parent = ChineseButton
-
--- 按钮边框效果
-local ChineseButtonStroke = Instance.new("UIStroke")
-ChineseButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
-ChineseButtonStroke.Thickness = 1
-ChineseButtonStroke.Parent = ChineseButton
-
--- 枪战竞技场按钮
-local GunArenaButton = Instance.new("TextButton")
-GunArenaButton.Name = "GunArenaButton"
-GunArenaButton.Text = "枪战竞技场"
-GunArenaButton.Size = UDim2.new(1, -10, 0, 45)
-GunArenaButton.Position = UDim2.new(0, 5, 0, 260)
-GunArenaButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-GunArenaButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-GunArenaButton.Parent = NavBar
-
--- 按钮圆角效果
-local GunArenaButtonCorner = Instance.new("UICorner")
-GunArenaButtonCorner.CornerRadius = UDim.new(0, 8)
-GunArenaButtonCorner.Parent = GunArenaButton
-
--- 按钮边框效果
-local GunArenaButtonStroke = Instance.new("UIStroke")
-GunArenaButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
-GunArenaButtonStroke.Thickness = 1
-GunArenaButtonStroke.Parent = GunArenaButton
-
--- 右侧内容区域
-local ContentFrame = Instance.new("Frame")
-ContentFrame.Name = "ContentFrame"
-ContentFrame.Size = UDim2.new(1, -135, 1, -55)
-ContentFrame.Position = UDim2.new(0, 135, 0, 45)
-ContentFrame.BackgroundTransparency = 1
-ContentFrame.Parent = MainFrame
-
--- 状态提示
-local StatusText = Instance.new("TextLabel")
-StatusText.Name = "StatusText"
-StatusText.Text = "就绪"
-StatusText.Size = UDim2.new(1, 0, 0, 20)
-StatusText.Position = UDim2.new(0, 0, 1, -25)
-StatusText.BackgroundTransparency = 1
-StatusText.TextColor3 = Color3.fromRGB(0, 1, 0)
-StatusText.TextSize = 14
-StatusText.Font = Enum.Font.SourceSans
-StatusText.TextXAlignment = Enum.TextXAlignment.Left
-StatusText.Parent = ContentFrame
-
--- 开发团队页面
-local DevTeamFrame = Instance.new("Frame")
-DevTeamFrame.Name = "DevTeamFrame"
-DevTeamFrame.Size = UDim2.new(1, 0, 1, 0)
-DevTeamFrame.BackgroundTransparency = 1
-DevTeamFrame.Visible = false
-DevTeamFrame.Parent = ContentFrame
-
--- 作者留言
-local AuthorMessage = Instance.new("TextLabel")
-AuthorMessage.Name = "AuthorMessage"
-AuthorMessage.Text = "欢迎使用NZ脚本中心暗黑科技版！为确保脚本功能稳定及账号安全，严禁将脚本配套的卡密外传或分享给他人，违规可能导致卡密失效，感谢你的配合！"
-AuthorMessage.Size = UDim2.new(1, -20, 0, 120)
-AuthorMessage.Position = UDim2.new(0, 10, 0, 10)
-AuthorMessage.BackgroundTransparency = 1
-AuthorMessage.TextColor3 = COLOR_SCHEME.ACCENT_PURPLE
-AuthorMessage.TextSize = 16
-AuthorMessage.TextWrapped = true
-AuthorMessage.Font = Enum.Font.GothamBold
-AuthorMessage.Parent = DevTeamFrame
-
--- 开发人员信息
-local DeveloperInfo = Instance.new("TextLabel")
-DeveloperInfo.Name = "DeveloperInfo"
-DeveloperInfo.Text = "开发团队:\n主作者:南烛\n副作者:逍遥\n经理:深拥情话梦一场\n代理:孙笑川\n代理:以后\n代理:星云\n星云大号:相信"
-DeveloperInfo.Size = UDim2.new(1, -20, 0, 180)
-DeveloperInfo.Position = UDim2.new(0, 10, 0, 140)
-DeveloperInfo.BackgroundTransparency = 1
-DeveloperInfo.TextColor3 = Color3.fromRGB(1, 0.5, 0)
-DeveloperInfo.TextSize = 18
-DeveloperInfo.TextWrapped = true
-DeveloperInfo.Font = Enum.Font.GothamBold
-DeveloperInfo.Parent = DevTeamFrame
-
--- 通用功能页面
-local GeneralFrame = Instance.new("Frame")
-GeneralFrame.Name = "GeneralFrame"
-GeneralFrame.Size = UDim2.new(1, 0, 1, 0)
-GeneralFrame.BackgroundTransparency = 1
-GeneralFrame.Visible = true
-GeneralFrame.Parent = ContentFrame
-
--- 无敌少侠飞行按钮
-local FlightButton = Instance.new("TextButton")
-FlightButton.Name = "FlightButton"
-FlightButton.Text = "无敌少侠飞行"
-FlightButton.Size = UDim2.new(1, 0, 0, 45)
-FlightButton.Position = UDim2.new(0, 0, 0, 10)
-FlightButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-FlightButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-FlightButton.Parent = GeneralFrame
-
--- 按钮圆角效果
-local FlightButtonCorner = Instance.new("UICorner")
-FlightButtonCorner.CornerRadius = UDim.new(0, 8)
-FlightButtonCorner.Parent = FlightButton
-
--- 按钮边框效果
-local FlightButtonStroke = Instance.new("UIStroke")
-FlightButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
-FlightButtonStroke.Thickness = 1
-FlightButtonStroke.Parent = FlightButton
-
--- 快速旋转按钮
-local FastSpinButton = Instance.new("TextButton")
-FastSpinButton.Name = "FastSpinButton"
-FastSpinButton.Text = "快速旋转 (速度50)"
-FastSpinButton.Size = UDim2.new(1, 0, 0, 45)
-FastSpinButton.Position = UDim2.new(0, 0, 0, 65)
-FastSpinButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-FastSpinButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-FastSpinButton.Parent = GeneralFrame
-
--- 按钮圆角效果
-local FastSpinButtonCorner = Instance.new("UICorner")
-FastSpinButtonCorner.CornerRadius = UDim.new(0, 8)
-FastSpinButtonCorner.Parent = FastSpinButton
-
--- 按钮边框效果
-local FastSpinButtonStroke = Instance.new("UIStroke")
-FastSpinButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
-FastSpinButtonStroke.Thickness = 1
-FastSpinButtonStroke.Parent = FastSpinButton
-
--- 极速旋转按钮
-local SuperSpinButton = Instance.new("TextButton")
-SuperSpinButton.Name = "SuperSpinButton"
-SuperSpinButton.Text = "极速旋转 (速度100)"
-SuperSpinButton.Size = UDim2.new(1, 0, 0, 45)
-SuperSpinButton.Position = UDim2.new(0, 0, 0, 120)
-SuperSpinButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-SuperSpinButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-SuperSpinButton.Parent = GeneralFrame
-
--- 按钮圆角效果
-local SuperSpinButtonCorner = Instance.new("UICorner")
-SuperSpinButtonCorner.CornerRadius = UDim.new(0, 8)
-SuperSpinButtonCorner.Parent = SuperSpinButton
-
--- 按钮边框效果
-local SuperSpinButtonStroke = Instance.new("UIStroke")
-SuperSpinButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
-SuperSpinButtonStroke.Thickness = 1
-SuperSpinButtonStroke.Parent = SuperSpinButton
-
--- 无限跳按钮
-local InfiniteJumpButton = Instance.new("TextButton")
-InfiniteJumpButton.Name = "InfiniteJumpButton"
-InfiniteJumpButton.Text = "无限跳跃"
-InfiniteJumpButton.Size = UDim2.new(1, 0, 0, 45)
-InfiniteJumpButton.Position = UDim2.new(0, 0, 0, 175)
-InfiniteJumpButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-InfiniteJumpButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-InfiniteJumpButton.Parent = GeneralFrame
-
--- 按钮圆角效果
-local InfiniteJumpButtonCorner = Instance.new("UICorner")
-InfiniteJumpButtonCorner.CornerRadius = UDim.new(0, 8)
-InfiniteJumpButtonCorner.Parent = InfiniteJumpButton
-
--- 按钮边框效果
-local InfiniteJumpButtonStroke = Instance.new("UIStroke")
-InfiniteJumpButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
-InfiniteJumpButtonStroke.Thickness = 1
-InfiniteJumpButtonStroke.Parent = InfiniteJumpButton
-
--- 夜视功能按钮
-local NightVisionButton = Instance.new("TextButton")
-NightVisionButton.Name = "NightVisionButton"
-NightVisionButton.Text = "夜视功能"
-NightVisionButton.Size = UDim2.new(1, 0, 0, 45)
-NightVisionButton.Position = UDim2.new(0, 0, 0, 230)
-NightVisionButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-NightVisionButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-NightVisionButton.Parent = GeneralFrame
-
--- 按钮圆角效果
-local NightVisionButtonCorner = Instance.new("UICorner")
-NightVisionButtonCorner.CornerRadius = UDim.new(0, 8)
-NightVisionButtonCorner.Parent = NightVisionButton
-
--- 按钮边框效果
-local NightVisionButtonStroke = Instance.new("UIStroke")
-NightVisionButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
-NightVisionButtonStroke.Thickness = 1
-NightVisionButtonStroke.Parent = NightVisionButton
-
--- ESP功能页面
-local ESPFrame = Instance.new("Frame")
-ESPFrame.Name = "ESPFrame"
-ESPFrame.Size = UDim2.new(1, 0, 1, 0)
-ESPFrame.BackgroundTransparency = 1
-ESPFrame.Visible = false
-ESPFrame.Parent = ContentFrame
-
--- ESP开关按钮
-local ESPToggle = Instance.new("TextButton")
-ESPToggle.Name = "ESPToggle"
-ESPToggle.Text = "开启ESP"
-ESPToggle.Size = UDim2.new(1, 0, 0, 45)
-ESPToggle.Position = UDim2.new(0, 0, 0, 10)
-ESPToggle.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-ESPToggle.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-ESPToggle.Parent = ESPFrame
-
--- 按钮圆角效果
-local ESPToggleCorner = Instance.new("UICorner")
-ESPToggleCorner.CornerRadius = UDim.new(0, 8)
-ESPToggleCorner.Parent = ESPToggle
-
--- 按钮边框效果
-local ESPToggleStroke = Instance.new("UIStroke")
-ESPToggleStroke.Color = COLOR_SCHEME.ACCENT_BLUE
-ESPToggleStroke.Thickness = 1
-ESPToggleStroke.Parent = ESPToggle
-
--- 队伍检测开关按钮
-local TeamDetectToggle = Instance.new("TextButton")
-TeamDetectToggle.Name = "TeamDetectToggle"
-TeamDetectToggle.Text = "开启队伍检测"
-TeamDetectToggle.Size = UDim2.new(1, 0, 0, 45)
-TeamDetectToggle.Position = UDim2.new(0, 0, 0, 60)
-TeamDetectToggle.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-TeamDetectToggle.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-TeamDetectToggle.Parent = ESPFrame
-
--- 按钮圆角效果
-local TeamDetectToggleCorner = Instance.new("UICorner")
-TeamDetectToggleCorner.CornerRadius = UDim.new(0, 8)
-TeamDetectToggleCorner.Parent = TeamDetectToggle
-
--- 按钮边框效果
-local TeamDetectToggleStroke = Instance.new("UIStroke")
-TeamDetectToggleStroke.Color = COLOR_SCHEME.ACCENT_BLUE
-TeamDetectToggleStroke.Thickness = 1
-TeamDetectToggleStroke.Parent = TeamDetectToggle
-
--- 其他脚本页面
-local OtherScriptsFrame = Instance.new("Frame")
-OtherScriptsFrame.Name = "OtherScriptsFrame"
-OtherScriptsFrame.Size = UDim2.new(1, 0, 1, 0)
-OtherScriptsFrame.BackgroundTransparency = 1
-OtherScriptsFrame.Visible = false
-OtherScriptsFrame.Parent = ContentFrame
-
--- SN.hub脚本按钮
-local SNHubButton = Instance.new("TextButton")
-SNHubButton.Name = "SNHubButton"
-SNHubButton.Text = "SN.hub"
-SNHubButton.Size = UDim2.new(1, 0, 0, 45)
-SNHubButton.Position = UDim2.new(0, 0, 0, 10)
-SNHubButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-SNHubButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-SNHubButton.Parent = OtherScriptsFrame
-
--- 按钮圆角效果
-local SNHubButtonCorner = Instance.new("UICorner")
-SNHubButtonCorner.CornerRadius = UDim.new(0, 8)
-SNHubButtonCorner.Parent = SNHubButton
-
--- 按钮边框效果
-local SNHubButtonStroke = Instance.new("UIStroke")
-SNHubButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
-SNHubButtonStroke.Thickness = 1
-SNHubButtonStroke.Parent = SNHubButton
-
--- 叶脚本按钮
-local YeScriptButton = Instance.new("TextButton")
-YeScriptButton.Name = "YeScriptButton"
-YeScriptButton.Text = "叶脚本"
-YeScriptButton.Size = UDim2.new(1, 0, 0, 45)
-YeScriptButton.Position = UDim2.new(0, 0, 0, 60)
-YeScriptButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-YeScriptButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-YeScriptButton.Parent = OtherScriptsFrame
-
--- 按钮圆角效果
-local YeScriptButtonCorner = Instance.new("UICorner")
-YeScriptButtonCorner.CornerRadius = UDim.new(0, 8)
-YeScriptButtonCorner.Parent = YeScriptButton
-
--- 按钮边框效果
-local YeScriptButtonStroke = Instance.new("UIStroke")
-YeScriptButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
-YeScriptButtonStroke.Thickness = 1
-YeScriptButtonStroke.Parent = YeScriptButton
-
--- 天脚本按钮
-local TianScriptButton = Instance.new("TextButton")
-TianScriptButton.Name = "TianScriptButton"
-TianScriptButton.Text = "天脚本"
-TianScriptButton.Size = UDim2.new(1, 0, 0, 45)
-TianScriptButton.Position = UDim2.new(0, 0, 0, 110)
-TianScriptButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-TianScriptButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-TianScriptButton.Parent = OtherScriptsFrame
-
--- 按钮圆角效果
-local TianScriptButtonCorner = Instance.new("UICorner")
-TianScriptButtonCorner.CornerRadius = UDim.new(0, 8)
-TianScriptButtonCorner.Parent = TianScriptButton
-
--- 按钮边框效果
-local TianScriptButtonStroke = Instance.new("UIStroke")
-TianScriptButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
-TianScriptButtonStroke.Thickness = 1
-TianScriptButtonStroke.Parent = TianScriptButton
-
--- TX.退休脚本按钮
-local TXRetireButton = Instance.new("TextButton")
-TXRetireButton.Name = "TXRetireButton"
-TXRetireButton.Text = "TX.退休"
-TXRetireButton.Size = UDim2.new(1, 0, 0, 45)
-TXRetireButton.Position = UDim2.new(0, 0, 0, 160)
-TXRetireButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-TXRetireButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-TXRetireButton.Parent = OtherScriptsFrame
-
--- 按钮圆角效果
-local TXRetireButtonCorner = Instance.new("UICorner")
-TXRetireButtonCorner.CornerRadius = UDim.new(0, 8)
-TXRetireButtonCorner.Parent = TXRetireButton
-
--- 按钮边框效果
-local TXRetireButtonStroke = Instance.new("UIStroke")
-TXRetireButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
-TXRetireButtonStroke.Thickness = 1
-TXRetireButtonStroke.Parent = TXRetireButton
-
--- 一键汉化页面
-local ChineseFrame = Instance.new("Frame")
-ChineseFrame.Name = "ChineseFrame"
-ChineseFrame.Size = UDim2.new(1, 0, 1, 0)
-ChineseFrame.BackgroundTransparency = 1
-ChineseFrame.Visible = false
-ChineseFrame.Parent = ContentFrame
-
--- 汉化按钮
-local ChineseButton = Instance.new("TextButton")
-ChineseButton.Name = "ChineseButton"
-ChineseButton.Text = "一键汉化英文脚本"
-ChineseButton.Size = UDim2.new(1, 0, 0, 45)
-ChineseButton.Position = UDim2.new(0, 0, 0, 10)
-ChineseButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-ChineseButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-ChineseButton.Parent = ChineseFrame
-
--- 按钮圆角效果
-local ChineseButtonCorner = Instance.new("UICorner")
-ChineseButtonCorner.CornerRadius = UDim.new(0, 8)
-ChineseButtonCorner.Parent = ChineseButton
-
--- 按钮边框效果
-local ChineseButtonStroke = Instance.new("UIStroke")
-ChineseButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
-ChineseButtonStroke.Thickness = 1
-ChineseButtonStroke.Parent = ChineseButton
-
--- 枪战竞技场页面
-local GunArenaFrame = Instance.new("Frame")
-GunArenaFrame.Name = "GunArenaFrame"
-GunArenaFrame.Size = UDim2.new(1, 0, 1, 0)
-GunArenaFrame.BackgroundTransparency = 1
-GunArenaFrame.Visible = false
-GunArenaFrame.Parent = ContentFrame
-
--- 自动农场按钮
-local AutoFarmButton = Instance.new("TextButton")
-AutoFarmButton.Name = "AutoFarmButton"
-AutoFarmButton.Text = "自动农场"
-AutoFarmButton.Size = UDim2.new(1, 0, 0, 45)
-AutoFarmButton.Position = UDim2.new(0, 0, 0, 10)
-AutoFarmButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-AutoFarmButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-AutoFarmButton.Parent = GunArenaFrame
-
--- 按钮圆角效果
-local AutoFarmButtonCorner = Instance.new("UICorner")
-AutoFarmButtonCorner.CornerRadius = UDim.new(0, 8)
-AutoFarmButtonCorner.Parent = AutoFarmButton
-
--- 按钮边框效果
-local AutoFarmButtonStroke = Instance.new("UIStroke")
-AutoFarmButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
-AutoFarmButtonStroke.Thickness = 1
-AutoFarmButtonStroke.Parent = AutoFarmButton
-
--- 自动农场描述
-local AutoFarmDescription = Instance.new("TextLabel")
-AutoFarmDescription.Name = "AutoFarmDescription"
-AutoFarmDescription.Text = "需要你手动开火。自动农场的功能是会直接传送到其他玩家的后面并且准心瞄准他的头部。当这个玩家打死以后自动切换到其他玩家。只传送到敌人后面不会传送到队友后面。会在敌人后面一直待着直到对方死亡换到其他人后面一直待着。"
-AutoFarmDescription.Size = UDim2.new(1, 0, 0, 60)
-AutoFarmDescription.Position = UDim2.new(0, 0, 0, 60)
-AutoFarmDescription.BackgroundTransparency = 1
-AutoFarmDescription.TextColor3 = COLOR_SCHEME.TEXT_GRAY
-AutoFarmDescription.TextSize = 12
-AutoFarmDescription.TextWrapped = true
-AutoFarmDescription.TextXAlignment = Enum.TextXAlignment.Left
-AutoFarmDescription.Parent = GunArenaFrame
-
--- 碰撞箱功能标题
-local HitboxTitle = Instance.new("TextLabel")
-HitboxTitle.Name = "HitboxTitle"
-HitboxTitle.Text = "碰撞箱功能"
-HitboxTitle.Size = UDim2.new(1, 0, 0, 30)
-HitboxTitle.Position = UDim2.new(0, 0, 0, 130)
-HitboxTitle.BackgroundTransparency = 1
-HitboxTitle.TextColor3 = COLOR_SCHEME.ACCENT_PURPLE
-HitboxTitle.TextSize = 20
-HitboxTitle.Font = Enum.Font.GothamBold
-HitboxTitle.TextXAlignment = Enum.TextXAlignment.Left
-HitboxTitle.Parent = GunArenaFrame
-
--- 碰撞箱大小滑块
-local HitboxSizeSlider = Instance.new("TextLabel")
-HitboxSizeSlider.Name = "HitboxSizeSlider"
-HitboxSizeSlider.Text = "碰撞箱大小: 1"
-HitboxSizeSlider.Size = UDim2.new(1, 0, 0, 20)
-HitboxSizeSlider.Position = UDim2.new(0, 0, 0, 170)
-HitboxSizeSlider.BackgroundTransparency = 1
-HitboxSizeSlider.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-HitboxSizeSlider.TextSize = 14
-HitboxSizeSlider.TextXAlignment = Enum.TextXAlignment.Left
-HitboxSizeSlider.Parent = GunArenaFrame
-
-local HitboxSizeBar = Instance.new("Frame")
-HitboxSizeBar.Name = "HitboxSizeBar"
-HitboxSizeBar.Size = UDim2.new(1, 0, 0, 10)
-HitboxSizeBar.Position = UDim2.new(0, 0, 0, 195)
-HitboxSizeBar.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-HitboxSizeBar.Parent = GunArenaFrame
-
-local HitboxSizeBarCorner = Instance.new("UICorner")
-HitboxSizeBarCorner.CornerRadius = UDim.new(0, 5)
-HitboxSizeBarCorner.Parent = HitboxSizeBar
-
-local HitboxSizeFill = Instance.new("Frame")
-HitboxSizeFill.Name = "HitboxSizeFill"
-HitboxSizeFill.Size = UDim2.new(0.2, 0, 1, 0)  -- 默认1/5
-HitboxSizeFill.BackgroundColor3 = COLOR_SCHEME.ACCENT_BLUE
-HitboxSizeFill.Parent = HitboxSizeBar
-
-local HitboxSizeFillCorner = Instance.new("UICorner")
-HitboxSizeFillCorner.CornerRadius = UDim.new(0, 5)
-HitboxSizeFillCorner.Parent = HitboxSizeFill
-
--- 碰撞箱透明度滑块
-local HitboxTransparencySlider = Instance.new("TextLabel")
-HitboxTransparencySlider.Name = "HitboxTransparencySlider"
-HitboxTransparencySlider.Text = "碰撞箱透明度: 0.2"
-HitboxTransparencySlider.Size = UDim2.new(1, 0, 0, 20)
-HitboxTransparencySlider.Position = UDim2.new(0, 0, 0, 215)
-HitboxTransparencySlider.BackgroundTransparency = 1
-HitboxTransparencySlider.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-HitboxTransparencySlider.TextSize = 14
-HitboxTransparencySlider.TextXAlignment = Enum.TextXAlignment.Left
-HitboxTransparencySlider.Parent = GunArenaFrame
-
-local HitboxTransparencyBar = Instance.new("Frame")
-HitboxTransparencyBar.Name = "HitboxTransparencyBar"
-HitboxTransparencyBar.Size = UDim2.new(1, 0, 0, 10)
-HitboxTransparencyBar.Position = UDim2.new(0, 0, 0, 240)
-HitboxTransparencyBar.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-HitboxTransparencyBar.Parent = GunArenaFrame
-
-local HitboxTransparencyBarCorner = Instance.new("UICorner")
-HitboxTransparencyBarCorner.CornerRadius = UDim.new(0, 5)
-HitboxTransparencyBarCorner.Parent = HitboxTransparencyBar
-
-local HitboxTransparencyFill = Instance.new("Frame")
-HitboxTransparencyFill.Name = "HitboxTransparencyFill"
-HitboxTransparencyFill.Size = UDim2.new(0.2, 0, 1, 0)  -- 默认0.2
-HitboxTransparencyFill.BackgroundColor3 = COLOR_SCHEME.ACCENT_BLUE
-HitboxTransparencyFill.Parent = HitboxTransparencyBar
-
-local HitboxTransparencyFillCorner = Instance.new("UICorner")
-HitboxTransparencyFillCorner.CornerRadius = UDim.new(0, 5)
-HitboxTransparencyFillCorner.Parent = HitboxTransparencyFill
-
--- 提交更改按钮
-local SubmitHitboxButton = Instance.new("TextButton")
-SubmitHitboxButton.Name = "SubmitHitboxButton"
-SubmitHitboxButton.Text = "提交更改"
-SubmitHitboxButton.Size = UDim2.new(1, 0, 0, 40)
-SubmitHitboxButton.Position = UDim2.new(0, 0, 0, 260)
-SubmitHitboxButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-SubmitHitboxButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-SubmitHitboxButton.Parent = GunArenaFrame
-
--- 按钮圆角效果
-local SubmitHitboxButtonCorner = Instance.new("UICorner")
-SubmitHitboxButtonCorner.CornerRadius = UDim.new(0, 8)
-SubmitHitboxButtonCorner.Parent = SubmitHitboxButton
-
--- 按钮边框效果
-local SubmitHitboxButtonStroke = Instance.new("UIStroke")
-SubmitHitboxButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
-SubmitHitboxButtonStroke.Thickness = 1
-SubmitHitboxButtonStroke.Parent = SubmitHitboxButton
-
--- 美化功能标题
-local SkinTitle = Instance.new("TextLabel")
-SkinTitle.Name = "SkinTitle"
-SkinTitle.Text = "美化功能"
-SkinTitle.Size = UDim2.new(1, 0, 0, 30)
-SkinTitle.Position = UDim2.new(0, 0, 0, 310)
-SkinTitle.BackgroundTransparency = 1
-SkinTitle.TextColor3 = COLOR_SCHEME.ACCENT_PURPLE
-SkinTitle.TextSize = 20
-SkinTitle.Font = Enum.Font.GothamBold
-SkinTitle.TextXAlignment = Enum.TextXAlignment.Left
-SkinTitle.Parent = GunArenaFrame
-
--- 七彩枪皮按钮
-local RainbowSkinButton = Instance.new("TextButton")
-RainbowSkinButton.Name = "RainbowSkinButton"
-RainbowSkinButton.Text = "七彩枪皮"
-RainbowSkinButton.Size = UDim2.new(1, 0, 0, 45)
-RainbowSkinButton.Position = UDim2.new(0, 0, 0, 350)
-RainbowSkinButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-RainbowSkinButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-RainbowSkinButton.Parent = GunArenaFrame
-
--- 按钮圆角效果
-local RainbowSkinButtonCorner = Instance.new("UICorner")
-RainbowSkinButtonCorner.CornerRadius = UDim.new(0, 8)
-RainbowSkinButtonCorner.Parent = RainbowSkinButton
-
--- 按钮边框效果
-local RainbowSkinButtonStroke = Instance.new("UIStroke")
-RainbowSkinButtonStroke.Color = COLOR_SCHEME.ACCENT_BLUE
-RainbowSkinButtonStroke.Thickness = 1
-RainbowSkinButtonStroke.Parent = RainbowSkinButton
-
--- 七彩枪皮描述
-local RainbowSkinDescription = Instance.new("TextLabel")
-RainbowSkinDescription.Name = "RainbowSkinDescription"
-RainbowSkinDescription.Text = "开启后会将玩家所拿的枪械、刀、手雷进行七彩颜色的变换。玩什么枪都可以刀也可以手雷也可以。用户关闭那个按钮就不再进行变换颜色恢复原本的样子。"
-RainbowSkinDescription.Size = UDim2.new(1, 0, 0, 40)
-RainbowSkinDescription.Position = UDim2.new(0, 0, 0, 400)
-RainbowSkinDescription.BackgroundTransparency = 1
-RainbowSkinDescription.TextColor3 = COLOR_SCHEME.TEXT_GRAY
-RainbowSkinDescription.TextSize = 12
-RainbowSkinDescription.TextWrapped = true
-RainbowSkinDescription.TextXAlignment = Enum.TextXAlignment.Left
-RainbowSkinDescription.Parent = GunArenaFrame
-
--- 退出提示框
-local ExitPrompt = Instance.new("Frame")
-ExitPrompt.Name = "ExitPrompt"
-ExitPrompt.Size = UDim2.new(0, 300, 0, 150)
-ExitPrompt.Position = UDim2.new(0.5, -150, 0.5, -75)
-ExitPrompt.BackgroundColor3 = COLOR_SCHEME.BACKGROUND
-ExitPrompt.BorderSizePixel = 0
-ExitPrompt.Visible = false
-ExitPrompt.Parent = ScreenGui
-
--- 渐变背景效果
-local ExitPromptGradient = Instance.new("UIGradient")
-ExitPromptGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, COLOR_SCHEME.ACCENT_BLUE),
-    ColorSequenceKeypoint.new(1, COLOR_SCHEME.ACCENT_PURPLE)
-})
-ExitPromptGradient.Rotation = 45
-ExitPromptGradient.Parent = ExitPrompt
-
--- 圆角效果
-local ExitPromptCorner = Instance.new("UICorner")
-ExitPromptCorner.CornerRadius = UDim.new(0, 12)
-ExitPromptCorner.Parent = ExitPrompt
-
--- 边框效果
-local ExitPromptStroke = Instance.new("UIStroke")
-ExitPromptStroke.Color = COLOR_SCHEME.BORDER
-ExitPromptStroke.Thickness = 2
-ExitPromptStroke.Parent = ExitPrompt
-
--- 退出提示文本
-local ExitText = Instance.new("TextLabel")
-ExitText.Name = "ExitText"
-ExitText.Text = "确定要关闭NZ脚本中心吗？"
-ExitText.Size = UDim2.new(1, 0, 0, 60)
-ExitText.Position = UDim2.new(0, 0, 0, 20)
-ExitText.BackgroundTransparency = 1
-ExitText.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-ExitText.TextSize = 20
-ExitText.Font = Enum.Font.GothamBold
-ExitText.Parent = ExitPrompt
-
--- 取消按钮
-local CancelButton = Instance.new("TextButton")
-CancelButton.Name = "CancelButton"
-CancelButton.Text = "取消"
-CancelButton.Size = UDim2.new(0.4, 0, 0, 40)
-CancelButton.Position = UDim2.new(0.1, 0, 0.6, 0)
-CancelButton.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-CancelButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-CancelButton.Parent = ExitPrompt
-
--- 按钮圆角效果
-local CancelButtonCorner = Instance.new("UICorner")
-CancelButtonCorner.CornerRadius = UDim.new(0, 8)
-CancelButtonCorner.Parent = CancelButton
-
--- 按钮边框效果
-local CancelButtonStroke = Instance.new("UIStroke")
-CancelButtonStroke.Color = COLOR_SCHEME.BORDER
-CancelButtonStroke.Thickness = 1
-CancelButtonStroke.Parent = CancelButton
-
--- 确定按钮
-local ConfirmButton = Instance.new("TextButton")
-ConfirmButton.Name = "ConfirmButton"
-ConfirmButton.Text = "确定"
-ConfirmButton.Size = UDim2.new(0.4, 0, 0, 40)
-ConfirmButton.Position = UDim2.new(0.5, 0, 0.6, 0)
-ConfirmButton.BackgroundColor3 = COLOR_SCHEME.ACCENT_BLUE
-ConfirmButton.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-ConfirmButton.Parent = ExitPrompt
-
--- 按钮圆角效果
-local ConfirmButtonCorner = Instance.new("UICorner")
-ConfirmButtonCorner.CornerRadius = UDim.new(0, 8)
-ConfirmButtonCorner.Parent = ConfirmButton
-
--- 按钮边框效果
-local ConfirmButtonStroke = Instance.new("UIStroke")
-ConfirmButtonStroke.Color = COLOR_SCHEME.ACCENT_PURPLE
-ConfirmButtonStroke.Thickness = 2
-ConfirmButtonStroke.Parent = ConfirmButton
-
--- 服务器退出提示
-local ServerExitNotice = Instance.new("Frame")
-ServerExitNotice.Name = "ServerExitNotice"
-ServerExitNotice.Size = UDim2.new(0, 400, 0, 100)
-ServerExitNotice.Position = UDim2.new(0.5, -200, 0, 20)
-ServerExitNotice.BackgroundColor3 = COLOR_SCHEME.BACKGROUND
-ServerExitNotice.BorderSizePixel = 0
-ServerExitNotice.Visible = false
-ServerExitNotice.Parent = ScreenGui
-
--- 渐变背景效果
-local ServerExitNoticeGradient = Instance.new("UIGradient")
-ServerExitNoticeGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, COLOR_SCHEME.ACCENT_BLUE),
-    ColorSequenceKeypoint.new(1, COLOR_SCHEME.ACCENT_PURPLE)
-})
-ServerExitNoticeGradient.Rotation = 45
-ServerExitNoticeGradient.Parent = ServerExitNotice
-
--- 圆角效果
-local ServerExitNoticeCorner = Instance.new("UICorner")
-ServerExitNoticeCorner.CornerRadius = UDim.new(0, 12)
-ServerExitNoticeCorner.Parent = ServerExitNotice
-
--- 边框效果
-local ServerExitNoticeStroke = Instance.new("UIStroke")
-ServerExitNoticeStroke.Color = COLOR_SCHEME.BORDER
-ServerExitNoticeStroke.Thickness = 2
-ServerExitNoticeStroke.Parent = ServerExitNotice
-
--- 大标题
-local ExitTitle = Instance.new("TextLabel")
-ExitTitle.Name = "ExitTitle"
-ExitTitle.Text = "NZ脚本中心"
-ExitTitle.Size = UDim2.new(1, 0, 0, 50)
-ExitTitle.Position = UDim2.new(0, 0, 0, 10)
-ExitTitle.BackgroundTransparency = 1
-ExitTitle.TextColor3 = COLOR_SCHEME.ACCENT_PURPLE
-ExitTitle.TextSize = 28
-ExitTitle.Font = Enum.Font.GothamBold
-ExitTitle.Parent = ServerExitNotice
-
--- 小标题
-local ExitSubtitle = Instance.new("TextLabel")
-ExitSubtitle.Name = "ExitSubtitle"
-ExitSubtitle.Text = "您已退出/跳转服务器\n下次也要用NZ脚本中心噢^O^"
-ExitSubtitle.Size = UDim2.new(1, 0, 0, 40)
-ExitSubtitle.Position = UDim2.new(0, 0, 0, 50)
-ExitSubtitle.BackgroundTransparency = 1
-ExitSubtitle.TextColor3 = COLOR_SCHEME.TEXT_WHITE
-ExitSubtitle.TextSize = 16
-ExitSubtitle.Font = Enum.Font.Gotham
-ExitSubtitle.Parent = ServerExitNotice
-
--- 变量声明
-local isDragging = false
-local dragStartPos = Vector2.new(0, 0)
-local frameStartPos = UDim2.new(0, 0, 0, 0)
-local isRestoreDragging = false
-local restoreStartPos = Vector2.new(0, 0)
-local buttonStartPos = UDim2.new(0, 0, 0, 0)
-local espEnabled = false
-local teamDetectEnabled = false
-local espHighlights = {}
-local correctKey = "nznb666"
-local verifiedPlayers = {}
-local fastSpinEnabled = false
-local superSpinEnabled = false
-local infiniteJumpEnabled = false
-local nightVisionEnabled = false
-local fastSpinConnection = nil
-local superSpinConnection = nil
-local infiniteJumpConnection = nil
-local isExitPromptShown = false
-local currentPage = "General"
-local hitboxSize = 1
-local hitboxTransparency = 0.2
-local rainbowSkinEnabled = false
-local autoFarmEnabled = false
-
--- 复制群号功能
-CopyButton.MouseButton1Click:Connect(function()
-    local clipboard = setclipboard or toclipboard or set_clipboard or (Clipboard and Clipboard.set)
-    if clipboard then
-        clipboard("813128648")
-        StatusText.Text = "群号已复制到剪贴板"
-    else
-        StatusText.Text = "无法复制，请手动复制群号"
-    end
-end)
-
--- 验证卡密功能
-VerifyButton.MouseButton1Click:Connect(function()
-    if KeyInput.Text == correctKey then
-        verifiedPlayers[LocalPlayer.UserId] = true
-        KeyFrame.Visible = false
-        MessagePrompt.Visible = true
-        StatusText.Text = "验证成功，请选择是否发送消息"
-    else
-        KeyInput.Text = ""
-        KeyInput.PlaceholderText = "卡密错误，请重新输入"
-        StatusText.Text = "卡密错误"
-        LocalPlayer:Kick("Wrong card.")
-    end
-end)
-
--- 发送消息功能
-SendButton.MouseButton1Click:Connect(function()
-    MessagePrompt.Visible = false
-    MainFrame.Visible = true
-    FloatingBall.Visible = true
-    StatusText.Text = "进入主界面"
     
-    -- 发送聊天消息
-    local ReplicatedStorage = game:GetService("ReplicatedStorage")
-    local ChatService = ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents")
-    if ChatService then
-        local SayMessageRequest = ChatService:FindFirstChild("SayMessageRequest")
-        if SayMessageRequest then
-            SayMessageRequest:FireServer("欢迎使用NZ脚本中心", "All")
-            wait(1)
-            SayMessageRequest:FireServer("正在为您进入", "All")
+    -- 自动挥刀功能
+    local function setupAutoSwing()
+        local swingFrame = Instance.new("Frame")
+        swingFrame.Size = UDim2.new(1, 0, 1, 0)
+        swingFrame.BackgroundTransparency = 1
+        swingFrame.Visible = false
+        swingFrame.Parent = rightNav
+        
+        local title = Instance.new("TextLabel")
+        title.Text = "自动挥刀"
+        title.Size = UDim2.new(1, 0, 0.1, 0)
+        title.BackgroundTransparency = 1
+        title.TextColor3 = Color3.new(1, 1, 1)
+        title.TextScaled = true
+        title.Font = Enum.Font.GothamBold
+        title.Parent = swingFrame
+        
+        local toggleButton = Instance.new("TextButton")
+        toggleButton.Text = "关闭"
+        toggleButton.Size = UDim2.new(0.3, 0, 0.1, 0)
+        toggleButton.Position = UDim2.new(0.35, 0, 0.2, 0)
+        toggleButton.BackgroundColor3 = Color3.new(0.8, 0.2, 0.2)
+        toggleButton.TextColor3 = Color3.new(1, 1, 1)
+        toggleButton.Font = Enum.Font.Gotham
+        toggleButton.TextScaled = true
+        toggleButton.Parent = swingFrame
+        
+        local swingCoroutine = nil
+        
+        local function startSwinging()
+            swingCoroutine = coroutine.create(function()
+                while autoSwingEnabled do
+                    local args = {"swingKatana"}
+                    local ninjaEvent = player:WaitForChild("ninjaEvent")
+                    ninjaEvent:FireServer(unpack(args))
+                    wait(0.5)
+                end
+            end)
+            coroutine.resume(swingCoroutine)
         end
+        
+        toggleButton.MouseButton1Click:Connect(function()
+            autoSwingEnabled = not autoSwingEnabled
+            if autoSwingEnabled then
+                toggleButton.Text = "开启"
+                toggleButton.BackgroundColor3 = Color3.new(0.2, 0.8, 0.2)
+                startSwinging()
+            else
+                toggleButton.Text = "关闭"
+                toggleButton.BackgroundColor3 = Color3.new(0.8, 0.2, 0.2)
+                if swingCoroutine then
+                    coroutine.close(swingCoroutine)
+                end
+            end
+        end)
+        
+        return swingFrame
     end
-end)
-
--- 不发送消息功能
-NoSendButton.MouseButton1Click:Connect(function()
-    MessagePrompt.Visible = false
-    MainFrame.Visible = true
-    FloatingBall.Visible = true
-    StatusText.Text = "进入主界面"
-end)
-
--- 最小化按钮功能
-MinimizeButton.MouseButton1Click:Connect(function()
-    MainFrame.Visible = false
-    FloatingBall.Visible = true
-    StatusText.Text = "界面已最小化"
-end)
-
--- 关闭按钮功能
-CloseButton.MouseButton1Click:Connect(function()
-    ExitPrompt.Visible = true
-    isExitPromptShown = true
-end)
-
--- 取消退出功能
-CancelButton.MouseButton1Click:Connect(function()
-    ExitPrompt.Visible = false
-    isExitPromptShown = false
-end)
-
--- 确认退出功能
-ConfirmButton.MouseButton1Click:Connect(function()
-    ExitPrompt.Visible = false
-    MainFrame.Visible = false
-    FloatingBall.Visible = false
-    isExitPromptShown = false
-    StatusText.Text = "界面已关闭"
-end)
-
--- 拖动主窗口
-TitleBar.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        isDragging = true
-        dragStartPos = Vector2.new(input.Position.X, input.Position.Y)
-        frameStartPos = MainFrame.Position
+    
+    -- 创建功能界面
+    local jumpFrame = setupInfiniteJump()
+    local espFrame = setupESP()
+    local swingFrame = setupAutoSwing()
+    
+    -- 类型切换功能
+    local function showFrame(frameToShow)
+        jumpFrame.Visible = false
+        espFrame.Visible = false
+        swingFrame.Visible = false
+        frameToShow.Visible = true
     end
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement then
-        if isDragging then
-            local delta = Vector2.new(input.Position.X, input.Position.Y) - dragStartPos
-            MainFrame.Position = UDim2.new(frameStartPos.X.Scale, frameStartPos.X.Offset + delta.X, 
-                                          frameStartPos.Y.Scale, frameStartPos.Y.Offset + delta.Y)
+    
+    generalButton.MouseButton1Click:Connect(function() showFrame(jumpFrame) end)
+    espButton.MouseButton1Click:Connect(function() showFrame(espFrame) end)
+    ninjaButton.MouseButton1Click:Connect(function() showFrame(swingFrame) end)
+    
+    -- 默认显示通用功能
+    showFrame(jumpFrame)
+    
+    -- 缩小功能
+    local minimized = false
+    local minimizedButton = nil
+    
+    local function minimizeInterface()
+        minimized = true
+        mainFrame.Visible = false
+        
+        -- 创建缩小后的按钮
+        minimizedButton = Instance.new("Frame")
+        minimizedButton.Size = UDim2.new(0.15, 0, 0.05, 0)
+        minimizedButton.Position = UDim2.new(0.4, 0, 0.02, 0)
+        minimizedButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.3)
+        minimizedButton.BorderSizePixel = 0
+        minimizedButton.Parent = screenGui
+        
+        local dragArea = Instance.new("TextButton")
+        dragArea.Text = "≡"
+        dragArea.Size = UDim2.new(0.2, 0, 1, 0)
+        dragArea.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
+        dragArea.TextColor3 = Color3.new(1, 1, 1)
+        dragArea.Font = Enum.Font.GothamBold
+        dragArea.TextScaled = true
+        dragArea.Parent = minimizedButton
+        
+        local expandArea = Instance.new("TextButton")
+        expandArea.Text = "NZ"
+        expandArea.Size = UDim2.new(0.8, 0, 1, 0)
+        expandArea.Position = UDim2.new(0.2, 0, 0, 0)
+        expandArea.BackgroundColor3 = Color3.new(0.1, 0.1, 0.3)
+        expandArea.TextColor3 = Color3.new(1, 1, 1)
+        expandArea.Font = Enum.Font.GothamBold
+        expandArea.TextScaled = true
+        expandArea.Parent = minimizedButton
+        
+        -- 拖动功能
+        local dragging = false
+        local dragInput, dragStart, startPos
+        
+        local function update(input)
+            local delta = input.Position - dragStart
+            minimizedButton.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, 
+                                               startPos.Y.Scale, startPos.Y.Offset + delta.Y)
         end
+        
+        dragArea.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                dragging = true
+                dragStart = input.Position
+                startPos = minimizedButton.Position
+                
+                input.Changed:Connect(function()
+                    if input.UserInputState == Enum.UserInputState.End then
+                        dragging = false
+                    end
+                end)
+            end
+        end)
+        
+        dragArea.InputChanged:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseMovement then
+                dragInput = input
+            end
+        end)
+        
+        UserInputService.InputChanged:Connect(function(input)
+            if input == dragInput and dragging then
+                update(input)
+            end
+        end)
+        
+        -- 展开功能
+        expandArea.MouseButton1Click:Connect(function()
+            minimizedButton:Destroy()
+            mainFrame.Visible = true
+            minimized = false
+        end)
     end
-end)
-
-UserInputService.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        isDragging = false
-    end
-end)
-
--- 导航按钮功能
-DevTeamButton.MouseButton1Click:Connect(function()
-    hideAllFrames()
-    DevTeamFrame.Visible = true
-    currentPage = "DevTeam"
-    updateNavButtons()
-    StatusText.Text = "切换到开发团队信息"
-end)
-
-GeneralButton.MouseButton1Click:Connect(function()
-    hideAllFrames()
-    GeneralFrame.Visible = true
-    currentPage = "General"
-    updateNavButtons()
-    StatusText.Text = "切换到通用功能"
-end)
-
-ESPButton.MouseButton1Click:Connect(function()
-    hideAllFrames()
-    ESPFrame.Visible = true
-    currentPage = "ESP"
-    updateNavButtons()
-    StatusText.Text = "切换到ESP功能"
-end)
-
-OtherScriptsButton.MouseButton1Click:Connect(function()
-    hideAllFrames()
-    OtherScriptsFrame.Visible = true
-    currentPage = "OtherScripts"
-    updateNavButtons()
-    StatusText.Text = "切换到其他脚本"
-end)
-
-ChineseButton.MouseButton1Click:Connect(function()
-    hideAllFrames()
-    ChineseFrame.Visible = true
-    currentPage = "Chinese"
-    updateNavButtons()
-    StatusText.Text = "切换到一键汉化"
-end)
-
-GunArenaButton.MouseButton1Click:Connect(function()
-    hideAllFrames()
-    GunArenaFrame.Visible = true
-    currentPage = "GunArena"
-    updateNavButtons()
-    StatusText.Text = "切换到枪战竞技场"
-end)
-
--- 隐藏所有帧函数
-local function hideAllFrames()
-    DevTeamFrame.Visible = false
-    GeneralFrame.Visible = false
-    ESPFrame.Visible = false
-    OtherScriptsFrame.Visible = false
-    ChineseFrame.Visible = false
-    GunArenaFrame.Visible = false
+    
+    minimizeButton.MouseButton1Click:Connect(minimizeInterface)
+    closeButton.MouseButton1Click:Connect(function()
+        screenGui:Destroy()
+    end)
 end
 
--- 更新导航按钮状态函数
-local function updateNavButtons()
-    local buttons = {
-        DevTeamButton, GeneralButton, ESPButton, OtherScriptsButton, 
-        ChineseButton, GunArenaButton
-    }
-    
-    for _, button in pairs(buttons) do
-        button.BackgroundColor3 = COLOR_SCHEME.PANEL_BG
-    end
-    
-    if currentPage == "DevTeam" then
-        DevTeamButton.BackgroundColor3 = COLOR_SCHEME.ACCENT_BLUE
-    elseif currentPage == "General" then
-        GeneralButton.BackgroundColor3 = COLOR_SCHEME.ACCENT_B
+-- 启动欢迎界面
+createWelcomeScreen()
+
+-- 将界面添加到玩家GUI
+screenGui.Parent = playerGui
+
