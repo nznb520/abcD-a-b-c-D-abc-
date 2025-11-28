@@ -1,413 +1,399 @@
--- NZ黑洞助手主脚本
+-- NZ黑洞助手 - 手机端适配版
 -- 版本 1.0
 
--- === 初始化 ===
+-- 服务引用
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
+local gui = Instance.new("ScreenGui")
+gui.Name = "NZHeiDongAssistant"
+gui.ResetOnSpawn = false
+gui.Parent = playerGui
 
--- 创建主GUI容器
-local mainGui = Instance.new("ScreenGui")
-mainGui.Name = "NZHeiDongAssistant"
-mainGui.ResetOnSpawn = false
-mainGui.Parent = playerGui
+-- 欢迎界面
+local function showWelcome()
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0, 280, 0, 180) -- 调整为适合手机屏幕的大小
+    frame.Position = UDim2.new(0.5, -140, 0.4, -90)
+    frame.BackgroundTransparency = 0.2
+    frame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+    frame.BorderSizePixel = 0
+    frame.Parent = gui
 
--- === 服务器ID检测 ===
-local function checkServerId()
-    -- 创建加载提示
-    local loadingFrame = Instance.new("Frame")
-    loadingFrame.Size = UDim2.new(0, 200, 0, 50)
-    loadingFrame.Position = UDim2.new(0.8, 0, 0.1, 0)
-    loadingFrame.BackgroundTransparency = 0.7
-    loadingFrame.BackgroundColor3 = Color3.new(0, 0, 0)
-    loadingFrame.BorderSizePixel = 0
-    loadingFrame.Parent = mainGui
-    
-    local loadingText = Instance.new("TextLabel")
-    loadingText.Size = UDim2.new(1, 0, 1, 0)
-    loadingText.BackgroundTransparency = 1
-    loadingText.TextColor3 = Color3.new(1, 1, 1)
-    loadingText.Text = "正在加载中..."
-    loadingText.Font = Enum.Font.SourceSansBold
-    loadingText.TextSize = 18
-    loadingText.Parent = loadingFrame
-    
-    -- 检测服务器ID
-    local serverId = game.JobId
-    wait(1) -- 模拟加载过程
-    
-    if string.find(serverId, "自然灾害") then
-        loadingFrame:Destroy()
-        showWelcomeMessage()
-    else
-        loadingText.Text = "此游戏不受支持"
-        wait(3)
-        loadingFrame:Destroy()
-    end
-end
+    -- 贴花图片
+    local image = Instance.new("ImageLabel")
+    image.Size = UDim2.new(0, 50, 0, 50)
+    image.Position = UDim2.new(0.5, -25, 0.1, 0)
+    image.Image = "http://www.roblox.com/asset/?id=105529853851343"
+    image.BackgroundTransparency = 1
+    image.Parent = frame
 
--- === 欢迎消息 ===
-local function showWelcomeMessage()
-    local welcomeFrame = Instance.new("Frame")
-    welcomeFrame.Size = UDim2.new(0, 300, 0, 150)
-    welcomeFrame.Position = UDim2.new(0.5, -150, 0.5, -75)
-    welcomeFrame.BackgroundTransparency = 0.3
-    welcomeFrame.BackgroundColor3 = Color3.new(0, 0, 0)
-    welcomeFrame.BorderSizePixel = 0
-    welcomeFrame.Parent = mainGui
-    
     -- 主标题
     local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(1, 0, 0, 40)
-    title.Position = UDim2.new(0, 0, 0, 10)
+    title.Size = UDim2.new(1, 0, 0, 25)
+    title.Position = UDim2.new(0, 0, 0, 70)
     title.BackgroundTransparency = 1
-    title.TextColor3 = Color3.new(1, 1, 1)
     title.Text = "NZ黑洞助手"
+    title.TextColor3 = Color3.fromRGB(255, 255, 255)
     title.Font = Enum.Font.SourceSansBold
-    title.TextSize = 28
+    title.TextSize = 20
     title.TextXAlignment = Enum.TextXAlignment.Center
-    title.Parent = welcomeFrame
-    
+    title.Parent = frame
+
     -- 副标题
     local subtitle = Instance.new("TextLabel")
-    subtitle.Size = UDim2.new(1, 0, 0, 30)
-    subtitle.Position = UDim2.new(0, 0, 0, 50)
+    subtitle.Size = UDim2.new(1, 0, 0, 18)
+    subtitle.Position = UDim2.new(0, 0, 0, 100)
     subtitle.BackgroundTransparency = 1
-    subtitle.TextColor3 = Color3.new(0.8, 0.8, 0.8)
     subtitle.Text = "你好，欢迎您使用NZ黑洞助手，祝您愉快！"
+    subtitle.TextColor3 = Color3.fromRGB(200, 200, 200)
     subtitle.Font = Enum.Font.SourceSans
-    subtitle.TextSize = 14
+    subtitle.TextSize = 12
     subtitle.TextXAlignment = Enum.TextXAlignment.Center
-    subtitle.Parent = welcomeFrame
-    
+    subtitle.Parent = frame
+
     -- 关闭提示
-    local closeText = Instance.new("TextLabel")
-    closeText.Size = UDim2.new(1, 0, 0, 20)
-    closeText.Position = UDim2.new(0, 0, 0, 90)
-    closeText.BackgroundTransparency = 1
-    closeText.TextColor3 = Color3.new(0.6, 0.6, 0.6)
-    closeText.Text = "点击任意地方关闭提示"
-    closeText.Font = Enum.Font.SourceSans
-    closeText.TextSize = 12
-    closeText.TextXAlignment = Enum.TextXAlignment.Center
-    closeText.Parent = welcomeFrame
-    
+    local closeTip = Instance.new("TextLabel")
+    closeTip.Size = UDim2.new(1, 0, 0, 18)
+    closeTip.Position = UDim2.new(0, 0, 0, 130)
+    closeTip.BackgroundTransparency = 1
+    closeTip.Text = "点击任意地方关闭提示"
+    closeTip.TextColor3 = Color3.fromRGB(150, 150, 150)
+    closeTip.Font = Enum.Font.SourceSans
+    closeTip.TextSize = 10
+    closeTip.TextXAlignment = Enum.TextXAlignment.Center
+    closeTip.Parent = frame
+
     -- 点击关闭
-    local function closeWelcome()
-        welcomeFrame:Destroy()
-        createMainPanel()
-    end
-    
-    -- 添加点击检测
     local clickDetector = Instance.new("TextButton")
     clickDetector.Size = UDim2.new(1, 0, 1, 0)
     clickDetector.BackgroundTransparency = 1
     clickDetector.Text = ""
-    clickDetector.Parent = welcomeFrame
-    
-    clickDetector.MouseButton1Click:Connect(closeWelcome)
+    clickDetector.Parent = frame
+    clickDetector.MouseButton1Click:Connect(function()
+        frame:Destroy()
+        createMainPanel()
+    end)
 end
 
--- === 主面板 ===
+-- 主面板
 local mainPanel = nil
-local isPanelMinimized = false
+local isMinimized = false
 
 local function createMainPanel()
+    -- 右上角用户信息标签
+    local infoTag = Instance.new("TextLabel")
+    infoTag.Size = UDim2.new(0, 200, 0, 35)
+    infoTag.Position = UDim2.new(0.75, 0, 0.02, 0)
+    infoTag.BackgroundTransparency = 0.3
+    infoTag.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+    infoTag.BorderSizePixel = 0
+    infoTag.Text = string.format("<font color='#FF6EC7'>尊敬的 %s</font><br><font size='8' color='#AAAAAA'>感谢您使用NZ黑洞中心</font>", player.Name)
+    infoTag.RichText = true
+    infoTag.Font = Enum.Font.SourceSans
+    infoTag.TextSize = 12
+    infoTag.TextXAlignment = Enum.TextXAlignment.Left
+    infoTag.Parent = gui
+
+    -- 主控制面板
     mainPanel = Instance.new("Frame")
-    mainPanel.Size = UDim2.new(0, 250, 0, 200)
-    mainPanel.Position = UDim2.new(0.1, 0, 0.3, 0)
-    mainPanel.BackgroundTransparency = 0.2
-    mainPanel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    mainPanel.Size = UDim2.new(0, 240, 0, 200)
+    mainPanel.Position = UDim2.new(0.7, 0, 0.2, 0)
+    mainPanel.BackgroundTransparency = 0.15
+    mainPanel.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
     mainPanel.BorderSizePixel = 0
-    mainPanel.Parent = mainGui
-    
-    -- 标题
+    mainPanel.Parent = gui
+
+    -- 标题栏
+    local titleBar = Instance.new("Frame")
+    titleBar.Size = UDim2.new(1, 0, 0, 35)
+    titleBar.BackgroundTransparency = 0.2
+    titleBar.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+    titleBar.Parent = mainPanel
+
     local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(1, 0, 0, 30)
-    title.BackgroundTransparency = 0.3
-    title.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    title.TextColor3 = Color3.new(1, 1, 1)
-    title.Text = "NZ黑洞助手 v1.0"
+    title.Size = UDim2.new(1, 0, 1, 0)
+    title.BackgroundTransparency = 1
+    title.Text = "NZ 黑洞控制中心"
+    title.TextColor3 = Color3.fromRGB(255, 255, 255)
     title.Font = Enum.Font.SourceSansBold
     title.TextSize = 16
     title.TextXAlignment = Enum.TextXAlignment.Center
-    title.Parent = mainPanel
-    
-    -- 攻击黑洞功能
-    local attackBlackholeFrame = Instance.new("Frame")
-    attackBlackholeFrame.Size = UDim2.new(1, 0, 0, 40)
-    attackBlackholeFrame.Position = UDim2.new(0, 0, 0, 40)
-    attackBlackholeFrame.BackgroundTransparency = 0.3
-    attackBlackholeFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    attackBlackholeFrame.Parent = mainPanel
-    
+    title.Parent = titleBar
+
+    -- 功能1：攻击黑洞
+    local attackFrame = Instance.new("Frame")
+    attackFrame.Size = UDim2.new(1, 0, 0, 35)
+    attackFrame.Position = UDim2.new(0, 0, 0, 45)
+    attackFrame.BackgroundTransparency = 0.3
+    attackFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
+    attackFrame.Parent = mainPanel
+
     local attackLabel = Instance.new("TextLabel")
-    attackLabel.Size = UDim2.new(0.7, 0, 1, 0)
+    attackLabel.Size = UDim2.new(0.6, 0, 1, 0)
     attackLabel.Position = UDim2.new(0, 10, 0, 0)
     attackLabel.BackgroundTransparency = 1
-    attackLabel.TextColor3 = Color3.new(1, 1, 1)
     attackLabel.Text = "攻击黑洞"
+    attackLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
     attackLabel.Font = Enum.Font.SourceSans
-    attackLabel.TextSize = 16
-    attackLabel.TextXAlignment = Enum.TextXAlignment.Left
-    attackLabel.Parent = attackBlackholeFrame
-    
+    attackLabel.TextSize = 14
+    attackLabel.Parent = attackFrame
+
     local attackToggle = Instance.new("TextButton")
-    attackToggle.Size = UDim2.new(0, 50, 0, 25)
-    attackToggle.Position = UDim2.new(0.75, 0, 0.5, -12)
-    attackToggle.BackgroundTransparency = 0.3
-    attackToggle.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+    attackToggle.Size = UDim2.new(0, 50, 0, 22)
+    attackToggle.Position = UDim2.new(0.7, 0, 0.5, -11)
+    attackToggle.BackgroundTransparency = 0.4
+    attackToggle.BackgroundColor3 = Color3.fromRGB(100, 100, 120)
     attackToggle.Text = "关闭"
+    attackToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
     attackToggle.Font = Enum.Font.SourceSansBold
-    attackToggle.TextColor3 = Color3.new(1, 1, 1)
-    attackToggle.TextSize = 14
-    attackToggle.Parent = attackBlackholeFrame
-    
-    -- 地爆天星功能
-    local planetaryExplosionFrame = Instance.new("Frame")
-    planExplosionFrame.Size = UDim2.new(1, 0, 0, 40)
-    planExplosionFrame.Position = UDim2.new(0, 0, 0, 90)
-    planExplosionFrame.BackgroundTransparency = 0.3
-    planExplosionFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    planExplosionFrame.Parent = mainPanel
-    
-    local planLabel = Instance.new("TextLabel")
-    planLabel.Size = UDim2.new(0.7, 0, 1, 0)
-    planLabel.Position = UDim2.new(0, 10, 0, 0)
-    planLabel.BackgroundTransparency = 1
-    planLabel.TextColor3 = Color3.new(1, 1, 1)
-    planLabel.Text = "地爆天星"
-    planLabel.Font = Enum.Font.SourceSans
-    planLabel.TextSize = 16
-    planLabel.TextXAlignment = Enum.TextXAlignment.Left
-    planLabel.Parent = planExplosionFrame
-    
-    local planToggle = Instance.new("TextButton")
-    planToggle.Size = UDim2.new(0, 50, 0, 25)
-    planToggle.Position = UDim2.new(0.75, 0, 0.5, -12)
-    planToggle.BackgroundTransparency = 0.3
-    planToggle.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
-    planToggle.Text = "关闭"
-    planToggle.Font = Enum.Font.SourceSansBold
-    planToggle.TextColor3 = Color3.new(1, 1, 1)
-    planToggle.TextSize = 14
-    planToggle.Parent = planExplosionFrame
-    
-    -- 关闭面板按钮
+    attackToggle.TextSize = 12
+    attackToggle.Parent = attackFrame
+
+    -- 功能2：地爆天星（优化版）
+    local planetFrame = Instance.new("Frame")
+    planetFrame.Size = UDim2.new(1, 0, 0, 35)
+    planetFrame.Position = UDim2.new(0, 0, 0, 90)
+    planetFrame.BackgroundTransparency = 0.3
+    planetFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
+    planetFrame.Parent = mainPanel
+
+    local planetLabel = Instance.new("TextLabel")
+    planetLabel.Size = UDim2.new(0.6, 0, 1, 0)
+    planetLabel.Position = UDim2.new(0, 10, 0, 0)
+    planetLabel.BackgroundTransparency = 1
+    planetLabel.Text = "地爆天星"
+    planetLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
+    planetLabel.Font = Enum.Font.SourceSans
+    planetLabel.TextSize = 14
+    planetLabel.Parent = planetFrame
+
+    local planetToggle = Instance.new("TextButton")
+    planetToggle.Size = UDim2.new(0, 50, 0, 22)
+    planetToggle.Position = UDim2.new(0.7, 0, 0.5, -11)
+    planetToggle.BackgroundTransparency = 0.4
+    planetToggle.BackgroundColor3 = Color3.fromRGB(100, 100, 120)
+    planetToggle.Text = "关闭"
+    planetToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    planetToggle.Font = Enum.Font.SourceSansBold
+    planetToggle.TextSize = 12
+    planetToggle.Parent = planetFrame
+
+    -- 最小化按钮
     local minimizeBtn = Instance.new("TextButton")
-    minimizeBtn.Size = UDim2.new(1, 0, 0, 30)
-    minimizeBtn.Position = UDim2.new(0, 0, 1, -30)
-    minimizeBtn.BackgroundTransparency = 0.3
-    minimizeBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    minimizeBtn.Size = UDim2.new(1, 0, 0, 25)
+    minimizeBtn.Position = UDim2.new(0, 0, 1, -25)
+    minimizeBtn.BackgroundTransparency = 0.4
+    minimizeBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
     minimizeBtn.Text = "最小化面板"
-    minimizeBtn.Font = Enum.Font.SourceSansBold
-    minimizeBtn.TextColor3 = Color3.new(1, 1, 1)
-    minimizeBtn.TextSize = 14
+    minimizeBtn.TextColor3 = Color3.fromRGB(220, 220, 220)
+    minimizeBtn.Font = Enum.Font.SourceSans
+    minimizeBtn.TextSize = 12
     minimizeBtn.Parent = mainPanel
-    
-    -- 功能状态变量
-    local isAttackActive = false
-    local isPlanActive = false
-    local debrisGroup = {}
+
+    -- 地爆天星功能逻辑
     local planetaryBall = nil
-    local ballPart = nil
-    
-    -- 攻击黑洞功能
-    local function toggleAttackBlackhole()
-        isAttackActive = not isAttackActive
-        attackToggle.Text = isAttackActive and "开启" or "关闭"
-        attackToggle.BackgroundColor3 = isAttackActive and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(200, 0, 0)
-        
-        if isAttackActive then
-            spawn(function()
-                while isAttackActive and wait(0.1) do
-                    -- 检测未固定零件
-                    local parts = workspace:GetDescendants()
-                    for _, part in ipairs(parts) do
-                        if part:IsA("BasePart") and not part.Anchored and part.CanCollide then
-                            -- 吸到天上
-                            local targetPos = part.Position + Vector3.new(0, 50, 0)
-                            part.Velocity = (targetPos - part.Position).unit * 50
-                            
-                            -- 检测玩家并甩飞
-                            for _, otherPlayer in ipairs(Players:GetPlayers()) do
-                                if otherPlayer ~= player and otherPlayer.Character then
-                                    local humanoidRootPart = otherPlayer.Character:FindFirstChild("HumanoidRootPart")
-                                    if humanoidRootPart then
-                                        local distance = (part.Position - humanoidRootPart.Position).magnitude
-                                        if distance < 30 then
-                                            -- 高速旋转飞向玩家
-                                            local direction = (humanoidRootPart.Position - part.Position).unit
-                                            part.Velocity = direction * 100
-                                            
-                                            -- 甩飞玩家
-                                            local humanoid = otherPlayer.Character:FindFirstChild("Humanoid")
-                                            if humanoid then
-                                                humanoid:ApplyImpulse(direction * 50)
-                                            end
-                                        end
-                                    end
-                                end
-                            end
-                        end
-                    end
-                end
-            end)
+    local isPlanActive = false
+
+    local function createPlanetaryExplosionEffect(center)
+        if not planetaryBall then
+            planetaryBall = Instance.new("Part")
+            planetaryBall.Name = "PlanetaryBall"
+            planetaryBall.Size = Vector3.new(6, 6, 6)
+            planetaryBall.Position = center
+            planetaryBall.Anchored = true
+            planetaryBall.CanCollide = false
+            planetaryBall.Transparency = 0.4
+            planetaryBall.Parent = workspace
+
+            local mesh = Instance.new("SpecialMesh")
+            mesh.MeshType = Enum.MeshType.Sphere
+            mesh.Scale = Vector3.new(3, 3, 3)
+            mesh.Parent = planetaryBall
+
+            -- 添加粒子效果
+            local particle = Instance.new("ParticleEmitter")
+            particle.Parent = planetaryBall
+            particle.Texture = "rbxassetid://3007300343"
+            particle.Color = ColorSequence.new(Color3.fromRGB(255, 100, 100))
+            particle.Lifetime = NumberRange.new(0.5, 1)
+            particle.Rate = 80
+            particle.Speed = NumberRange.new(2, 5)
+            particle.ZOffset = 1
+            particle:Emit(30)
         end
     end
-    
-    -- 地爆天星功能
-    local function togglePlanetaryExplosion()
+
+    local function updatePlanetaryExplosion(touchPos)
+        if planetaryBall then
+            local ray = workspace:ScreenPointToRay(touchPos.X, touchPos.Y)
+            local part, position = workspace:FindPartOnRay(ray)
+            if position then
+                planetaryBall.Position = position + Vector3.new(0, 3, 0)
+            end
+        end
+    end
+
+    local function explodeParts(center)
+        for _, part in ipairs(workspace:GetDescendants()) do
+            if part:IsA("BasePart") and not part.Anchored and part.Parent ~= planetaryBall then
+                local direction = (part.Position - center).unit
+                part:ApplyImpulse(direction * 150)
+            end
+        end
+
+        -- 爆炸粒子效果
+        local explosion = Instance.new("Part")
+        explosion.Size = Vector3.new(1, 1, 1)
+        explosion.Position = center
+        explosion.Anchored = true
+        explosion.CanCollide = false
+        explosion.Parent = workspace
+
+        local particle = Instance.new("ParticleEmitter")
+        particle.Parent = explosion
+        particle.Texture = "rbxassetid://111111111"
+        particle.Lifetime = NumberRange.new(1)
+        particle.Rate = 150
+        particle.Speed = NumberRange.new(8, 15)
+        particle:Emit(80)
+
+        spawn(function()
+            wait(2)
+            explosion:Destroy()
+        end)
+    end
+
+    -- 触摸事件处理
+    local function onTouchStarted(touch, processed)
+        if processed then return end
+        if isPlanActive and planetaryBall then
+            updatePlanetaryExplosion(touch.Position)
+        end
+    end
+
+    -- 地爆天星开关逻辑
+    planetToggle.MouseButton1Click:Connect(function()
         isPlanActive = not isPlanActive
-        planToggle.Text = isPlanActive and "开启" or "关闭"
-        planToggle.BackgroundColor3 = isPlanActive and Color3.fromRGB(0, 200, 200) or Color3.fromRGB(200, 0, 0)
-        
+        planetToggle.Text = isPlanActive and "开启" or "关闭"
+        planetToggle.BackgroundColor3 = isPlanActive and Color3.fromRGB(0, 200, 200) or Color3.fromRGB(100, 100, 120)
+
         if isPlanActive then
-            -- 创建汇聚球体
-            if not ballPart then
-                ballPart = Instance.new("Part")
-                ballPart.Name = "PlanetaryBall"
-                ballPart.Size = Vector3.new(5, 5, 5)
-                ballPart.Position = workspace.CurrentCamera.CFrame.Position + Vector3.new(0, 10, 0)
-                ballPart.Anchored = true
-                ballPart.CanCollide = false
-                ballPart.Transparency = 0.5
-                ballPart.Color = Color3.fromRGB(255, 100, 100)
-                ballPart.Parent = workspace
-                
-                local specialMesh = Instance.new("SpecialMesh")
-                specialMesh.MeshType = Enum.MeshType.Sphere
-                specialMesh.Scale = Vector3.new(3, 3, 3)
-                specialMesh.Parent = ballPart
+            -- 监听触摸事件
+            local touchConn = game:GetService("UserInputService").TouchStarted:Connect(onTouchStarted)
+
+            -- 点击释放
+            local clickConn
+            clickConn = game:GetService("UserInputService").InputEnded:Connect(function(input, processed)
+                if input.UserInputType == Enum.UserInputType.Touch and not processed then
+                    if isPlanActive and planetaryBall then
+                        explodeParts(planetaryBall.Position)
+                        planetaryBall:Destroy()
+                        planetaryBall = nil
+                        isPlanActive = false
+                        planetToggle.Text = "关闭"
+                        planetToggle.BackgroundColor3 = Color3.fromRGB(100, 100, 120)
+                        if touchConn then touchConn:Disconnect() end
+                        if clickConn then clickConn:Disconnect() end
+                    end
+                end
+            end)
+        else
+            if planetaryBall then
+                planetaryBall:Destroy()
+                planetaryBall = nil
             end
-            
-            -- 吸收零件
-            spawn(function()
-                while isPlanActive and wait(0.1) do
-                    local parts = workspace:GetDescendants()
-                    for _, part in ipairs(parts) do
-                        if part:IsA("BasePart") and not part.Anchored and part.CanCollide then
-                            if not table.find(debrisGroup, part) then
-                                table.insert(debrisGroup, part)
-                            end
-                            
-                            -- 吸向球体
-                            if ballPart then
-                                local direction = (ballPart.Position - part.Position).unit
-                                part.Velocity = direction * 30
+        end
+    end)
+
+    -- 攻击黑洞功能逻辑
+    attackToggle.MouseButton1Click:Connect(function()
+        local state = attackToggle.Text == "关闭"
+        attackToggle.Text = state and "开启" or "关闭"
+        attackToggle.BackgroundColor3 = state and Color3.fromRGB(0, 200, 100) or Color3.fromRGB(100, 100, 120)
+        
+        if state then
+            -- 攻击黑洞逻辑
+            while attackToggle.Text == "开启" and wait(0.1) do
+                for _, part in ipairs(workspace:GetDescendants()) do
+                    if part:IsA("BasePart") and not part.Anchored then
+                        local targetPos = part.Position + Vector3.new(0, 50, 0)
+                        part.Velocity = (targetPos - part.Position).unit * 40
+                        
+                        -- 检测玩家并甩飞
+                        for _, otherPlayer in ipairs(Players:GetPlayers()) do
+                            if otherPlayer ~= player and otherPlayer.Character then
+                                local rootPart = otherPlayer.Character:FindFirstChild("HumanoidRootPart")
+                                if rootPart and (part.Position - rootPart.Position).magnitude < 25 then
+                                    part.Velocity = (rootPart.Position - part.Position).unit * 80
+                                    local humanoid = otherPlayer.Character:FindFirstChild("Humanoid")
+                                    if humanoid then
+                                        humanoid:ApplyImpulse((rootPart.Position - part.Position).unit * 40)
+                                    end
+                                end
                             end
                         end
                     end
                 end
-            end)
-            
-            -- 点击事件
-            local mouse = player:GetMouse()
-            local mouseClickConn
-            mouseClickConn = mouse.Button1Down:Connect(function()
-                if isPlanActive and ballPart then
-                    local ray = Ray.new(mouse.Hit.Position, Vector3.new(0, -1, 0))
-                    local part, position = workspace:FindPartOnRay(ray)
-                    
-                    if position then
-                        -- 球体飞向点击位置
-                        ballPart.Anchored = false
-                        ballPart.Velocity = (position - ballPart.Position).unit * 100
-                        
-                        -- 撞飞玩家
-                        spawn(function()
-                            wait(0.5)
-                            for _, otherPlayer in ipairs(Players:GetPlayers()) do
-                                if otherPlayer ~= player and otherPlayer.Character then
-                                    local humanoidRootPart = otherPlayer.Character:FindFirstChild("HumanoidRootPart")
-                                    if humanoidRootPart then
-                                        local distance = (ballPart.Position - humanoidRootPart.Position).magnitude
-                                        if distance < 20 then
-                                            local humanoid = otherPlayer.Character:FindFirstChild("Humanoid")
-                                            if humanoid then
-                                                humanoid:ApplyImpulse((humanoidRootPart.Position - ballPart.Position).unit * 100)
-                                            end
-                                        end
-                                    end
-                                end
-                            end
-                        end)
-                    end
-                end
-            end)
-            
-            -- 清理连接
-            spawn(function()
-                while isPlanActive do
-                    wait(0.1)
-                end
-                if mouseClickConn then
-                    mouseClickConn:Disconnect()
-                end
-            end)
-        else
-            -- 清理
-            if ballPart then
-                ballPart:Destroy()
-                ballPart = nil
             end
-            debrisGroup = {}
         end
-    end
-    
-    -- 按钮事件
-    attackToggle.MouseButton1Click:Connect(toggleAttackBlackhole)
-    planToggle.MouseButton1Click:Connect(togglePlanetaryExplosion)
-    
-    -- 最小化/恢复面板
+    end)
+
+    -- 最小化/恢复
     minimizeBtn.MouseButton1Click:Connect(function()
-        isPanelMinimized = not isPanelMinimized
-        minimizeBtn.Text = isPanelMinimized and "恢复面板" or "最小化面板"
-        
-        if isPanelMinimized then
-            mainPanel.Size = UDim2.new(0, 100, 0, 30)
-            title.Text = "NZ助手"
+        isMinimized = not isMinimized
+        if isMinimized then
+            mainPanel.Visible = false
+            infoTag.Visible = false
+            createMinimizeStub()
         else
-            mainPanel.Size = UDim2.new(0, 250, 0, 200)
-            title.Text = "NZ黑洞助手 v1.0"
+            mainPanel.Visible = true
+            infoTag.Visible = true
         end
     end)
-    
-    -- 拖拽功能
-    local dragging = false
-    local dragStartPos
-    local frameStartPos
-    
-    mainPanel.MouseEnter:Connect(function()
-        mainPanel.Active = true
+
+    -- 拖拽支持（手机端通过触摸移动）
+    local function onDragStarted()
+        mainPanel.Draggable = true
+    end
+
+    local function onDragEnded()
+        mainPanel.Draggable = false
+    end
+
+    titleBar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch then
+            onDragStarted()
+        end
     end)
-    
-    mainPanel.MouseLeave:Connect(function()
-        mainPanel.Active = false
-    end)
-    
-    mainPanel.MouseButton1Down:Connect(function()
-        dragging = true
-        dragStartPos = Vector2.new(mouse.X, mouse.Y)
-        frameStartPos = mainPanel.Position
-    end)
-    
-    mainPanel.MouseButton1Up:Connect(function()
-        dragging = false
-    end)
-    
-    game:GetService("UserInputService").InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement and dragging then
-            local delta = Vector2.new(input.Position.X, input.Position.Y) - dragStartPos
-            mainPanel.Position = UDim2.new(
-                frameStartPos.X.Scale, 
-                frameStartPos.X.Offset + delta.X,
-                frameStartPos.Y.Scale,
-                frameStartPos.Y.Offset + delta.Y
-            )
+
+    titleBar.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch then
+            onDragEnded()
         end
     end)
 end
 
--- === 启动脚本 ===
-checkServerId()
+-- 最小化后的小按钮
+local function createMinimizeStub()
+    local stub = Instance.new("TextButton")
+    stub.Size = UDim2.new(0, 70, 0, 20)
+    stub.Position = UDim2.new(0.85, 0, 0.02, 0)
+    stub.BackgroundTransparency = 0.5
+    stub.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+    stub.Text = "NZ助手"
+    stub.TextColor3 = Color3.fromRGB(255, 255, 255)
+    stub.Font = Enum.Font.SourceSans
+    stub.TextSize = 10
+    stub.Parent = gui
+
+    stub.MouseButton1Click:Connect(function()
+        stub:Destroy()
+        if mainPanel then mainPanel.Visible = true end
+        if infoTag then infoTag.Visible = true end
+        isMinimized = false
+    end)
+end
+
+-- 启动脚本
+showWelcome()
