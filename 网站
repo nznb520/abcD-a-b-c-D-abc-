@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>墨龙||凌霄军团管理系统</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background-color: #1a1a1a;
+            color: gold;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 2px solid gold;
+            border-radius: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        h1 {
+            text-align: center;
+            color: gold;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+        }
+        .password-box {
+            text-align: center;
+            margin: 30px auto;
+            padding: 20px;
+            border: 2px solid gold;
+            border-radius: 5px;
+            max-width: 400px;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        input {
+            padding: 8px;
+            margin: 10px 0;
+            width: 80%;
+            background-color: #333;
+            color: gold;
+            border: 1px solid gold;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #333;
+            color: gold;
+            border: 1px solid gold;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: gold;
+            color: #333;
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .member-list {
+            margin-top: 20px;
+            border: 2px solid gold;
+            border-radius: 5px;
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .member-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            border-bottom: 1px solid gold;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        .modal-content {
+            background-color: #1a1a1a;
+            margin: 10% auto;
+            padding: 20px;
+            border: 2px solid gold;
+            border-radius: 10px;
+            width: 60%;
+            max-width: 500px;
+        }
+        .close {
+            color: gold;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        select {
+            padding: 8px;
+            margin: 10px 0;
+            width: 100%;
+            background-color: #333;
+            color: gold;
+            border: 1px solid gold;
+            border-radius: 4px;
+        }
+        .stats {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .admin-panel {
+            margin-top: 20px;
+            padding: 15px;
+            border: 2px solid gold;
+            border-radius: 5px;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>墨龙||凌霄军团管理系统</h1>
+        
+        <!-- 初始密码输入框 -->
+        <div id="passwordSection" class="password-box">
+            <h2>请输入密码</h2>
+            <input type="password" id="passwordInput" placeholder="请输入密码">
+            <button id="enterBtn">进入</button>
+        </div>
+        
+        <!-- 主管理界面 -->
+        <div id="managementSection" style="display: none;">
+            <button id="adminBtn">管理人员入口</button>
+            
+            <div class="member-list" id="memberList">
+                <!-- 成员列表将在这里动态生成 -->
+            </div>
+            
+            <div class="stats">
+                军团人数: <span id="memberCount">0</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 管理员密码输入框 -->
+    <div id="adminPasswordModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>管理员验证</h2>
+            <input type="password" id="adminPasswordInput" placeholder="请输入管理员密码">
+            <button id="adminConfirmBtn">确认</button>
+        </div>
+    </div>
+    
+    <!-- 添加成员模态框 -->
+    <div id="addMemberModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>添加管理人员</h2>
+            <select id="positionSelect">
+                <option value="团长">团长</option>
+                <option value="副团长">副团长</option>
+                <option value="1分队队员">1分队队员</option>
+                <option value="2分队队员">2分队队员</option>
+                <option value="3分队队员">3分队队员</option>
+                <option value="4分队队员">4分队队员</option>
+                <option value="分团团长">分团团长</option>
+                <option value="分团副团长">分团副团长</option>
+                <option value="成员">成员</option>
+                <option value="审核部部长">审核部部长</option>
+                <option value="审核部分部长">审核部分部长</option>
+            </select>
+            <input type="text" id="memberName" placeholder="请输入名字">
+            <button id="confirmAddBtn">确认添加</button>
+        </div>
+    </div>
+    
+    <!-- 编辑成员模态框 -->
+    <div id="editMemberModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>编辑成员信息</h2>
+            <select id="editPositionSelect">
+                <option value="团长">团长</option>
+                <option value="副团长">副团长</option>
+                <option value="1分队队员">1分队队员</option>
+                <option value="2分队队员">2分队队员</option>
+                <option value="3分队队员">3分队队员</option>
+                <option value="4分队队员">4分队队员</option>
+                <option value="分团团长">分团团长</option>
+                <option value="分团副团长">分团副团长</option>
+                <option value="成员">成员</option>
+                <option value="审核部部长">审核部部长</option>
+                <option value="审核部分部长">审核部分部长</option>
+            </select>
+            <input type="text" id="editMemberName" placeholder="请输入名字">
+            <button id="confirmEditBtn">确认修改</button>
+        </div>
+    </div>
+    
+    <!-- 修改人数模态框 -->
+    <div id="editCountModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>修改军团人数</h2>
+            <input type="number" id="newMemberCount" placeholder="请输入新的人数">
+            <button id="confirmCountBtn">确认修改</button>
+        </div>
+    </div>
+
+    <script>
+        // 密码验证
+        const correctPassword = "6yei38wi";
+        const adminPassword = "idkd773h";
+        const passwordInput = document.getElementById("passwordInput");
+        const enterBtn = document.getElementById("enterBtn");
+        const passwordSection = document.getElementById("passwordSection");
+        const managementSection = document.getElementById("managementSection");
+        const adminBtn = document.getElementById("adminBtn");
+        
+        // 从本地存储加载数据
+        let members = JSON.parse(localStorage.getItem('legion_members')) || [];
+        let memberCount = parseInt(localStorage.getItem('legion_count')) || 0;
+        let isAdmin = localStorage.getItem('legion_admin') === 'true' || false;
+        
+        // 初始化显示
+        updateMemberList();
+        document.getElementById("memberCount").textContent = memberCount;
+        
+        enterBtn.addEventListener("click", function() {
+            if (passwordInput.value === correctPassword) {
+                passwordSection.style.display = "none";
+                managementSection.style.display = "block";
+                loadData();
+            } else {
+                alert("密码错误！");
+            }
+        });
+        
+        // 管理员按钮点击事件
+        adminBtn.addEventListener("click", function() {
+            document.getElementById("adminPasswordModal").style.display = "block";
+        });
+        
+        // 管理员密码确认
+        document.getElementById("adminConfirmBtn").addEventListener("click", function() {
+            const adminPasswordInput = document.getElementById("adminPasswordInput");
+            if (adminPasswordInput.value === adminPassword) {
+                isAdmin = true;
+                localStorage.setItem('legion_admin', 'true');
+                document.getElementById("adminPasswordModal").style.display = "none";
+                showAdminPanel();
+            } else {
+                alert("管理员密码错误！");
+            }
+            adminPasswordInput.value = "";
+        });
+        
+        // 显示管理员面板
+        function showAdminPanel() {
+            const adminPanel = document.createElement("div");
+            adminPanel.className = "admin-panel";
+            adminPanel.innerHTML = `
+                <button id="addMemberBtn">添加管理人员</button>
+                <button id="editCountBtn">修改军团人数</button>
+            `;
+            managementSection.insertBefore(adminPanel, document.getElementById("memberList"));
+            
+            // 添加成员按钮
+            document.getElementById("addMemberBtn").addEventListener("click", function() {
+                document.getElementById("addMemberModal").style.display = "block";
+            });
+            
+            // 修改人数按钮
+            document.getElementById("editCountBtn").addEventListener("click", function() {
+                document.getElementById("newMemberCount").value = memberCount;
+                document.getElementById("editCountModal").style.display = "block";
+            });
+        }
+        
+        // 加载数据
+        function loadData() {
+            if (isAdmin) {
+                showAdminPanel();
+            }
+        }
+        
+        // 关闭模态框
+        document.querySelectorAll(".close").forEach(button => {
+            button.addEventListener("click", function() {
+                this.closest(".modal").style.display = "none";
+            });
+        });
+        
+        // 确认添加成员
+        document.getElementById("confirmAddBtn").addEventListener("click", function() {
+            const position = document.getElementById("positionSelect").value;
+            const name = document.getElementById("memberName").value;
+            
+            if (name.trim() === "") {
+                alert("请输入名字！");
+                return;
+            }
+            
+            members.push({
+                id: Date.now(),
+                name: name,
+                position: position
+            });
+            
+            saveMembers();
+            updateMemberList();
+            document.getElementById("addMemberModal").style.display = "none";
+            document.getElementById("memberName").value = "";
+        });
+        
+        // 编辑成员
+        let currentEditId = null;
+        
+        function openEditModal(id) {
+            if (!isAdmin) {
+                alert("只有管理员才能修改成员信息！");
+                return;
+            }
+            
+            const member = members.find(m => m.id === id);
+            if (member) {
+                currentEditId = id;
+                document.getElementById("editPositionSelect").value = member.position;
+                document.getElementById("editMemberName").value = member.name;
+                document.getElementById("editMemberModal").style.display = "block";
+            }
+        }
+        
+        document.getElementById("confirmEditBtn").addEventListener("click", function() {
+            const position = document.getElementById("editPositionSelect").value;
+            const name = document.getElementById("editMemberName").value;
+            
+            if (name.trim() === "") {
+                alert("请输入名字！");
+                return;
+            }
+            
+            const index = members.findIndex(m => m.id === currentEditId);
+            if (index !== -1) {
+                members[index] = {
+                    id: currentEditId,
+                    name: name,
+                    position: position
+                };
+                
+                saveMembers();
+                updateMemberList();
+                document.getElementById("editMemberModal").style.display = "none";
+            }
+        });
+        
+        // 修改人数
+        document.getElementById("confirmCountBtn").addEventListener("click", function() {
+            const newCount = parseInt(document.getElementById("newMemberCount").value);
+            if (!isNaN(newCount) && newCount >= 0) {
+                memberCount = newCount;
+                localStorage.setItem('legion_count', memberCount);
+                document.getElementById("memberCount").textContent = memberCount;
+                document.getElementById("editCountModal").style.display = "none";
+            } else {
+                alert("请输入有效的人数！");
+            }
+        });
+        
+        // 删除成员
+        function deleteMember(id) {
+            if (!isAdmin) {
+                alert("只有管理员才能删除成员！");
+                return;
+            }
+            
+            if (confirm("确定要删除此成员吗？")) {
+                members = members.filter(m => m.id !== id);
+                saveMembers();
+                updateMemberList();
+            }
+        }
+        
+        // 更新成员列表显示
+        function updateMemberList() {
+            const memberList = document.getElementById("memberList");
+            memberList.innerHTML = "";
+            
+            if (members.length === 0) {
+                memberList.innerHTML = "<p>暂无成员</p >";
+                return;
+            }
+            
+            members.forEach(member => {
+                const memberItem = document.createElement("div");
+                memberItem.className = "member-item";
+                
+                const editBtn = isAdmin ? `<button onclick="openEditModal(${member.id})">修改</button>` : '';
+                const deleteBtn = isAdmin ? `<button onclick="deleteMember(${member.id})">删除</button>` : '';
+                
+                memberItem.innerHTML = `
+                    <span>${member.position}: ${member.name}</span>
+                    <div>
+                        ${editBtn}
+                        ${deleteBtn}
+                    </div>
+                `;
+                memberList.appendChild(memberItem);
+            });
+        }
+        
+        // 保存成员数据到本地存储
+        function saveMembers() {
+            localStorage.setItem('legion_members', JSON.stringify(members));
+        }
+        
+        // 点击模态框外部关闭模态框
+        window.addEventListener("click", function(event) {
+            if (event.target.className === "modal") {
+                event.target.style.display = "none";
+            }
+        });
+        
+        // 检查是否已经是管理员
+        if (isAdmin) {
+            passwordSection.style.display = "none";
+            managementSection.style.display = "block";
+            showAdminPanel();
+        }
+    </script>
+</body>
+</html>
