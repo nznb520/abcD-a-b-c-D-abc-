@@ -1,6 +1,5 @@
 local CoreGui = game:GetService("StarterGui")
 
--- 修改1：通知标题改为 NZ脚本中心
 CoreGui:SetCore("SendNotification", {
     Title = "NZ脚本中心",
     Text = "NZ脚本中心加载（反挂机已开启）",
@@ -16,15 +15,15 @@ end)
 
 local OrionLib = loadstring(game:HttpGet("https://pastebin.com/raw/dUiCrXYP"))()
 local Window = OrionLib:MakeWindow({
-    -- 修改2：菜单主名称
-    Name = "NZ脚本中心", 
+    -- 修改这里：将窗口标题改为彩虹色
+    Name = "<font color=\"#FF0000\">N</font><font color=\"#FF7F00\">Z</font><font color=\"#FFFF00\">脚</font><font color=\"#00FF00\">本</font><font color=\"#0000FF\">中</font><font color=\"#4B0082\">心</font>", 
     HidePremium = false, 
     SaveConfig = true,
-    -- 修改3：菜单欢迎语
     IntroText = "欢迎使用NZ脚本中心", 
     ConfigFolder = "演戏等于稳定"
 })
 
+-- ========== 原有的公告板块 ==========
 local about = Window:MakeTab({
     Name = "公告",
     Icon = "rbxassetid://93566402708060",
@@ -34,15 +33,27 @@ local about = Window:MakeTab({
 about:AddParagraph("公告", "永久公益,完全碾压市面上97%的缝合脚本")
 about:AddParagraph("更新", "河北唐县")
 about:AddParagraph("注意", "演戏等于稳定")
+about:AddParagraph("版本号", "V1.0")
 about:AddParagraph("您的用户名:"," "..game.Players.LocalPlayer.Name.."")
 about:AddParagraph("您的注入器:"," "..identifyexecutor().."")
 about:AddParagraph("您当前服务器的ID"," "..game.GameId.."")
-
--- 修改4：修改师傅信息为 南烛
 about:AddParagraph("依然的师傅:南烛", "快手号:无 QQ号:无")
--- 修改5：修改创作者信息为 南烛
 about:AddParagraph("创作者:南烛", "快手号:无 QQ号:无")
 
+-- ========== 修改：新增的作者板块 (名字改为彩虹色) ==========
+local authorTab = Window:MakeTab({
+    Name = "作者",
+    Icon = "rbxassetid://93566402708060",
+    PremiumOnly = false
+})
+
+-- 主作者名字改为彩虹色
+authorTab:AddParagraph("主作者", "<font color=\"#FF0000\">南</font><font color=\"#FF7F00\">烛</font>")
+-- 副作者名字改为彩虹色
+authorTab:AddParagraph("副作者", "<font color=\"#4B0082\">逍</font><font color=\"#9400D3\">遥</font>")
+authorTab:AddParagraph("联系主作者", "QQ号: 1901671661")
+
+-- ========== 以下为原有的功能按钮代码 (保持不变) ==========
 local Tab = Window:MakeTab({
 Name = "其他通用脚本",
 Icon = "rbxassetid://93566402708060",
@@ -159,7 +170,6 @@ PremiumOnly = false
 Tab:AddButton({
     Name = "依然NB飞行V9178",
     Callback = function()
--- 保留了原功能名，若想改名可自行修改上面的 Name 参数
 loadstring(game:HttpGet("https://raw.githubusercontent.com/lds-D/Roblox-666/refs/heads/main/%E4%BE%9D%E7%84%B6%E9%A3%9E%E8%A1%8C%E8%84%9A%E6%9C%AC"))()
   end
 })
@@ -235,7 +245,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/cytj777i/6669178/main
 })
 
 Tab:AddButton({
-Name = "控制物体(适合自然灾害)",
+Name = "控制NPC(适合自然灾害)",
 Callback = function()
 loadstring(game:HttpGet("https://raw.githubusercontent.com/cytj777i/6669178/main/%E5%8D%95%E4%B8%80%E7%89%A9%E4%BD%93%E9%A3%9E%E8%A1%8C%E8%BD%BD%E8%87%AA%E5%B7%B1%E6%9C%80%E7%BB%88%E4%BC%98%E5%8C%96%E7%89%88"))()   
   end
@@ -420,30 +430,4 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/iopjklbnmsss/SansHubS
   end
 })
 
-Tab:AddButton({
-    Name = "死铁轨脚本1",
-    Callback = function()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/ArdyBotzz/NatHub/refs/heads/master/NatHub.lua"))();
-  end
-})
-Tab:AddButton({
-    Name = "死铁轨脚本2",
-    Callback = function()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Unknownlodfc/Zephyr/refs/heads/main/DeadRails/Main"))()
-  end
-})
-
-local Section = Tab:AddSection({
-Name = "功能"
-})
-
-Tab:AddButton({
-    Name = "强力挥击(Kenny汉化)",
-    Callback = function()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/ke9460394-dot/ugik/refs/heads/main/%E6%AD%BB%E9%93%81%E8%BD%A8v4.lua"))()
-  end
-})
-
-Tab:AddButton({
-    Name = "近战增强脚本(Kenny汉化)",
-    Callback = function()
+Tab:AddButton
