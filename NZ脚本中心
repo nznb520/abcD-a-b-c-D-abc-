@@ -1,263 +1,124 @@
--- ==========================================
--- NZ 脚本中心 - 主程序
--- 使用 IUP 库开发
--- ==========================================
+-- 首先导入Flux UI库
+local Flux = loadstring(game:HttpGet("https://raw.githubusercontent.com/weakhoes/Roblox-UI-Libs/main/fluxlib.lua"))()
 
--- 尝试加载 IUP 库
-local iup = require("iuplua")
-require("iupluacontrols")
+-- 创建窗口
+local window = Flux:Window("NZ脚本中心", "欢迎使用NZ脚本中心", Color3.fromRGB(44, 44, 44), Enum.KeyCode.RightControl)
 
--- 全局变量，用于存储主对话框，以便在加载完成后显示
-local main_dialog
+-- 添加标签页
+local mainTab = window:Tab("主界面", "rbxassetid://1234567890")
+local scriptsTab = window:Tab("脚本", "rbxassetid://1234567890")
+local settingsTab = window:Tab("设置", "rbxassetid://1234567890")
 
--- ==========================================
--- 1. 加载页面函数
--- ==========================================
-local function showLoadingScreen()
-    -- 创建一个简单的标签作为加载界面
-    local label = iup.label{
-        title = "NZ 脚本中心\n正在加载资源...",
-        font = "Arial, 16",
-        alignment = "ACENTER",
-        size = "300x100"
-    }
-    
-    local loading_dlg = iup.dialog{
-        label, 
-        title = "加载中", 
-        modal = "YES", 
-        resize = "NO"
-    }
-    
-    -- 显示加载界面 (非模态也可以，这里用模态防止操作主窗体)
-    loading_dlg:show()
-    
-    -- 模拟加载延迟 (实际应用中这里可能是读取文件或初始化数据)
-    -- 注意：在真实 GUI 环境中，长时间阻塞主线程会导致界面无响应。
-    -- 这里为了演示简单，使用一个短延时。
-    iup.LoopStep() -- 处理一次消息循环，确保窗口绘制出来
-    
-    -- 模拟耗时操作 (仅用于演示，实际应删除或替换为真实逻辑)
-    local start = os.time()
-    while os.time() - start < 1 do end -- 等待1秒
-    
-    -- 销毁加载界面
-    loading_dlg:destroy()
-end
+-- 主界面标签内容
+mainTab:Label("欢迎使用NZ脚本中心")
+mainTab:Line()
+mainTab:Label("当前版本: v1.0.0")
+mainTab:Button("检查更新", function()
+    Flux:Notification("已是最新版本", "已是最新版本，无需更新", 5)
+end)
+mainTab:Line()
+mainTab:Label("选择游戏：")
 
--- ==========================================
--- 2. 功能函数定义 (占位符)
--- ==========================================
+-- 游戏下拉选择
+local games = {"通用脚本", "监狱人生", "忍者传奇", "力量传奇", "Blox Fruits"}
+local selectedGame = mainTab:Dropdown("选择游戏", games, function(selection)
+    Flux:Notification("游戏切换", "已切换到: " .. selection, 3)
+end)
 
--- 无限跳功能 (实际逻辑需要游戏内挂钩，这里仅打印日志)
-local function toggleInfiniteJump()
-    local state = iup.GetGlobal("infinite_jump_state")
-    if state == "ON" then
-        print("[NZ 脚本] 已关闭无限跳")
-        iup.SetGlobal("infinite_jump_state", "OFF")
-        iup.SetAttribute(iup.GetHandle("btn_infinite_jump"), "TITLE", "无限跳: 关")
+-- 脚本标签内容
+scriptsTab:Label("脚本列表")
+scriptsTab:Line()
+
+-- 创建脚本按钮
+scriptsTab:Button("无限跳跃", function()
+    loadstring(game:HttpGet("https://example.com/script1.lua", true))()
+    Flux:Notification("脚本注入", "无限跳跃脚本已加载", 3)
+end)
+
+scriptsTab:Button("飞行脚本", function()
+    loadstring(game:HttpGet("https://example.com/script2.lua", true))()
+    Flux:Notification("脚本注入", "飞行脚本已加载", 3)
+end)
+
+scriptsTab:Button("穿墙脚本", function()
+    loadstring(game:HttpGet("https://example.com/script3.lua", true))()
+    Flux:Notification("脚本注入", "穿墙脚本已加载", 3)
+end)
+
+scriptsTab:Line()
+scriptsTab:Toggle("自动执行", false, function(state)
+    if state then
+        Flux:Notification("自动执行", "已开启自动执行功能", 3)
     else
-        print("[NZ 脚本] 已开启无限跳 (请在游戏中尝试空中跳跃)")
-        iup.SetGlobal("infinite_jump_state", "ON")
-        iup.SetAttribute(iup.GetHandle("btn_infinite_jump"), "TITLE", "无限跳: 开")
+        Flux:Notification("自动执行", "已关闭自动执行功能", 3)
     end
+end)
+
+-- 设置标签内容
+settingsTab:Label("设置选项")
+settingsTab:Line()
+
+-- 颜色选择器
+local currentColor = Color3.fromRGB(44, 44, 44)
+settingsTab:Colorpicker("主题颜色", currentColor, function(color)
+    -- 这里可以添加更新UI颜色的代码
+    Flux:Notification("主题更新", "主题颜色已更新", 3)
+end)
+
+-- 滑块设置
+settingsTab:Slider("UI透明度", 0, 100, 100, function(value)
+    -- 这里可以添加更新UI透明度的代码
+    Flux:Notification("透明度设置", "UI透明度已设置为: " .. value .. "%", 2)
+end)
+
+settingsTab:Line()
+settingsTab:Label("快捷键设置")
+
+-- 绑定按键
+local currentKey = "RightControl"
+settingsTab:Bind("打开/关闭UI", Enum.KeyCode.RightControl, function()
+    window:Close()
+end)
+
+settingsTab:Line()
+settingsTab:Label("关于")
+settingsTab:Button("关于NZ脚本中心", function()
+    Flux:Notification("关于", "NZ脚本中心 v1.0.0\n开发者: NZ团队", 5)
+end)
+
+settingsTab:Button("加入Discord", function()
+    setclipboard("https://discord.gg/example")
+    Flux:Notification("链接复制", "Discord链接已复制到剪贴板", 3)
+end)
+
+-- 初始化UI
+local UIState = {
+    AutoExecute = false,
+    CurrentGame = "通用脚本",
+    ThemeColor = currentColor,
+    UITransparency = 100
+}
+
+-- 保存函数用于其他脚本调用
+local NZScriptCenter = {}
+
+function NZScriptCenter:ExecuteScript(scriptName)
+    -- 这里可以添加执行具体脚本的逻辑
+    Flux:Notification("脚本执行", "正在执行: " .. scriptName, 3)
 end
 
--- 修改移速功能
-local function modifySpeed()
-    local speed_input = iup.GetHandle("txt_speed")
-    local speed_value = iup.GetAttribute(speed_input, "VALUE")
-    
-    -- 简单的验证
-    local speed_num = tonumber(speed_value)
-    if speed_num and speed_num > 0 then
-        print(string.format("[NZ 脚本] 正在修改移速为: %.2f", speed_num))
-        -- TODO: 在这里注入移速修改代码 (取决于游戏内存操作)
-        iup.Message("成功", string.format("移速已修改为 %.2f", speed_num))
-    else
-        iup.Message("错误", "请输入有效的数字!")
-    end
+function NZScriptCenter:GetUIState()
+    return UIState
 end
 
--- 透视功能
-local function toggleESP()
-    local state = iup.GetGlobal("esp_state")
-    if state == "ON" then
-        print("[NZ 脚本] 已关闭透视 (轮廓高亮)")
-        iup.SetGlobal("esp_state", "OFF")
-        iup.SetAttribute(iup.GetHandle("btn_esp"), "TITLE", "开启透视 (彩色轮廓)")
-    else
-        print("[NZ 脚本] 已开启透视功能 (高亮显示玩家轮廓)")
-        -- TODO: 这里需要实现渲染逻辑来画出玩家轮廓
-        iup.SetGlobal("esp_state", "ON")
-        iup.SetAttribute(iup.GetHandle("btn_esp"), "TITLE", "关闭透视")
-    end
+function NZScriptCenter:ShowNotification(title, message, duration)
+    Flux:Notification(title, message, duration or 3)
 end
 
--- ==========================================
--- 3. 创建主界面
--- ==========================================
-local function createMainWindow()
-    -- 标题标签
-    local lbl_title = iup.label{
-        title = "NZ 脚本中心",
-        font = "Helvetica, Bold, 18",
-        expand = "HORIZONTAL",
-        alignment = "ACENTER",
-        padding = "10x10"
-    }
+-- 在游戏启动时显示欢迎消息
+task.spawn(function()
+    task.wait(2)
+    Flux:Notification("欢迎", "欢迎使用NZ脚本中心！", 5)
+end)
 
-    local lbl_author = iup.label{
-        title = "作者：南烛",
-        font = "Arial, 10",
-        foreground = "80,80,80", -- 灰色
-        alignment = "ACENTER"
-    }
-
-    -- ==========================================
-    -- 选项卡控件
-    -- ==========================================
-    local tabs = iup.tabs{
-        -- --- 1. 通用栏目 ---
-        iup.vbox{
-            iup.frame{
-                title = "跳跃辅助",
-                iup.button{
-                    title = "无限跳: 关", 
-                    name = "btn_infinite_jump",
-                    action = toggleInfiniteJump
-                }
-            },
-            iup.frame{
-                title = "移动速度",
-                iup.hbox{
-                    iup.text{
-                        value = "5.0", 
-                        size = "50", 
-                        name = "txt_speed"
-                    },
-                    iup.button{
-                        title = "修改移速", 
-                        action = modifySpeed
-                    }
-                }
-            },
-            iup.frame{
-                title = "视觉辅助",
-                iup.button{
-                    title = "开启透视 (彩色轮廓)", 
-                    name = "btn_esp",
-                    action = toggleESP
-                }
-            },
-            margin = "10x10"
-        };
-        
-        -- --- 2. 制作人员栏目 ---
-        iup.vbox{
-            iup.label{title = "核心开发团队", font="Bold"},
-            iup.label{title = "作者：南烛", padding="0x5"},
-            iup.label{title = "副作者：逍遥"},
-            margin = "20x20"
-        };
-
-        -- --- 3. 军团排名栏目 ---
-        iup.vbox{
-            iup.label{title = "军团势力排行榜 (Top 42)", font="Bold", padding="0x10"},
-            -- 使用多行文本框模拟表格，设置为只读
-            iup.text{
-                value = [[排名\t军团名称\t\t团长\t战力\t\t所属联盟\t\t上级军团\t\t操作
-=========================================================================================================
-1【龙影破晓】权1,700【LXG|凌霄阁】 (逍遥, 167)【王权永恒】 (天佑神州, 41)无修改 删除
-2【星星之火】春宝1,200【星芒逐光】 (快手小路, 61)无修改 删除
-3【无上领域】米公子804无无修改 删除
-4【独步天下】阿宇639无无修改 删除
-5【君临天下】阿成584无无修改 删除
-6【墨龙||凌霄】逍遥471【G.S】 (2134羌古大帝, 31)【龙影破晓】 (权, 1700)修改 删除
-7【龙庭//乱世之巅】你行你也叫破晓呗 .229无无修改 删除
-8〖魔灵教/MH〗36.43.46_50173无无修改 删除
-9【星℡海】℡一代天172无【星星之火】 (春宝, 1200)修改 删除
-10【璃月阁】天府130无无修改 删除
-11【腥风-血爪门】笙翊120【夕日】 (11不舍阿, 85)无修改 删除
-12【神临‖缘月】柯淼90无无修改 删除
-13【冥河-山渊】Lxy寒渊88无【星星之火】 (春宝, 1200)修改 删除
-14【夕日】11不舍阿85无【腥风-血爪门】 (笙翊, 120)修改 删除
-15【麒麟】麒麟.团长空81无无修改 删除
-16【冰龙冥河】你行你也叫阿磊（初代A1)76无无修改 删除
-17【卧底狂欢】彤彤控76无无修改 删除
-18【月落星沉】天府74无无修改 删除
-19【幻梦|摘星阁】铜锣烧63无无修改 删除
-20【星芒逐光 】快手小路61无【星星之火】 (明天再也不见, 527)修改 删除
-21【乾坤龙庭】逍遥59无无修改 删除
-22【血煞|天下会】逍遥52无无修改 删除
-23【永恒】郵佱50无无修改 删除
-24【冥河-月海】小虎49无【冥河-深渊】 (Lxy寒渊, 88)修改 删除
-25【龙阁||无畏】凡44无无修改 删除
-26【王权永恒】天佑神州41无【龙影破晓】 (权, 800)修改 删除
-27【超越一切】QQ用户12341无无修改 删除
-28棱花/FJB曼波40无无修改 删除
-29【行者军团】Yang.W.K.35无无修改 删除
-30【PFC暗耀丨星辰】R35无无修改 删除
-31[北漠 | 永日辉煌]光的神35无无修改 删除
-32【天神阁】天神阁团长34无无修改 删除
-33【长安｜龙啸九州】狼魂33无无修改 删除
-34【G.S】0234大帝31无【墨龙凌霄】 (逍遥, 471)修改 删除
-35【海啸|龙威】一只蹭线的小马超31无无修改 删除
-36【归殊】狸花仄27无无修改 删除
-37【审判会】阿判大王26无无修改 删除
-38【醉斩狂杀】于哥23无无修改 删除
-39【蒙面】【蒙面】溜鱼大王23无无修改 删除
-40【结晶】星结10无【AZ|天下会】 (金鳞, 400)修改 删除
-41【XS/归殊】军团主群 默夜流星(让我滚去复习)10无无修改 删除
-42【AZ|天下会】金鳞1【结晶】 (星结, 10)无修改 删除]],
-                readonly = "YES",
-                expand = "YES",
-                font = "Courier, 9" -- 等宽字体以便对齐
-            },
-            margin = "10x10"
-        };
-
-        -- 设置选项卡标题
-        tabtitle0 = "通用设置",
-        tabtitle1 = "制作人员",
-        tabtitle2 = "军团排名"
-    }
-
-    -- 主布局
-    local main_layout = iup.vbox{
-        lbl_title,
-        lbl_author,
-        iup.label{title = ""}, -- 空白间隔
-        tabs,
-        margin = "5x5"
-    }
-
-    -- 创建主对话框
-    main_dialog = iup.dialog{
-        main_layout,
-        title = "NZ 脚本中心 v1.0",
-        size = "800x600"
-    }
-end
-
--- ==========================================
--- 4. 主函数入口
--- ==========================================
-function main()
-    print("启动 NZ 脚本中心...")
-
-    -- 1. 显示加载页面
-    showLoadingScreen()
-
-    -- 2. 创建主窗口
-    createMainWindow()
-
-    -- 3. 显示主窗口
-    main_dialog:show()
-
-    -- 4. 启动 IUP 主循环
-    iup.MainLoop()
-end
-
--- 运行主函数
-main()
+return NZScriptCenter
